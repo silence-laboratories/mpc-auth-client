@@ -7,9 +7,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/popover";
 import { Client, Presets } from "userop";
 import * as store from "@/utils/store";
 import { useRouter } from "next/navigation";
-import { json } from "stream/consumers";
 import { SilentWallet } from "@/silentWallet";
-import { ethers } from "ethers";
 import { getSilentShareStorage } from "@/mpc/storage";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };

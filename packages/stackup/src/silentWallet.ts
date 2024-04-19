@@ -50,20 +50,20 @@ export class SilentWallet extends Signer {
     this.keygenResult = keygenResult;
   }
 
-  public static async generate(): Promise<SilentWallet> {
-    await index.initPairing();
-    await index.runPairing();
-    const keygenResult = await index.runKeygen();
-    await index.runBackup();
-    const p1KeyShare: IP1KeyShare = keygenResult.distributedKey.keyShareData;
-    if (!p1KeyShare) {
-      throw new Error("Failed to generate p1KeyShare");
-    }
+  // public static async generate(): Promise<SilentWallet> {
+  //   await index.initPairing();
+  //   await index.runPairing();
+  //   const keygenResult = await index.runKeygen();
+  //   await index.runBackup();
+  //   const p1KeyShare: IP1KeyShare = keygenResult.distributedKey.keyShareData;
+  //   if (!p1KeyShare) {
+  //     throw new Error("Failed to generate p1KeyShare");
+  //   }
 
-    const publicKey = p1KeyShare.public_key;
-    const address = ethers.utils.computeAddress(`0x04${publicKey}`);
-    return new SilentWallet(address, publicKey, p1KeyShare, keygenResult);
-  }
+  //   const publicKey = p1KeyShare.public_key;
+  //   const address = ethers.utils.computeAddress(`0x04${publicKey}`);
+  //   return new SilentWallet(address, publicKey, p1KeyShare, keygenResult);
+  // }
 
   async getAddress(): Promise<string> {
     return this.address;
@@ -109,9 +109,10 @@ export class SilentWallet extends Signer {
 
     return signedMsg;
   }
+
   async signTransaction(transaction: TransactionRequest): Promise<string> {
     console.log("running signtransaction");
-    return resolveProperties(transaction).then(async (tx) => {
+    return resolveProperties(transaction).then(async (tx: any) => {
       if (tx.from != null) {
         if (getAddress(tx.from) !== this.address) {
           throw new Error(
