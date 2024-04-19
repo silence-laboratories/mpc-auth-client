@@ -4,13 +4,15 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/popover";
-
+import { Client, Presets } from "userop";
 import * as store from "@/utils/store";
 import { useRouter } from "next/navigation";
 import { json } from "stream/consumers";
-
+import { SilentWallet } from "@/silentWallet";
+import { ethers } from "ethers";
+import { getSilentShareStorage } from "@/mpc/storage";
 function Page() {
-    const placeholderAccount = {address: "...", balance: 0}
+    const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
     const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
     const router = useRouter();
@@ -19,34 +21,29 @@ function Page() {
 
     useEffect(() => {
         // show Eoa details
-        console.log("getEoa check",store.getEoa())
+        console.log("getEoa check", store.getEoa());
         setEoa(store.getEoa());
-
     }, []);
 
     const handleMint = () => {
         (async () => {
             setLoading(true);
-            // mint
-            // await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            const response = await fetch("http://localhost:3001/api/simpleAccount/address",{
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-
-        const walletAccount = await response.json(); 
-        store.setWalletAccount({address: walletAccount.scaAddress});
-        setLoading(false);
-
-            // redirect to homescreen
-            router.push("/homescreen");
+            const keyshards = getSilentShareStorage();
+            const distributedKey = keyshards.newPairingState?.distributedKey;
+            const keyShareData = distributedKey?.keyShareData ?? null; // Add null check here
+            const simpleAccount = await Presets.Builder.SimpleAccount.init(
+                new SilentWallet(
+                    store.getEoa().address,
+                    distributedKey?.publicKey ?? "",
+                    keyShareData,
+                    { distributedKey }
+                ),
+                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
+            );
+            const response = simpleAccount.getSender();
+            store.setWalletAccount({ address: response });
+            setLoading(true);
+            router.replace("/homescreen");
         })();
     };
 
@@ -141,16 +138,16 @@ function Page() {
                                             className="flex items-center"
                                             onClick={async () => {
                                                 navigator.clipboard.writeText(
-                                                    eoa.address
+                                                    eoa.address,
                                                 );
                                             }}
                                         >
                                             <span className="mr-1 text-[black] b1-bold">
-                                                {eoa.address.slice(0,4)}
+                                                {eoa.address.slice(0, 4)}
                                                 {"..."}
                                                 {eoa.address.slice(
-                                                    eoa.address.length-5,
-                                                    eoa.address.length
+                                                    eoa.address.length - 5,
+                                                    eoa.address.length,
                                                 )}
                                             </span>
                                             <svg
