@@ -21,7 +21,7 @@ function Page() {
     const step = 1;
 
     const MAX_SECONDS = 30;
-    async function generateWallet() {
+    const generateWallet = async () => {
         console.log("gen wallet called api---");
         store.clearLocalStorage();
 
@@ -40,20 +40,18 @@ function Page() {
                 address:
                     "0x" +
                     pubToAddress(
-                        Buffer.from(keygenRes.distributedKey.publicKey, "hex"),
+                        Buffer.from(keygenRes.distributedKey.publicKey, "hex")
                     ).toString("hex"),
             };
 
             console.log("eoa", eoa);
             store.setEoa(eoa);
 
-            // update pairing status
             store.setPairingStatus("Paired");
-            // setLoading(false);
-
-            router.replace("/mint");
+            setLoading(false);
+            router.replace("/backup");
         })();
-    }
+    };
     useEffect(() => {
         generateWallet();
     }, []);
@@ -70,10 +68,9 @@ function Page() {
     const onTryAgainClick = () => {
         console.log("on try again api");
         setSeconds(MAX_SECONDS);
-        generateWallet();
+        // generateWallet();
     };
 
-    //   const isQrExpired = false;
     const isQrExpired = !(qr && seconds > 0);
 
     return (

@@ -10,7 +10,7 @@ import {
     PasswordCheckItem,
     PasswordCheckState,
 } from "@/components/passwordCheckItem";
-import { PasswordCheck, checkPassword } from "@/utils/password";
+import { checkPassword } from "@/utils/password";
 import { runBackup } from "@/mpc";
 
 function Page() {
