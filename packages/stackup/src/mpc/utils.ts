@@ -2,11 +2,9 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { SnapError, SnapErrorCode } from './error';
-import { JsonTx } from '@ethereumjs/tx';
-import type { Json } from '@metamask/utils';
-import { pubToAddress } from 'ethereumjs-util';
 import _sodium from 'libsodium-wrappers-sumo';
 import { DistributedKey } from './types';
+import { pubToAddress } from '@ethereumjs/util';
 
 export const fromHexStringToBytes = (hexString: string) => {
 	try {
@@ -78,29 +76,6 @@ export function b64ToUint8Array(str: string): Uint8Array {
 
 export function b64ToString(str: string): string {
 	return Buffer.from(str, 'base64').toString('utf8');
-}
-
-/**
- * Serializes a transaction by removing undefined properties and converting them to null.
- *
- * @param tx - The transaction object.
- * @param type - The type of the transaction.
- * @returns The serialized transaction.
- */
-export function serializeTransaction(tx: JsonTx, type: number): Json {
-	const serializableSignedTx: Record<string, any> = {
-		...tx,
-		type,
-	};
-	// Make tx serializable
-	// toJSON does not remove undefined or convert undefined to null
-	Object.entries(serializableSignedTx).forEach(([key, _]) => {
-		if (serializableSignedTx[key] === undefined) {
-			delete serializableSignedTx[key];
-		}
-	});
-
-	return serializableSignedTx;
 }
 
 /**

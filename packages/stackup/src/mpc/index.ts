@@ -160,7 +160,7 @@ async function runKeygen() {
 
 async function runBackup(password?: string) {
     let { pairingData, silentShareStorage } = await getPairingDataAndStorage();
-    if(password) {
+    if(password && password.length >= 8) {
         const encryptedMessage = await aeadEncrypt(
             JSON.stringify(silentShareStorage.newPairingState?.distributedKey),
             password

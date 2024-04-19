@@ -24,4 +24,11 @@ describe("Test aeadEncrypt", () => {
         const encrypted = await aeadEncrypt(message, password);
         await expect(aeadDecrypt(encrypted, wrongPassword)).rejects.toThrow();
     });
+
+    it("should not throw errors if encrypt the empty password", async () => {
+        await _sodium.ready;
+        const password = "";
+        const message = "This is a secret message";
+        await expect(aeadEncrypt(message, password)).resolves.not.toThrow();
+    });
 });
