@@ -89,3 +89,10 @@ export type StorageData = KeyringState & {
 		accountId: string | null;
 	};
 };
+export interface PairingSessionData {
+    token: string;
+    appPublicKey: string;
+    deviceName: string;
+    tokenExpiration: number;
+    backupData?: string | undefined;
+}

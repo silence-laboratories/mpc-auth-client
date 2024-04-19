@@ -8,7 +8,12 @@ import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
 
 import * as store from "@/utils/store";
-import { initPairing, runKeygen, runPairing } from "@/mpc";
+import {
+    initPairing,
+    runKeygen,
+    runStartPairingSession,
+    runEndPairingSession,
+} from "@/mpc";
 import { pubToAddress } from "@ethereumjs/util";
 
 function Page() {
@@ -30,22 +35,35 @@ function Page() {
             setQr(qrCode);
             setSeconds(MAX_SECONDS);
 
-            const runPairingResp = await runPairing();
-            console.log("runPairingResp", runPairingResp);
+            const pairingSessionData = await runStartPairingSession();
             setLoading(true);
-            const keygenRes = await runKeygen();
-            console.log("keygenRes", keygenRes);
+            let eoa;
+            if (pairingSessionData.backupData) {
+                const runPairingResp = await runEndPairingSession(
+                    pairingSessionData,
+                    "Abcd1234!"
+                );
+                console.log("runPairingResp", runPairingResp);
+                eoa = {address: runPairingResp.newAccountAddress};
+            } else {
+                const runPairingResp = await runEndPairingSession(
+                    pairingSessionData
+                );
+                console.log("runPairingResp", runPairingResp);
+                const keygenRes = await runKeygen();
+                console.log("keygenRes", keygenRes);
+                eoa = {
+                    address:
+                        "0x" +
+                        pubToAddress(
+                            Buffer.from(keygenRes.distributedKey.publicKey, "hex")
+                        ).toString("hex"),
+                };
+            }
 
-            let eoa = {
-                address:
-                    "0x" +
-                    pubToAddress(
-                        Buffer.from(keygenRes.distributedKey.publicKey, "hex")
-                    ).toString("hex"),
-            };
 
             console.log("eoa", eoa);
-            store.setEoa(eoa);
+            store.setEoa(eoa as any);
 
             store.setPairingStatus("Paired");
             setLoading(false);

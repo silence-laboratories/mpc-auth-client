@@ -90,7 +90,7 @@ function Page() {
     }
 
     const handleSkip = () => {
-        runBackup();
+        
     }
 
     useEffect(() => {

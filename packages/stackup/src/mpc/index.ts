@@ -1,3 +1,4 @@
+import { startPairingSession } from './actions/pairing';
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
@@ -9,7 +10,7 @@ import * as Backup from "./actions/backup";
 import { aeadEncrypt, requestEntropy } from "./crypto";
 import { fromHexStringToBytes, getAddressFromDistributedKey } from "./utils";
 import { saveSilentShareStorage, getSilentShareStorage } from "./storage";
-import { SignMetadata, StorageData } from "./types";
+import { PairingSessionData, SignMetadata, StorageData } from "./types";
 import { SnapError, SnapErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { v4 as uuid } from "uuid";
@@ -47,8 +48,13 @@ async function initPairing() {
     return qrCode;
 }
 
-async function runPairing() {
-    let result = await PairingAction.getPairingSessionData();
+async function runStartPairingSession() {
+    return await PairingAction.startPairingSession();
+
+}
+
+async function runEndPairingSession(pairingSessionData: PairingSessionData, password?: string) {
+    const result = await PairingAction.endPairingSession(pairingSessionData, undefined, password);
     saveSilentShareStorage({
         newPairingState: result.newPairingState,
         pairingData: result.newPairingState.pairingData,
@@ -78,7 +84,9 @@ async function runRePairing() {
         currentAccount?.distributedKey
     );
 
-    let result = await PairingAction.getPairingSessionData(
+    const pairingSessionData = await PairingAction.startPairingSession();
+    const result = await PairingAction.endPairingSession(
+        pairingSessionData,
         currentAccountAddress
     );
 
@@ -158,16 +166,14 @@ async function runKeygen() {
     };
 }
 
-async function runBackup(password?: string) {
+async function runBackup(password: string) {
     let { pairingData, silentShareStorage } = await getPairingDataAndStorage();
-    if(password && password.length >= 8) {
+    if (password && password.length >= 8) {
         const encryptedMessage = await aeadEncrypt(
             JSON.stringify(silentShareStorage.newPairingState?.distributedKey),
             password
         );
         await Backup.backup(pairingData, encryptedMessage);
-    } else {
-        await Backup.backup(pairingData, "");
     }
 }
 
@@ -207,7 +213,8 @@ async function runSign(
 
 export {
     initPairing,
-    runPairing,
+    runStartPairingSession,
+    runEndPairingSession,
     runKeygen,
     runSign,
     runBackup,
