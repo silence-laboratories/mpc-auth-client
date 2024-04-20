@@ -33,8 +33,6 @@ function Page() {
         specialCharCheck: "init",
     });
 
-    const step = 2;
-
     const handlePasswordInputOnBlur = () => {
         const passwordCheck = checkPassword(currentPassword);
         setPasswordCheckState({
@@ -109,7 +107,7 @@ function Page() {
             <div className="absolute w-full top-0 right-0">
                 <Progress
                     className="w-[99.5%]"
-                    value={step * 25}
+                    value={50}
                     style={{ height: "4px" }}
                 />
             </div>

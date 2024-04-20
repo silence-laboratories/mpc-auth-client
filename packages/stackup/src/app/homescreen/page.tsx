@@ -227,7 +227,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
     function logout(event: React.MouseEvent): void {
         event.preventDefault();
-        router.push("/pair");
+        router.push("/intro");
     }
 
     return (
