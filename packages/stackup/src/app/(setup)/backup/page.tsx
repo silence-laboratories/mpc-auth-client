@@ -76,8 +76,7 @@ function Page() {
         }
     };
 
-    const handleProceed = () => {
-        runBackup("Abcd1234!");
+    const handleProceed = async () => {
         if (!isPasswordAllow || !isPasswordMatch) {
             return;
         }
@@ -88,6 +87,13 @@ function Page() {
         if (passwordConfirmation.length < 8) {
             setIsPasswordMatch(false);
             return;
+        }
+        try {
+            await runBackup(currentPassword, false);
+            router.replace("/mint");
+        } catch (error) {
+            // TODO: Handle error
+            console.error(error);
         }
     };
 

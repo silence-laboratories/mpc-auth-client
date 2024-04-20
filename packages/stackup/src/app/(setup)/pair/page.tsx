@@ -40,13 +40,18 @@ function Page() {
         pairingSessionData: PairingSessionData,
         password: string
     ) => {
-        const runPairingResp = await runEndPairingSession(
-            pairingSessionData,
-            password
-        );
-        handleAfterPairing({
-            address: runPairingResp.newAccountAddress ?? "",
-        });
+        try {            
+            const runPairingResp = await runEndPairingSession(
+                pairingSessionData,
+                password
+            );
+            handleAfterPairing({
+                address: runPairingResp.newAccountAddress ?? "",
+            });
+        } catch (error) {
+            // TODO: handle error
+            console.error(error);
+        }
     };
     const generateWallet = async () => {
         store.clearLocalStorage();

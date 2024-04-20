@@ -166,18 +166,24 @@ async function runKeygen() {
     };
 }
 
-async function runBackup(password: string, isSkip?: boolean) {
+async function runBackup(password: string, isSkip: boolean) {
     let { pairingData, silentShareStorage } = await getPairingDataAndStorage();
     if(isSkip) {
         await Backup.backup(pairingData, '');
         return;
     }
     if (password && password.length >= 8) {
-        const encryptedMessage = await aeadEncrypt(
-            JSON.stringify(silentShareStorage.newPairingState?.distributedKey),
-            password
-        );
-        await Backup.backup(pairingData, encryptedMessage);
+        try {
+            const encryptedMessage = await aeadEncrypt(
+                JSON.stringify(silentShareStorage.newPairingState?.distributedKey),
+                password
+            );
+            await Backup.backup(pairingData, encryptedMessage);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            } else throw new SnapError("unkown-error", SnapErrorCode.UnknownError);
+        }
     }
 }
 
