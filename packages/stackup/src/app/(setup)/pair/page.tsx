@@ -15,17 +15,39 @@ import {
     runEndPairingSession,
 } from "@/mpc";
 import { pubToAddress } from "@ethereumjs/util";
+import { PasswordScreen } from "@/components/passwordScreen";
+import { PairingSessionData } from "@/mpc/types";
 
 function Page() {
     const router = useRouter();
-
     const [loading, setLoading] = useState<boolean>(false);
     const [qr, setQr] = useState<string | null>("placeholderQR");
     const [seconds, setSeconds] = useState<number>(30);
+    const [showPasswordScreen, setShowPasswordScreen] = useState<boolean>(false);
+    const [pairingSessionDataState, setPairingSessionDataState] =
+        useState<PairingSessionData | null>(null);
 
     const step = 1;
 
     const MAX_SECONDS = 30;
+    const handleAfterPairing = (eoa: store.accountType) => {
+        store.setEoa(eoa);
+        store.setPairingStatus("Paired");
+        setLoading(false);
+    };
+
+    const handlePairingWithBackup = async (
+        pairingSessionData: PairingSessionData,
+        password: string
+    ) => {
+        const runPairingResp = await runEndPairingSession(
+            pairingSessionData,
+            password
+        );
+        handleAfterPairing({
+            address: runPairingResp.newAccountAddress ?? "",
+        });
+    };
     const generateWallet = async () => {
         store.clearLocalStorage();
 
@@ -36,17 +58,13 @@ function Page() {
 
             const pairingSessionData = await runStartPairingSession();
             setLoading(true);
-            let eoa: store.accountType;
             if (pairingSessionData.backupData) {
-                const runPairingResp = await runEndPairingSession(
-                    pairingSessionData,
-                    "Abcd1234!"
-                );
-                eoa = { address: runPairingResp.newAccountAddress ?? "" };
+                setPairingSessionDataState(pairingSessionData);
+                setShowPasswordScreen(true);
             } else {
                 await runEndPairingSession(pairingSessionData);
                 const keygenRes = await runKeygen();
-                eoa = {
+                handleAfterPairing({
                     address:
                         "0x" +
                         pubToAddress(
@@ -55,13 +73,9 @@ function Page() {
                                 "hex"
                             )
                         ).toString("hex"),
-                };
+                });
+                router.replace("/backup");
             }
-
-            store.setEoa(eoa);
-            store.setPairingStatus("Paired");
-            setLoading(false);
-            router.replace("/backup");
         })();
     };
 
@@ -79,14 +93,21 @@ function Page() {
     }, [seconds]);
 
     const onTryAgainClick = () => {
-        console.log("on try again api");
         setSeconds(MAX_SECONDS);
-        // generateWallet();
+        generateWallet();
     };
 
     const isQrExpired = !(qr && seconds > 0);
 
-    return (
+    return showPasswordScreen ? (
+        <PasswordScreen
+            onProceed={async (password) => {
+                if (pairingSessionDataState) {
+                    await handlePairingWithBackup(pairingSessionDataState, password);
+                }
+            }}
+        />
+    ) : (
         <div>
             <div className="absolute w-full top-0 right-0">
                 <Progress
