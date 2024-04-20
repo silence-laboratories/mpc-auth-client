@@ -15,7 +15,7 @@ import {
     runEndPairingSession,
 } from "@/mpc";
 import { pubToAddress } from "@ethereumjs/util";
-import { PasswordScreen } from "@/components/passwordScreen";
+import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 
 function Page() {
@@ -105,7 +105,7 @@ function Page() {
     const isQrExpired = !(qr && seconds > 0);
 
     return showPasswordScreen ? (
-        <PasswordScreen
+        <PasswordEnterScreen
             onProceed={async (password) => {
                 if (pairingSessionDataState) {
                     await handlePairingWithBackup(pairingSessionDataState, password);

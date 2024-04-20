@@ -1,17 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
-import { Label } from "./ui/label";
+import { Label } from "../ui/label";
 import { PasswordInput } from "./passwordInput";
 import { PasswordCheckItem, PasswordCheckState } from "./passwordCheckItem";
 import { checkPassword } from "@/utils/password";
-import { PairingSessionData } from "@/mpc/types";
-import LoadingScreen from "./loadingScreen";
+import LoadingScreen from "../loadingScreen";
 
-export const PasswordScreen: React.FunctionComponent<{
+export const PasswordEnterScreen: React.FunctionComponent<{
     onProceed: (password: string) => Promise<void>;
 }> = ({ onProceed }) => {
     const router = useRouter();
@@ -151,7 +150,7 @@ export const PasswordScreen: React.FunctionComponent<{
                                         fill="#8695AA"
                                     />
                                 </svg>
-                                <div>Password must contain atleast</div>
+                                <div>Password must contain at least</div>
                             </div>
                             <ul
                                 className="ml-5 text-[#609AFA]"

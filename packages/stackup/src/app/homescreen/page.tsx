@@ -4,28 +4,34 @@ import { ethers } from "ethers";
 import { Client, Presets } from "userop";
 import { Button } from "@/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
-import { Separator } from "@/components/separator";
 import { TextInput } from "@/components/textInput";
 import * as store from "@/utils/store";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
-import { HexString } from "web3";
 import { formatEther } from "ethers/lib/utils";
 import { getSilentShareStorage } from "@/mpc/storage";
+import { Separator } from "@/components/separator";
+import { MoreVertical } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 
 interface HomescreenProps {}
 
 const Homescreen: React.FC<HomescreenProps> = ({}) => {
+    const router = useRouter();
     const placeholderAccount = { address: "...", balance: 0 };
     const [walletAccount, setWalletAccount] =
         useState<store.accountType>(placeholderAccount);
     const [walletBalance, setWalletBalance] = useState<string>("0");
     const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
-    const [network, setNetwork] = useState("..."); 
+    const [network, setNetwork] = useState("...");
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
-        "none",
+        "none"
     );
-    const router = useRouter();
+    const [openSettings, setOpenSettings] = useState(false);
+    const [isPasswordReady, setIsPasswordReady] = useState(false);
+    const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
+        useState(false);
 
     useEffect(() => {
         if (store.getPairingStatus() == "Unpaired") {
@@ -42,7 +48,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         chainName: "Sepolia Test Network",
         nativeCurrency: {
             name: "sepolia",
-            symbol: "ETH", 
+            symbol: "ETH",
             decimals: 18,
         },
         rpcUrls: ["https://rpc.sepolia.org"],
@@ -129,16 +135,19 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     //transaction
     const [recipientAddress, setRecipientAddress] = useState("0x");
     const [amount, setAmount] = useState("0");
-    const [txHash, setTxHash] = useState<null | string>(null);
     const [isSendValid, setIsSendValid] = useState(false);
     const [recipientAddressError, setRecipientAddressError] = useState("");
     const [amountError, setAmountError] = useState("");
 
     useEffect(() => {
+        setIsPasswordReady(store.isPasswordReady());
+    }, []);
+
+    useEffect(() => {
         setIsSendValid(
             switchChain == "none" &&
                 recipientAddressError == "" &&
-                amountError == "",
+                amountError == ""
         );
     }, [recipientAddress, amount, switchChain]);
 
@@ -195,12 +204,12 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                     store.getEoa().address,
                     distributedKey?.publicKey as string,
                     distributedKey?.keyShareData,
-                    { distributedKey },
+                    { distributedKey }
                 ),
-                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e",
+                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
             );
             const client = await Client.init(
-                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e",
+                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
             );
 
             const target = ethers.utils.getAddress(requestData.to);
@@ -210,7 +219,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 {
                     // Add necessary options as needed
                     onBuild: (op) => console.log("Signed UserOperation:", op),
-                },
+                }
             );
             console.log("userOp Hash", res.userOpHash);
 
@@ -229,6 +238,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         event.preventDefault();
         router.push("/intro");
     }
+
+    const onRePairing = () => {};
 
     return (
         <div className="">
@@ -320,21 +331,21 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                 className="flex items-center"
                                                 onClick={async () => {
                                                     navigator.clipboard.writeText(
-                                                        walletAccount.address,
+                                                        walletAccount.address
                                                     );
                                                 }}
                                             >
                                                 <span className="mr-1 text-[black] b1-bold ">
                                                     {walletAccount.address.slice(
                                                         0,
-                                                        5,
+                                                        5
                                                     )}
                                                     {"..."}
                                                     {walletAccount.address.slice(
                                                         walletAccount.address
                                                             .length - 5,
                                                         walletAccount.address
-                                                            .length,
+                                                            .length
                                                     )}
                                                 </span>
                                                 <svg
@@ -370,9 +381,9 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
                                 <div className="ml-auto"></div>
 
-                                <div className="text-black">
+                                <div className="text-black flex flex-col items-end mr-6">
                                     <div className="text-sm text-black-200">
-                                        EOA:
+                                        EOA
                                     </div>
                                     <Popover>
                                         <PopoverTrigger>
@@ -380,7 +391,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                 className="flex items-center"
                                                 onClick={async () => {
                                                     navigator.clipboard.writeText(
-                                                        eoa.address,
+                                                        eoa.address
                                                     );
                                                 }}
                                             >
@@ -389,7 +400,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                     {"..."}
                                                     {eoa.address.slice(
                                                         eoa.address.length - 5,
-                                                        eoa.address.length,
+                                                        eoa.address.length
                                                     )}
                                                 </span>
                                                 <svg
@@ -425,6 +436,168 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                         )}
                                         <div>{network}</div>
                                     </div>
+                                </div>
+                                <div className="self-start">
+                                    <Popover
+                                        open={openSettings}
+                                        onOpenChange={setOpenSettings}
+                                    >
+                                        <PopoverTrigger>
+                                            <Button
+                                                className="bg-[#F6F7F9] rounded-full w-8 h-8 hover:bg-[#F6F7F9]"
+                                                size="icon"
+                                            >
+                                                <MoreVertical className="text-[#526077]" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="flex justify-center w-18 p-1 border-[#B1BBC8] border-[1px]">
+                                            <div className="flex flex-col gap-2 bg-[#fff] text-[#25272C] p-2">
+                                                <div
+                                                    className="flex justify-center items-center rounded-[8px] cursor-pointer p-2"
+                                                    onClick={
+                                                        !isPasswordReady
+                                                            ? undefined
+                                                            : onRePairing
+                                                    }
+                                                >
+                                                    <div
+                                                        className={`flex rounded-full p-2 mr-2 bg-[#ECEEF2] ${
+                                                            !isPasswordReady
+                                                                ? "opacity-50"
+                                                                : "opacity-100"
+                                                        }`}
+                                                    >
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="20"
+                                                            height="21"
+                                                            viewBox="0 0 20 21"
+                                                            fill="none"
+                                                        >
+                                                            <path
+                                                                fill-rule="evenodd"
+                                                                clip-rule="evenodd"
+                                                                d="M17.4716 7.92794C17.904 8.93841 18.1263 10.0263 18.125 11.1254C18.1248 15.611 14.4857 19.25 9.99999 19.25C5.51419 19.25 1.87499 15.6108 1.87499 11.125V11.125C1.87511 9.44458 2.396 7.80553 3.36599 6.43338C4.33597 5.06123 5.70737 4.02342 7.29147 3.46276C7.61686 3.3476 7.97401 3.51802 8.08918 3.84342C8.20435 4.16882 8.03392 4.52597 7.70852 4.64114C6.36803 5.11557 5.20752 5.99379 4.3867 7.15493C3.56589 8.31606 3.1251 9.70304 3.12499 11.125L16.875 11.1254C16.875 11.1252 16.875 11.1251 16.875 11.125V11.1246L16.875 11.1242C16.8762 10.1946 16.6881 9.2744 16.3224 8.41971C15.9587 7.56979 15.4268 6.80229 14.7588 6.16338L14.3051 5.77342L12.3168 7.76175C11.923 8.1555 11.25 7.8766 11.25 7.31957V3.00003C11.25 2.83427 11.3158 2.6753 11.4331 2.55809C11.5503 2.44088 11.7092 2.37503 11.875 2.37503H16.1945C16.7516 2.37503 17.0312 3.04808 16.6367 3.44183L15.1915 4.88702L15.598 5.23639L15.6095 5.24735C16.4056 6.00532 17.0391 6.91735 17.4716 7.92794ZM16.875 11.1254L3.12499 11.125C3.12502 14.9205 6.20456 18 9.99999 18C13.7953 18 16.8748 14.9206 16.875 11.1254Z"
+                                                                fill="#8695AA"
+                                                            />
+                                                        </svg>
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span
+                                                            className={`${
+                                                                !isPasswordReady
+                                                                    ? "opacity-50"
+                                                                    : "opacity-100"
+                                                            }`}
+                                                        >
+                                                            Recover account on
+                                                            phone
+                                                        </span>
+                                                        {!isPasswordReady && (
+                                                            <span>
+                                                                (Set a password
+                                                                to unlock)
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1"></div>
+                                                </div>
+
+                                                <Separator className="w-[248px] ml-3 my-1 bg-[#3A4252]" />
+                                                <div
+                                                    className="flex justify-center items-center rounded-[8px] cursor-pointer p-2"
+                                                    onClick={() => {
+                                                        setOpenPasswordBackupDialog(
+                                                            true
+                                                        );
+                                                    }}
+                                                >
+                                                    <div className="flex rounded-full p-2 mr-2 bg-[#ECEEF2]">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="24"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                        >
+                                                            <path
+                                                                d="M20 6H4C2.89543 6 2 6.89543 2 8V16C2 17.1046 2.89543 18 4 18H20C21.1046 18 22 17.1046 22 16V8C22 6.89543 21.1046 6 20 6Z"
+                                                                stroke="#23272E"
+                                                                stroke-width="2"
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                            />
+                                                            <path
+                                                                d="M12 12H12.01"
+                                                                stroke="#23272E"
+                                                                stroke-width="2"
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                            />
+                                                            <path
+                                                                d="M17 12H17.01"
+                                                                stroke="#23272E"
+                                                                stroke-width="2"
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                            />
+                                                            <path
+                                                                d="M7 12H7.01"
+                                                                stroke="#23272E"
+                                                                stroke-width="2"
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                            />
+                                                        </svg>
+                                                    </div>
+                                                    Set Password
+                                                    <div className="flex-1"></div>
+                                                </div>
+                                                <Separator className="w-[248px] ml-3 my-1 bg-[#3A4252]" />
+                                                <div
+                                                    className="flex justify-center items-center rounded-[8px] cursor-pointer p-2"
+                                                    onClick={logout}
+                                                >
+                                                    <div
+                                                        className="flex rounded-full p-2 mr-2"
+                                                        style={{
+                                                            background:
+                                                                "rgba(239, 68, 68, 0.15)",
+                                                        }}
+                                                    >
+                                                        <svg
+                                                            className="self-center"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="20"
+                                                            height="20"
+                                                            viewBox="0 0 20 20"
+                                                            fill="none"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                clipRule="evenodd"
+                                                                d="M1.875 10C1.875 5.5142 5.5142 1.875 10 1.875C14.4858 1.875 18.125 5.5142 18.125 10C18.125 14.4858 14.4858 18.125 10 18.125C5.5142 18.125 1.875 14.4858 1.875 10ZM10 3.125C6.20455 3.125 3.125 6.20455 3.125 10C3.125 13.7954 6.20455 16.875 10 16.875C13.7954 16.875 16.875 13.7954 16.875 10C16.875 6.20455 13.7954 3.125 10 3.125Z"
+                                                                fill="#F87171"
+                                                            />
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                clipRule="evenodd"
+                                                                d="M6.25 10C6.25 9.65482 6.52982 9.375 6.875 9.375H13.125C13.4702 9.375 13.75 9.65482 13.75 10C13.75 10.3452 13.4702 10.625 13.125 10.625H6.875C6.52982 10.625 6.25 10.3452 6.25 10Z"
+                                                                fill="#F87171"
+                                                            />
+                                                        </svg>
+                                                    </div>
+
+                                                    <span className="b2-regular text-[#F87171]">
+                                                        Delete account
+                                                    </span>
+                                                    <div className="flex-1"></div>
+                                                </div>
+
+                                                <div className="grid grid-cols-3 items-center gap-4"></div>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
                             </div>
                         )}
@@ -497,7 +670,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                             href={
                                                 "https://mumbai.polygonscan.com/tx/" +
                                                 `${localStorage.getItem(
-                                                    "txHash",
+                                                    "txHash"
                                                 )}`
                                             }
                                         >
@@ -507,6 +680,45 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     </span>{" "}
                                 </div>
                             </div>
+                        </div>
+                    )}
+
+                    {!isPasswordReady && (
+                        <div
+                            onClick={() => {
+                                setOpenPasswordBackupDialog(true);
+                            }}
+                            className="b2-regular p-2 flex rounded-lg border bg-[rgba(253,209,71,0.10)] border-[#85680E] text-[#CA9A04] my-4"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                            >
+                                <path
+                                    d="M8 2.25C4.55375 2.25 1.75 5.05375 1.75 8.5C1.75 11.9462 4.55375 14.75 8 14.75C11.4462 14.75 14.25 11.9462 14.25 8.5C14.25 5.05375 11.4462 2.25 8 2.25ZM8 4.8125C8.1607 4.8125 8.31779 4.86015 8.4514 4.94943C8.58502 5.03871 8.68916 5.1656 8.75065 5.31407C8.81215 5.46253 8.82824 5.6259 8.79689 5.78351C8.76554 5.94112 8.68815 6.08589 8.57452 6.19952C8.46089 6.31315 8.31612 6.39054 8.15851 6.42189C8.0009 6.45324 7.83753 6.43715 7.68907 6.37565C7.5406 6.31416 7.41371 6.21002 7.32443 6.0764C7.23515 5.94279 7.1875 5.7857 7.1875 5.625C7.1875 5.40951 7.2731 5.20285 7.42548 5.05048C7.57785 4.8981 7.78451 4.8125 8 4.8125ZM9.5 11.875H6.75C6.61739 11.875 6.49021 11.8223 6.39645 11.7286C6.30268 11.6348 6.25 11.5076 6.25 11.375C6.25 11.2424 6.30268 11.1152 6.39645 11.0214C6.49021 10.9277 6.61739 10.875 6.75 10.875H7.625V8.125H7.125C6.99239 8.125 6.86521 8.07232 6.77145 7.97855C6.67768 7.88479 6.625 7.75761 6.625 7.625C6.625 7.49239 6.67768 7.36521 6.77145 7.27145C6.86521 7.17768 6.99239 7.125 7.125 7.125H8.125C8.25761 7.125 8.38479 7.17768 8.47855 7.27145C8.57232 7.36521 8.625 7.49239 8.625 7.625V10.875H9.5C9.63261 10.875 9.75979 10.9277 9.85355 11.0214C9.94732 11.1152 10 11.2424 10 11.375C10 11.5076 9.94732 11.6348 9.85355 11.7286C9.75979 11.8223 9.63261 11.875 9.5 11.875Z"
+                                    fill="#EAB308"
+                                />
+                            </svg>
+                            <div className="mr-auto">
+                                Password setting is pending
+                            </div>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 18 18"
+                                fill="none"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M7.84467 3.46967C8.13756 3.17678 8.61244 3.17678 8.90533 3.46967L13.4053 7.96967C13.6982 8.26256 13.6982 8.73744 13.4053 9.03033L8.90533 13.5303C8.61244 13.8232 8.13756 13.8232 7.84467 13.5303C7.55178 13.2374 7.55178 12.7626 7.84467 12.4697L11.0643 9.25H3.125C2.71079 9.25 2.375 8.91421 2.375 8.5C2.375 8.08579 2.71079 7.75 3.125 7.75H11.0643L7.84467 4.53033C7.55178 4.23744 7.55178 3.76256 7.84467 3.46967Z"
+                                    fill="#EAB308"
+                                />
+                            </svg>
                         </div>
                     )}
 
@@ -548,13 +760,20 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                             </div>
                         </div>
                     </div>
-                    <button
-                        className="flex items-center justify-center text-red-300 rounded-md px-2"
-                        onClick={logout}
+
+                    <Dialog
+                        open={openPasswordBackupDialog}
+                        onOpenChange={setOpenPasswordBackupDialog}
                     >
-                        <img src="/logout.svg" className="mr-3" />
-                        <div className="mr-3 text-sm">Delete Wallet</div>
-                    </button>
+                        <DialogContent
+                            className="flex flex-col  items-start justify-center w-[60vw] h-auto bg-[#fff] border-none outline-none max-w-[654px]"
+                            onInteractOutside={(e) => {
+                                e.preventDefault();
+                            }}
+                        >
+                            <PasswordBackupScreen showSkipButton={false}/>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
         </div>

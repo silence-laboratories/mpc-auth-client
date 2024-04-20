@@ -41,3 +41,11 @@ export function clearLocalStorage() {
     localStorage.removeItem("eoa");
     localStorage.removeItem("walletAccount");
 }
+
+export function isPasswordReady() {
+    return JSON.parse(localStorage.getItem("passwordReady") || "false");
+}
+
+export function setPasswordReady() {
+    localStorage.setItem("passwordReady", JSON.stringify(true));
+}
