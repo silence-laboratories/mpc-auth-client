@@ -163,15 +163,12 @@ export const endPairingSession = async (
 
         let distributedKey: DistributedKey | undefined;
         let accountAddress: string | undefined;
-		console.log("pairingSessionData", pairingSessionData);
-		console.log("password", password)
         if (pairingSessionData.backupData && password) {
             const backupDataJson = await decryptAndDeserializeBackupData(
                 sessionToken,
                 pairingSessionData.backupData,
                 password
             );
-            console.log("backupDataJson", backupDataJson);
             distributedKey = backupDataJson.distributedKey;
             accountAddress = backupDataJson.accountAddress;
         }

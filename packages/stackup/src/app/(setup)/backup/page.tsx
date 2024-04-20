@@ -57,11 +57,9 @@ function Page() {
             passwordCheck.lowerCaseCheck &&
             passwordCheck.upperCaseCheck &&
             passwordCheck.specialCharCheck;
-        console.log(isPasswordAllow);
         if (!isPasswordAllow) {
             setIsPasswordAllow(false);
         } else {
-            console.log("HE");
             setIsPasswordAllow(true);
         }
     };

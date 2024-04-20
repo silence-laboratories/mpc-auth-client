@@ -85,7 +85,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         const sepoliaChainId = 0xaa36a7;
         const currentChainId = (await provider.getNetwork()).chainId;
         if (currentChainId == sepoliaChainId) {
-            console.log(currentChainId, "chianid");
             return true;
         }
         // else not sepolia

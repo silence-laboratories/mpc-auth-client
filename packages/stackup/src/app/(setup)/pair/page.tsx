@@ -27,7 +27,6 @@ function Page() {
 
     const MAX_SECONDS = 30;
     const generateWallet = async () => {
-        console.log("gen wallet called api---");
         store.clearLocalStorage();
 
         (async () => {
@@ -37,39 +36,35 @@ function Page() {
 
             const pairingSessionData = await runStartPairingSession();
             setLoading(true);
-            let eoa;
+            let eoa: store.accountType;
             if (pairingSessionData.backupData) {
                 const runPairingResp = await runEndPairingSession(
                     pairingSessionData,
                     "Abcd1234!"
                 );
-                console.log("runPairingResp", runPairingResp);
-                eoa = {address: runPairingResp.newAccountAddress};
+                eoa = { address: runPairingResp.newAccountAddress ?? "" };
             } else {
-                const runPairingResp = await runEndPairingSession(
-                    pairingSessionData
-                );
-                console.log("runPairingResp", runPairingResp);
+                await runEndPairingSession(pairingSessionData);
                 const keygenRes = await runKeygen();
-                console.log("keygenRes", keygenRes);
                 eoa = {
                     address:
                         "0x" +
                         pubToAddress(
-                            Buffer.from(keygenRes.distributedKey.publicKey, "hex")
+                            Buffer.from(
+                                keygenRes.distributedKey.publicKey,
+                                "hex"
+                            )
                         ).toString("hex"),
                 };
             }
 
-
-            console.log("eoa", eoa);
-            store.setEoa(eoa as any);
-
+            store.setEoa(eoa);
             store.setPairingStatus("Paired");
             setLoading(false);
             router.replace("/backup");
         })();
     };
+
     useEffect(() => {
         generateWallet();
     }, []);

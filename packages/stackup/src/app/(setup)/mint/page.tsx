@@ -18,8 +18,6 @@ function Page() {
     const step = 2;
 
     useEffect(() => {
-        // show Eoa details
-        console.log("getEoa check", store.getEoa());
         setEoa(store.getEoa());
     }, []);
 
