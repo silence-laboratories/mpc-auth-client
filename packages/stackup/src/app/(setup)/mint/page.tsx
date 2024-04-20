@@ -9,6 +9,7 @@ import * as store from "@/utils/store";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
 import { getSilentShareStorage } from "@/mpc/storage";
+import LoadingScreen from "@/components/loadingScreen";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
@@ -80,21 +81,7 @@ function Page() {
                 Your Phone is Paired
             </div>
 
-            {loading && (
-                <div className="flex flex-col items-center justify-center h-[50vh]">
-                    <img
-                        className="h-[50%] mb-8"
-                        src="/loading.gif"
-                        alt="loading"
-                    />
-                    <div
-                        className="text-center text-blackh2-bold"
-                        style={{ marginBottom: 140 }}
-                    >
-                        Minting...
-                    </div>
-                </div>
-            )}
+            {loading && <LoadingScreen>Minting...</LoadingScreen>}
             {!loading && !!eoa && (
                 <>
                     <div className="h3 font-bold text-blackleading-[38.4px] mt-12">
@@ -134,7 +121,7 @@ function Page() {
                                             className="flex items-center"
                                             onClick={async () => {
                                                 navigator.clipboard.writeText(
-                                                    eoa.address,
+                                                    eoa.address
                                                 );
                                             }}
                                         >
@@ -143,7 +130,7 @@ function Page() {
                                                 {"..."}
                                                 {eoa.address.slice(
                                                     eoa.address.length - 5,
-                                                    eoa.address.length,
+                                                    eoa.address.length
                                                 )}
                                             </span>
                                             <svg
