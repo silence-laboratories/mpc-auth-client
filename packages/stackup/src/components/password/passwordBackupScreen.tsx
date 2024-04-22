@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Label } from "../ui/label";
-import { PasswordInput } from "./passwordInput";
+import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { PasswordCheckItem, PasswordCheckState } from "./passwordCheckItem";
 import { Button } from "../ui/button";
 import { checkPassword } from "@/utils/password";
@@ -18,8 +18,9 @@ export const PasswordBackupScreen: React.FunctionComponent<{
     const router = useRouter();
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
-    const [isPasswordAllow, setIsPasswordAllow] = useState(true);
-    const [isPasswordMatch, setIsPasswordMatch] = useState(true);
+    const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
+    const [passwordConfirmErr, setPasswordConfirmErr] = useState<PasswordInputErr>();
+
     const [openSkipDialog, setOpenSkipDialog] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
 
@@ -60,30 +61,30 @@ export const PasswordBackupScreen: React.FunctionComponent<{
             passwordCheck.upperCaseCheck &&
             passwordCheck.specialCharCheck;
         if (!isPasswordAllow) {
-            setIsPasswordAllow(false);
+            setPasswordErr(PasswordInputErr.NotAllowed);
         } else {
-            setIsPasswordAllow(true);
+            setPasswordErr(undefined);
         }
     };
 
     const handleConfirmPwdOnBlur = () => {
         if (currentPassword !== passwordConfirmation) {
-            setIsPasswordMatch(false);
+            setPasswordConfirmErr(PasswordInputErr.Confirm);
         } else {
-            setIsPasswordMatch(true);
+            setPasswordConfirmErr(undefined);
         }
     };
 
     const handleProceed = async () => {
-        if (!isPasswordAllow || !isPasswordMatch) {
+        if (passwordErr || passwordConfirmErr) {
             return;
         }
         if (currentPassword.length < 8) {
-            setIsPasswordAllow(false);
+            setPasswordErr(PasswordInputErr.Short);
             return;
         }
         if (passwordConfirmation.length < 8) {
-            setIsPasswordMatch(false);
+            setPasswordConfirmErr(PasswordInputErr.Short);
             return;
         }
         try {
@@ -158,7 +159,7 @@ export const PasswordBackupScreen: React.FunctionComponent<{
                     <Label htmlFor="current_password">Enter a password</Label>
                     <PasswordInput
                         id="current_password"
-                        showError={!isPasswordAllow}
+                        error={passwordErr}
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         autoComplete="current-password"
@@ -173,7 +174,7 @@ export const PasswordBackupScreen: React.FunctionComponent<{
                     </Label>
                     <PasswordInput
                         id="password_confirmation"
-                        showError={!isPasswordMatch}
+                        error={passwordConfirmErr}
                         value={passwordConfirmation}
                         onChange={(e) =>
                             setPasswordConfirmation(e.target.value)

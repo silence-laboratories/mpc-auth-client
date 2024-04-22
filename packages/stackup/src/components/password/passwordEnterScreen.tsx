@@ -5,7 +5,7 @@ import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
 import { Label } from "../ui/label";
-import { PasswordInput } from "./passwordInput";
+import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { PasswordCheckItem, PasswordCheckState } from "./passwordCheckItem";
 import { checkPassword } from "@/utils/password";
 import LoadingScreen from "../loadingScreen";
@@ -15,7 +15,7 @@ export const PasswordEnterScreen: React.FunctionComponent<{
 }> = ({ onProceed }) => {
     const router = useRouter();
     const [currentPassword, setCurrentPassword] = useState("");
-    const [isPasswordAllow, setIsPasswordAllow] = useState(true);
+    const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
     const [isLoading, setIsLoading] = useState(false);
 
     const [passwordCheckState, setPasswordCheckState] = useState<{
@@ -55,20 +55,19 @@ export const PasswordEnterScreen: React.FunctionComponent<{
             passwordCheck.upperCaseCheck &&
             passwordCheck.specialCharCheck;
         if (!isPasswordAllow) {
-            setIsPasswordAllow(false);
+            setPasswordErr(PasswordInputErr.NotAllowed);
         } else {
-            setIsPasswordAllow(true);
+            setPasswordErr(undefined);
         }
-        setCurrentPassword(pwd)
-
+        setCurrentPassword(pwd);
     };
 
     const handleProceed = async () => {
-        if (!isPasswordAllow) {
+        if (passwordErr) {
             return;
         }
         if (currentPassword.length < 8) {
-            setIsPasswordAllow(false);
+            setPasswordErr(PasswordInputErr.Short);
             return;
         }
         setIsLoading(true);
@@ -114,7 +113,10 @@ export const PasswordEnterScreen: React.FunctionComponent<{
             </div>
             {isLoading && <LoadingScreen>Pairing...</LoadingScreen>}
             {!isLoading && (
-                <div>
+                <form onSubmit={(event) => {
+                    event.preventDefault(); // Prevent the form from refreshing the page
+                    handleProceed();
+                }}>
                     <p className="b2-regular text-[#8E95A2]">
                         To unlock your backup on this device, enter the password
                         that you had set during account creation.
@@ -126,10 +128,10 @@ export const PasswordEnterScreen: React.FunctionComponent<{
                         </Label>
                         <PasswordInput
                             id="current_password"
-                            showError={!isPasswordAllow}
+                            error={passwordErr}
                             value={currentPassword}
                             onChange={(e) => {
-                                handlePasswordOnchange(e.target.value)
+                                handlePasswordOnchange(e.target.value);
                             }}
                             autoComplete="current-password"
                             placeholder="password"
@@ -186,13 +188,14 @@ export const PasswordEnterScreen: React.FunctionComponent<{
 
                     <div className="w-full justify-center items-center flex flex-col">
                         <Button
+                            type="submit"
                             className="bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active w-1/2"
                             onClick={handleProceed}
                         >
                             Proceed
                         </Button>
                     </div>
-                </div>
+                </form>
             )}
         </div>
     );
