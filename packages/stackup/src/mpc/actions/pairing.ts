@@ -26,7 +26,7 @@ export interface PairingDataInit {
 
 let pairingDataInit: PairingDataInit;
 
-export const init = async (walletName: string) => {
+export const init = async (walletId: string) => {
     try {
         let pairingId = await utils.randomPairingId();
 
@@ -41,7 +41,7 @@ export const init = async (walletName: string) => {
         };
 
         let qrCode = JSON.stringify({
-            walletName,
+            walletId,
             pairingId,
             webEncPublicKey: _sodium.to_hex(encPair.publicKey),
             signPublicKey: _sodium.to_hex(signPair.publicKey),

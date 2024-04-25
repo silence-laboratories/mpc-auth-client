@@ -43,9 +43,9 @@ async function unpair() {
     deleteStorage();
 }
 
-async function initPairing(walletName: string) {
-    let qrCode = await PairingAction.init(walletName);
-    localStorage.setItem("walletName", walletName);
+async function initPairing(walletId: string) {
+    let qrCode = await PairingAction.init(walletId);
+    localStorage.setItem("walletId", walletId);
     return qrCode;
 }
 

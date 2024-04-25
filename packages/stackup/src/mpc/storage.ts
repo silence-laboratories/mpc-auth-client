@@ -4,15 +4,15 @@
 import { SnapError, SnapErrorCode } from "./error";
 import { StorageData } from "./types";
 
-const getWalletName = (): string => {
-    let name = localStorage.getItem("walletName");
-    if (name === null) {
+const getWalletId = (): string => {
+    let walletId = localStorage.getItem("walletId");
+    if (walletId === null) {
         throw new SnapError(
-            "Wallet name is not set",
+            "Wallet id is not found",
             SnapErrorCode.UnknownError
         );
     }
-    return name;
+    return walletId;
 };
 
 /**
@@ -21,8 +21,8 @@ const getWalletName = (): string => {
  * @returns true if exists, false otherwise
  */
 const isStorageExist = (): boolean => {
-    let walletName = getWalletName();
-    let data = localStorage.getItem(walletName);
+    let walletId = getWalletId();
+    let data = localStorage.getItem(walletId);
     return data !== null;
 };
 
@@ -30,8 +30,8 @@ const isStorageExist = (): boolean => {
  * Delete the stored data, if it exists.
  */
 const deleteStorage = () => {
-    let walletName = getWalletName();
-    localStorage.removeItem(walletName);
+    let walletId = getWalletId();
+    localStorage.removeItem(walletId);
 };
 
 /**
@@ -46,8 +46,8 @@ const saveSilentShareStorage = (data: StorageData) => {
             SnapErrorCode.InvalidStorageData
         );
     }
-    let walletName = getWalletName();
-    localStorage.setItem(walletName, JSON.stringify(data));
+    let walletId = getWalletId();
+    localStorage.setItem(walletId, JSON.stringify(data));
 };
 
 /**
@@ -56,13 +56,13 @@ const saveSilentShareStorage = (data: StorageData) => {
  * @returns SilentShareStorage object
  */
 const getSilentShareStorage = (): StorageData => {
-    let walletName = getWalletName();
+    let walletId = getWalletId();
     const _isStorageExist = isStorageExist();
     if (!_isStorageExist) {
         throw new SnapError("Wallet is not paired", SnapErrorCode.NotPaired);
     }
 
-    let state = localStorage.getItem(walletName);
+    let state = localStorage.getItem(walletId);
 
     if (!state) {
         throw new SnapError(
