@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback } from "@/components/avatar";
 import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
 
-import * as store from "@/utils/store";
 import {
     initPairing,
     runKeygen,
@@ -17,6 +16,8 @@ import {
 import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
+import { setPairingStatus } from "@/mpc/storage/wallet";
+import { accountType, setEoa } from "@/mpc/storage/account";
 
 function Page() {
     const router = useRouter();
@@ -30,9 +31,9 @@ function Page() {
     const step = 1;
 
     const MAX_SECONDS = 30;
-    const handleAfterPairing = (eoa: store.accountType) => {
-        store.setEoa(eoa);
-        store.setPairingStatus("Paired");
+    const handleAfterPairing = (eoa: accountType) => {
+        setEoa(eoa);
+        setPairingStatus("Paired");
         setLoading(false);
     };
 
@@ -54,8 +55,6 @@ function Page() {
         }
     };
     const generateWallet = async () => {
-        store.clearLocalStorage();
-
         (async () => {
             const qrCode = await initPairing("stackup");
             setQr(qrCode);

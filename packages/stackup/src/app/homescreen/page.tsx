@@ -5,15 +5,16 @@ import { Client, Presets } from "userop";
 import { Button } from "@/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { TextInput } from "@/components/textInput";
-import * as store from "@/utils/store";
+import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
 import { formatEther } from "ethers/lib/utils";
-import { getSilentShareStorage } from "@/mpc/storage";
+import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
+import { signOut } from "@/mpc";
 
 interface HomescreenProps {}
 
@@ -34,7 +35,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         useState(false);
 
     useEffect(() => {
-        if (store.getPairingStatus() == "Unpaired") {
+        if (getPairingStatus() == "Unpaired") {
             router.replace("/intro");
             return;
         }
@@ -241,6 +242,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
     function logout(event: React.MouseEvent): void {
         event.preventDefault();
+        signOut();
         router.push("/intro");
     }
 

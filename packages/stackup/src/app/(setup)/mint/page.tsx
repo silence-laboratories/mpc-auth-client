@@ -5,10 +5,10 @@ import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/popover";
 import { Client, Presets } from "userop";
-import * as store from "@/utils/store";
+import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@/mpc/storage";
+import { getSilentShareStorage } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };

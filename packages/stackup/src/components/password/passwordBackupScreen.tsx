@@ -8,7 +8,7 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
 import { runBackup } from "@/mpc";
 import { useRouter } from "next/navigation";
-import { setPasswordReady } from "@/utils/store";
+import { setPasswordReady } from "@/mpc/storage/account";
 
 export const PasswordBackupScreen: React.FunctionComponent<{
     onProceed?: () => void;

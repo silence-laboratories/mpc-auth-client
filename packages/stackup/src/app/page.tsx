@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import * as store from "@/utils/store";
+import * as store from "@/mpc/storage/account";
 
 export default function Home() {
     const router = useRouter();

@@ -2,18 +2,18 @@ import { startPairingSession } from "./actions/pairing";
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { deleteStorage } from "./storage";
+import { clearWallet } from "./storage/wallet";
 import * as PairingAction from "./actions/pairing";
 import * as KeyGenAction from "./actions/keygen";
 import * as SignAction from "./actions/sign";
 import * as Backup from "./actions/backup";
 import { aeadEncrypt, requestEntropy } from "./crypto";
 import { fromHexStringToBytes, getAddressFromDistributedKey } from "./utils";
-import { saveSilentShareStorage, getSilentShareStorage } from "./storage";
+import { saveSilentShareStorage, getSilentShareStorage } from "./storage/wallet";
 import { PairingSessionData, SignMetadata, StorageData } from "./types";
 import { SnapError, SnapErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-import { getEoa } from "@/utils/store";
+import { getEoa } from "@/mpc/storage/account";
 
 const TOKEN_LIFE_TIME = 60000;
 
@@ -37,10 +37,6 @@ async function isPaired() {
             deviceName: null,
         };
     }
-}
-
-async function unpair() {
-    deleteStorage();
 }
 
 async function initPairing(walletId: string) {
@@ -229,6 +225,11 @@ async function runSign(
     );
 }
 
+
+async function signOut() {
+    clearWallet();
+}
+
 export {
     initPairing,
     runStartPairingSession,
@@ -236,7 +237,7 @@ export {
     runKeygen,
     runSign,
     runBackup,
-    unpair,
+    signOut,
     isPaired,
     refreshPairing,
     runRePairing,

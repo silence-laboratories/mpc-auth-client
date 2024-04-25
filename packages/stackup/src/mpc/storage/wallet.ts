@@ -1,8 +1,9 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { SnapError, SnapErrorCode } from "./error";
-import { StorageData } from "./types";
+import { SnapError, SnapErrorCode } from "../error";
+import { StorageData, pairingStatusType } from "../types";
+import { clearAccount } from "./account";
 
 const getWalletId = (): string => {
     let walletId = localStorage.getItem("walletId");
@@ -29,9 +30,11 @@ const isStorageExist = (): boolean => {
 /**
  * Delete the stored data, if it exists.
  */
-const deleteStorage = () => {
+const clearWallet = () => {
     let walletId = getWalletId();
     localStorage.removeItem(walletId);
+    setPairingStatus("Unpaired");
+    clearAccount();
 };
 
 /**
@@ -76,9 +79,19 @@ const getSilentShareStorage = (): StorageData => {
     return jsonObject;
 };
 
+function setPairingStatus(status: pairingStatusType) {
+    localStorage.setItem("pairingStatus", status);
+}
+
+function getPairingStatus(): pairingStatusType {
+    return localStorage.getItem("pairingStatus") as pairingStatusType;
+}
+
 export {
     isStorageExist,
-    deleteStorage,
+    clearWallet,
     saveSilentShareStorage,
     getSilentShareStorage,
+    setPairingStatus,
+    getPairingStatus,
 };
