@@ -94,4 +94,5 @@ export {
     getSilentShareStorage,
     setPairingStatus,
     getPairingStatus,
+    getWalletId
 };

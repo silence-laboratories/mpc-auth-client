@@ -43,6 +43,7 @@ export interface SignConversation {
 	publicKey: string;
 	sessionId: string;
 	message: Message;
+	walletId: string;
 }
 
 export interface BackupConversation {
