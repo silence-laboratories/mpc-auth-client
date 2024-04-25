@@ -11,7 +11,6 @@ import _sodium from "libsodium-wrappers-sumo";
 import { DistributedKey, PairingData, PairingSessionData } from "../types";
 import { SnapError, SnapErrorCode } from "../error";
 import { aeadDecrypt } from "../crypto";
-import { v4 as uuid } from "uuid";
 
 export enum PairingRemark {
     WALLET_MISMATCH = "WALLET_MISMATCH",
@@ -27,7 +26,7 @@ export interface PairingDataInit {
 
 let pairingDataInit: PairingDataInit;
 
-export const init = async () => {
+export const init = async (walletName: string) => {
     try {
         let pairingId = await utils.randomPairingId();
 
@@ -42,6 +41,7 @@ export const init = async () => {
         };
 
         let qrCode = JSON.stringify({
+            walletName,
             pairingId,
             webEncPublicKey: _sodium.to_hex(encPair.publicKey),
             signPublicKey: _sodium.to_hex(signPair.publicKey),
@@ -200,7 +200,6 @@ export const endPairingSession = async (
             newPairingState: {
                 pairingData,
                 distributedKey: distributedKey ?? null,
-                accountId: distributedKey ? uuid() : null,
             },
             elapsedTime: Date.now() - startTime,
             deviceName: pairingSessionData.deviceName,

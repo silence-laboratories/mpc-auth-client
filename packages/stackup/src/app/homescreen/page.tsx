@@ -197,6 +197,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 to: recipientAddress,
                 amount: amount,
             };
+            // TODO: Move this to `mpc`
             const keyshards = getSilentShareStorage();
             const distributedKey = keyshards.newPairingState?.distributedKey;
             const simpleAccount = await Presets.Builder.SimpleAccount.init(

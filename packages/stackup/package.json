@@ -36,7 +36,6 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "userop": "0.3.0",
-    "uuid": "^9.0.0",
     "web3": "^4.7.0"
   },
   "devDependencies": {

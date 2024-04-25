@@ -4,7 +4,16 @@
 import { SnapError, SnapErrorCode } from "./error";
 import { StorageData } from "./types";
 
-const STORAGE_KEY = "SilentShare1";
+const getWalletName = (): string => {
+    let name = localStorage.getItem("walletName");
+    if (name === null) {
+        throw new SnapError(
+            "Wallet name is not set",
+            SnapErrorCode.UnknownError
+        );
+    }
+    return name;
+};
 
 /**
  * Function to check if a storage exist
@@ -12,21 +21,17 @@ const STORAGE_KEY = "SilentShare1";
  * @returns true if exists, false otherwise
  */
 const isStorageExist = (): boolean => {
-    try {
-        let data = localStorage.getItem(STORAGE_KEY);
-        return data !== null;
-    } catch (error) {
-        throw error instanceof Error
-            ? new SnapError(error.message, SnapErrorCode.StorageError)
-            : new SnapError(`unknown-error`, SnapErrorCode.UnknownError);
-    }
+    let walletName = getWalletName();
+    let data = localStorage.getItem(walletName);
+    return data !== null;
 };
 
 /**
  * Delete the stored data, if it exists.
  */
 const deleteStorage = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    let walletName = getWalletName();
+    localStorage.removeItem(walletName);
 };
 
 /**
@@ -35,19 +40,14 @@ const deleteStorage = () => {
  * @param data obj to save
  */
 const saveSilentShareStorage = (data: StorageData) => {
-    try {
-        if (data == null) {
-            throw new SnapError(
-                "Storage data cannot be null",
-                SnapErrorCode.InvalidStorageData
-            );
-        }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (error) {
-        throw error instanceof Error
-            ? new SnapError(error.message, SnapErrorCode.StorageError)
-            : new SnapError(`unknown-error`, SnapErrorCode.UnknownError);
+    if (data == null) {
+        throw new SnapError(
+            "Storage data cannot be null",
+            SnapErrorCode.InvalidStorageData
+        );
     }
+    let walletName = getWalletName();
+    localStorage.setItem(walletName, JSON.stringify(data));
 };
 
 /**
@@ -56,31 +56,24 @@ const saveSilentShareStorage = (data: StorageData) => {
  * @returns SilentShareStorage object
  */
 const getSilentShareStorage = (): StorageData => {
-    try {
-        const _isStorageExist = isStorageExist();
-        if (!_isStorageExist) {
-            throw new SnapError("Snap is not paired", SnapErrorCode.NotPaired);
-        }
-
-        let state = localStorage.getItem(STORAGE_KEY);
-
-        if (!state) {
-            throw new SnapError(
-                "Snap failed to fetch state",
-                SnapErrorCode.UnknownError
-            );
-        }
-
-        const jsonObject: StorageData = JSON.parse(
-            state as string
-        );
-
-        return jsonObject;
-    } catch (error) {
-        throw error instanceof Error
-            ? new SnapError(error.message, SnapErrorCode.StorageError)
-            : new SnapError(`unknown-error`, SnapErrorCode.UnknownError);
+    let walletName = getWalletName();
+    const _isStorageExist = isStorageExist();
+    if (!_isStorageExist) {
+        throw new SnapError("Wallet is not paired", SnapErrorCode.NotPaired);
     }
+
+    let state = localStorage.getItem(walletName);
+
+    if (!state) {
+        throw new SnapError(
+            "Wallet failed to fetch state",
+            SnapErrorCode.UnknownError
+        );
+    }
+
+    const jsonObject: StorageData = JSON.parse(state as string);
+
+    return jsonObject;
 };
 
 export {

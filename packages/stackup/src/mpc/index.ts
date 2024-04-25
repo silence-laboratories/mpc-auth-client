@@ -1,4 +1,4 @@
-import { startPairingSession } from './actions/pairing';
+import { startPairingSession } from "./actions/pairing";
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
@@ -13,7 +13,7 @@ import { saveSilentShareStorage, getSilentShareStorage } from "./storage";
 import { PairingSessionData, SignMetadata, StorageData } from "./types";
 import { SnapError, SnapErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-import { v4 as uuid } from "uuid";
+import { getEoa } from "@/utils/store";
 
 const TOKEN_LIFE_TIME = 60000;
 
@@ -43,23 +43,28 @@ async function unpair() {
     deleteStorage();
 }
 
-async function initPairing() {
-    let qrCode = await PairingAction.init();
+async function initPairing(walletName: string) {
+    let qrCode = await PairingAction.init(walletName);
+    localStorage.setItem("walletName", walletName);
     return qrCode;
 }
 
 async function runStartPairingSession() {
     return await PairingAction.startPairingSession();
-
 }
 
-async function runEndPairingSession(pairingSessionData: PairingSessionData, password?: string) {
-    const result = await PairingAction.endPairingSession(pairingSessionData, undefined, password);
+async function runEndPairingSession(
+    pairingSessionData: PairingSessionData,
+    password?: string
+) {
+    const result = await PairingAction.endPairingSession(
+        pairingSessionData,
+        undefined,
+        password
+    );
     saveSilentShareStorage({
         newPairingState: result.newPairingState,
         pairingData: result.newPairingState.pairingData,
-        wallets: {},
-        requests: {},
     });
     const distributedKey = result.newPairingState.distributedKey;
 
@@ -75,14 +80,16 @@ async function runEndPairingSession(pairingSessionData: PairingSessionData, pass
 
 async function runRePairing() {
     let silentShareStorage: StorageData = getSilentShareStorage();
-    const wallets = Object.values(silentShareStorage.wallets);
-    const currentAccount = wallets.length > 0 ? wallets[0] : null;
-    if (!currentAccount) {
-        throw new SnapError("Not Paired", SnapErrorCode.NotPaired);
-    }
-    const currentAccountAddress = getAddressFromDistributedKey(
-        currentAccount?.distributedKey
-    );
+    // const wallets = Object.values(silentShareStorage.wallets);
+    // const currentAccount = wallets.length > 0 ? wallets[0] : null;
+    // if (!currentAccount) {
+    //     throw new SnapError("Not Paired", SnapErrorCode.NotPaired);
+    // }
+    // const currentAccountAddress = getAddressFromDistributedKey(
+    //     currentAccount?.distributedKey
+    // );
+
+    const currentAccountAddress = getEoa().address;
 
     const pairingSessionData = await PairingAction.startPairingSession();
     const result = await PairingAction.endPairingSession(
@@ -140,15 +147,13 @@ async function getPairingDataAndStorage() {
 
 async function runKeygen() {
     let { pairingData, silentShareStorage } = await getPairingDataAndStorage();
-    let wallets = silentShareStorage.wallets;
-    let accountId = Object.keys(wallets).length + 1;
     let x1 = fromHexStringToBytes(await requestEntropy());
+    let accountId = 1;
     let result = await KeyGenAction.keygen(pairingData, accountId, x1);
     saveSilentShareStorage({
         ...silentShareStorage,
         newPairingState: {
             pairingData: null,
-            accountId: uuid(),
             distributedKey: {
                 publicKey: result.publicKey,
                 accountId,
@@ -168,21 +173,24 @@ async function runKeygen() {
 
 async function runBackup(password: string, isSkip: boolean) {
     let { pairingData, silentShareStorage } = await getPairingDataAndStorage();
-    if(isSkip) {
-        await Backup.backup(pairingData, '');
+    if (isSkip) {
+        await Backup.backup(pairingData, "");
         return;
     }
     if (password && password.length >= 8) {
         try {
             const encryptedMessage = await aeadEncrypt(
-                JSON.stringify(silentShareStorage.newPairingState?.distributedKey),
+                JSON.stringify(
+                    silentShareStorage.newPairingState?.distributedKey
+                ),
                 password
             );
             await Backup.backup(pairingData, encryptedMessage);
         } catch (error) {
             if (error instanceof Error) {
                 throw error;
-            } else throw new SnapError("unkown-error", SnapErrorCode.UnknownError);
+            } else
+                throw new SnapError("unkown-error", SnapErrorCode.UnknownError);
         }
     }
 }

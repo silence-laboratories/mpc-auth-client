@@ -76,17 +76,11 @@ export type Wallet = {
 	distributedKey: DistributedKey;
 };
 
-export type KeyringState = {
-	wallets: Record<string, Wallet>;
-	requests: Record<string, KeyringRequest>;
-};
-
-export type StorageData = KeyringState & {
+export type StorageData = {
 	pairingData: PairingData;
 	newPairingState?: {
 		pairingData: PairingData | null;
 		distributedKey: DistributedKey | null;
-		accountId: string | null;
 	};
 };
 export interface PairingSessionData {

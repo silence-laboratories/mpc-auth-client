@@ -57,7 +57,7 @@ function Page() {
         store.clearLocalStorage();
 
         (async () => {
-            const qrCode = await initPairing();
+            const qrCode = await initPairing("stackup");
             setQr(qrCode);
             setSeconds(MAX_SECONDS);
 
