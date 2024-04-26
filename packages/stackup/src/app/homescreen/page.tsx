@@ -20,11 +20,9 @@ interface HomescreenProps {}
 
 const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const router = useRouter();
-    const placeholderAccount = { address: "...", balance: 0 };
-    const [walletAccount, setWalletAccount] =
-        useState<store.accountType>(placeholderAccount);
+    const [walletAccount, setWalletAccount] = useState<store.accountType>();
     const [walletBalance, setWalletBalance] = useState<string>("0");
-    const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
+    const [eoa, setEoa] = useState<store.accountType>();
     const [network, setNetwork] = useState("...");
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
         "none"
@@ -39,9 +37,20 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             router.replace("/intro");
             return;
         }
+
+        const account = store.getWalletAccount();
+        if (!account) {
+            router.replace("/intro");
+        }
+
+        const eoa = store.getEoa();
+        if (!eoa) {
+            router.replace("/intro");
+        }
+
         // get wallet account and eoa
-        setWalletAccount(store.getWalletAccount());
-        setEoa(store.getEoa());
+        setWalletAccount(account);
+        setEoa(eoa);
     }, []);
 
     const SEPOLIA = {
@@ -56,8 +65,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         blockExplorerUrls: ["https://sepolia.etherscan.io/"],
     };
     useEffect(() => {
-        if (walletAccount.address == "...") return;
-        if (eoa.address == "...") return;
+        if (!walletAccount) return;
+        if (!eoa) return;
         (async () => {
             if (!(await isChainSepolia())) {
                 setSwitchChain("popup");
@@ -70,7 +79,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             }
 
             setNetwork("Sepolia Test Network");
-            let { balance_wallet, balance_eoa } = await updateBalance();
+            await updateBalance();
             setWalletAccount({
                 ...walletAccount,
             });
@@ -78,7 +87,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 ...eoa,
             });
         })();
-    }, [walletAccount.address, eoa.address]);
+    }, [walletAccount, eoa]);
 
     async function onSwitchChainClick() {
         if (switchChain === "popup") return;
@@ -109,8 +118,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             if (true) {
                 setNetwork("Sepolia Test Network");
                 return true;
-            } else {
-                return false;
             }
         } catch (e: unknown) {
             console.log("error", e);
@@ -119,6 +126,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     }
 
     async function updateBalance() {
+        if (!walletAccount) return;
+        if (!eoa) return;
         // @ts-ignore
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const balance_wallet = await provider.getBalance(walletAccount.address);
@@ -238,7 +247,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
     const handleBackupProceed = () => {
         setOpenPasswordBackupDialog(false);
-    }
+    };
 
     function logout(event: React.MouseEvent): void {
         event.preventDefault();
@@ -248,6 +257,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
     const onRePairing = () => {};
 
+    console.log(walletAccount);
     return (
         <div className="">
             <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none  w-[92vw] lg:w-[52.75vw] m-auto bg-white-primary">
@@ -338,17 +348,18 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                 className="flex items-center"
                                                 onClick={async () => {
                                                     navigator.clipboard.writeText(
-                                                        walletAccount.address
+                                                        walletAccount?.address ||
+                                                            ""
                                                     );
                                                 }}
                                             >
                                                 <span className="mr-1 text-[black] b1-bold ">
-                                                    {walletAccount.address.slice(
+                                                    {walletAccount?.address.slice(
                                                         0,
                                                         5
                                                     )}
                                                     {"..."}
-                                                    {walletAccount.address.slice(
+                                                    {walletAccount?.address.slice(
                                                         walletAccount.address
                                                             .length - 5,
                                                         walletAccount.address
@@ -398,14 +409,14 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                 className="flex items-center"
                                                 onClick={async () => {
                                                     navigator.clipboard.writeText(
-                                                        eoa.address
+                                                        eoa?.address || ""
                                                     );
                                                 }}
                                             >
                                                 <span className="mr-1 text-[black] b1-bold">
-                                                    {eoa.address.slice(0, 5)}
+                                                    {eoa?.address.slice(0, 5)}
                                                     {"..."}
-                                                    {eoa.address.slice(
+                                                    {eoa?.address.slice(
                                                         eoa.address.length - 5,
                                                         eoa.address.length
                                                     )}
@@ -778,7 +789,10 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 e.preventDefault();
                             }}
                         >
-                            <PasswordBackupScreen showSkipButton={false} onProceed={handleBackupProceed}/>
+                            <PasswordBackupScreen
+                                showSkipButton={false}
+                                onProceed={handleBackupProceed}
+                            />
                         </DialogContent>
                     </Dialog>
                 </div>

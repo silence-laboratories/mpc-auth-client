@@ -7,7 +7,7 @@ export function setEoa(eoa: accountType) {
 }
 
 export function getEoa(): accountType {
-    return JSON.parse(localStorage.getItem("eoa") || "{}");
+    return JSON.parse(localStorage.getItem("eoa") || "null");
 }
 
 export function setWalletAccount(walletAccount: accountType) {
@@ -15,7 +15,7 @@ export function setWalletAccount(walletAccount: accountType) {
 }
 
 export function getWalletAccount(): accountType {
-    return JSON.parse(localStorage.getItem("walletAccount") || "{}");
+    return JSON.parse(localStorage.getItem("walletAccount") || "null");
 }
 
 export function setTxHash(txHash: string) {
