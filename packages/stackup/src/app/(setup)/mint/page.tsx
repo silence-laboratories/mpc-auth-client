@@ -8,7 +8,7 @@ import { Client, Presets } from "userop";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@/mpc/storage/wallet";
+import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
@@ -19,6 +19,11 @@ function Page() {
     const step = 2;
 
     useEffect(() => {
+        if (getPairingStatus() == "Unpaired") {
+            router.replace("/intro");
+            return;
+        }
+        
         setEoa(store.getEoa());
     }, []);
 

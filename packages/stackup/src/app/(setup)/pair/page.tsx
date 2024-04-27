@@ -51,7 +51,7 @@ function Page() {
             });
         } catch (error) {
             // TODO: handle error
-            console.error(error);
+            throw error;
         }
     };
     const generateWallet = async () => {

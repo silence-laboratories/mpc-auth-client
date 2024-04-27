@@ -17,6 +17,7 @@ export const PasswordEnterScreen: React.FunctionComponent<{
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
     const [isLoading, setIsLoading] = useState(false);
+    const [disableBtn, setDisableBtn] = useState(false);
 
     const [passwordCheckState, setPasswordCheckState] = useState<{
         lengthCheck: PasswordCheckState;
@@ -33,6 +34,7 @@ export const PasswordEnterScreen: React.FunctionComponent<{
     });
 
     const handlePasswordOnchange = (pwd: string) => {
+        setDisableBtn(false);
         const passwordCheck = checkPassword(pwd);
         setPasswordCheckState({
             lengthCheck: passwordCheck.lengthCheck ? "checked" : "unchecked",
@@ -71,9 +73,15 @@ export const PasswordEnterScreen: React.FunctionComponent<{
             return;
         }
         setIsLoading(true);
-        await onProceed(currentPassword);
-        setIsLoading(false);
-        router.replace("/mint");
+        try {
+            await onProceed(currentPassword);
+            router.replace("/mint");
+            setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            setPasswordErr(PasswordInputErr.IncorrectPassword);
+            setDisableBtn(true);
+        }
     };
 
     return (
@@ -191,6 +199,7 @@ export const PasswordEnterScreen: React.FunctionComponent<{
                             type="submit"
                             className="bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active w-1/2"
                             onClick={handleProceed}
+                            disabled={disableBtn}
                         >
                             Proceed
                         </Button>

@@ -164,6 +164,11 @@ export const endPairingSession = async (
         let distributedKey: DistributedKey | undefined;
         let accountAddress: string | undefined;
         if (pairingSessionData.backupData && password) {
+            try {
+                
+            } catch (error) {
+                
+            }
             const backupDataJson = await decryptAndDeserializeBackupData(
                 sessionToken,
                 pairingSessionData.backupData,
