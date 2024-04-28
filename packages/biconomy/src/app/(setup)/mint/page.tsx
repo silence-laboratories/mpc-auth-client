@@ -4,12 +4,15 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/popover";
-import { Client, Presets } from "userop";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
 import { getSilentShareStorage } from "@/mpc/storage/wallet";
+import { createSmartAccountClient} from "@biconomy/account";
+
 import LoadingScreen from "@/components/loadingScreen";
+import { AwardIcon } from "lucide-react";
+import {  providers } from "ethers";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
@@ -27,17 +30,25 @@ function Page() {
             setLoading(true);
             const keyshards = getSilentShareStorage();
             const distributedKey = keyshards.newPairingState?.distributedKey;
-            const keyShareData = distributedKey?.keyShareData ?? null; // Add null check here
-            const simpleAccount = await Presets.Builder.SimpleAccount.init(
-                new SilentWallet(
-                    store.getEoa().address,
-                    distributedKey?.publicKey ?? "",
-                    keyShareData,
-                    { distributedKey }
-                ),
-                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
-            );
-            const response = simpleAccount.getSender();
+            const keyShareData = distributedKey?.keyShareData ?? null; 
+            const provider = new providers.JsonRpcProvider(
+                "https://rpc.sepolia.org",
+              );
+          
+            const client =  new SilentWallet(
+                        store.getEoa().address,
+                        distributedKey?.publicKey ?? "",
+                        keyShareData,
+                        { distributedKey },
+                        provider,
+                    )
+
+            const biconomySmartAccount = await createSmartAccountClient({
+                signer : client,
+                bundlerUrl:"https://bundler.biconomy.io/api/v2/11155111/J51Gd5gX3.fca10d8b-6619-4ed3-a580-3ce21fc0d717",
+            })
+            console.log("bicooonomySmart",biconomySmartAccount)
+            const response = await biconomySmartAccount.getAccountAddress();
             store.setWalletAccount({ address: response });
             setLoading(true);
             router.replace("/homescreen");

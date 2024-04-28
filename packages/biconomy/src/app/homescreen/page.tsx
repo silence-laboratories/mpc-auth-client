@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { ethers, providers } from "ethers";
 import { Client, Presets } from "userop";
 import { Button } from "@/components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
@@ -15,6 +15,8 @@ import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import { signOut } from "@/mpc";
+import { createSmartAccountClient } from "@biconomy/account";
+
 
 interface HomescreenProps {}
 
@@ -152,6 +154,12 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         );
     }, [recipientAddress, amount, switchChain]);
 
+    function convertEtherToWei(etherString: string) {
+        const ether = Number(etherString);
+        const weiString = (ether * 1e18).toString();
+        return BigInt(weiString);
+    }
+
     function handleRecipientAddressChange(address_: string) {
         setRecipientAddress(address_);
 
@@ -192,47 +200,42 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         (async () => {
             // clear banners
             setShowTransactionSignedBanner(false);
-            setShowTransactionInitiatedBanner(true);
-
+            setShowTransactionInitiatedBanner(true);                 
             const requestData = {
                 to: recipientAddress,
-                amount: amount,
+                value: convertEtherToWei(amount),
+
             };
-            // TODO: Move this to `mpc`
+          
+            const provider = new providers.JsonRpcProvider(
+                "https://rpc.sepolia.org",
+              );
             const keyshards = getSilentShareStorage();
             const distributedKey = keyshards.newPairingState?.distributedKey;
-            const simpleAccount = await Presets.Builder.SimpleAccount.init(
-                new SilentWallet(
-                    store.getEoa().address,
-                    distributedKey?.publicKey as string,
-                    distributedKey?.keyShareData,
-                    { distributedKey }
-                ),
-                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
-            );
-            const client = await Client.init(
-                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
-            );
+            const client =  new SilentWallet(
+                        store.getEoa().address,
+                        distributedKey?.publicKey ?? "",
+                        distributedKey?.keyShareData,
+                        { distributedKey },
+                        provider,
+                    )
 
-            const target = ethers.utils.getAddress(requestData.to);
-            const value = ethers.utils.parseEther(requestData.amount);
-            const res = await client.sendUserOperation(
-                simpleAccount.execute(target, value, "0x"),
-                {
-                    // Add necessary options as needed
-                    onBuild: (op) => console.log("Signed UserOperation:", op),
-                }
-            );
-            console.log("userOp Hash", res.userOpHash);
+            const biconomySmartAccount = await createSmartAccountClient({
+                signer : client,
+                bundlerUrl:"https://bundler.biconomy.io/api/v2/11155111/J51Gd5gX3.fca10d8b-6619-4ed3-a580-3ce21fc0d717",
+            })
 
-            const ev = await res.wait();
-            console.log("transactionHash", ev?.transactionHash ?? null);
+            const userOpResponse = await biconomySmartAccount.sendTransaction(requestData)
+            const {transactionHash} = await userOpResponse.waitForTxHash();
+            console.log("Transaction Hash", transactionHash);
+
+            const userOpReceipt = await userOpResponse.wait();
+       
+            console.log("transactionHash", userOpReceipt?.success ?? null);
 
             setShowTransactionInitiatedBanner(false);
 
             setShowTransactionSignedBanner(true);
-
-            // send sign request to server
         })();
     }
 

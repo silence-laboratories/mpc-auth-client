@@ -29,7 +29,7 @@ export class SilentWallet extends Signer {
     public public_key: string;
 
     private p1KeyShare: IP1KeyShare;
-    readonly provider?: ethers.providers.Provider;
+    readonly provider: ethers.providers.Provider;
     keygenResult: any;
 
     constructor(
@@ -37,7 +37,7 @@ export class SilentWallet extends Signer {
         public_key: string,
         p1KeyShare: any,
         keygenResult: any,
-        provider?: Provider
+        provider: Provider
     ) {
         super();
 

@@ -21,7 +21,7 @@ export default function RootLayout({
           <nav className="w-full z-20 top-0 start-0 border-b border-gray-700 bg-white-primary mb-6">
             <div className="flex w-full flex-wrap items-center justify-between h-[8.88vh]">
               <div className="flex items-center">
-                <img src="/slxstackup.svg" alt="logo 1" className="mr-10" />
+                <img src="/slxbcnmy.svg" alt="logo 1" className="mr-10" />
                 <img src="/demoLogo.svg" alt="Demo Logo" />
               </div>
               <div className="flex items-left">

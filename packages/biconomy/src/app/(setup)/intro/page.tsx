@@ -50,7 +50,7 @@ function Page() {
             </div>
             <div>
                 <img
-                    src="/slxstackup.svg"
+                    src="/slxbcnmy.svg"
                     alt="qr code"
                     className="w-1/2 h-1/2 m-auto"
                 />

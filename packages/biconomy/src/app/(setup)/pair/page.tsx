@@ -56,10 +56,9 @@ function Page() {
     };
     const generateWallet = async () => {
         (async () => {
-            const qrCode = await initPairing("stackup");
+            const qrCode = await initPairing("biconomy");
             setQr(qrCode);
             setSeconds(MAX_SECONDS);
-
             const pairingSessionData = await runStartPairingSession();
             setLoading(true);
             if (pairingSessionData.backupData) {
