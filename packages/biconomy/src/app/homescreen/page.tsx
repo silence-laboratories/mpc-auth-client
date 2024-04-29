@@ -256,7 +256,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none  w-[92vw] lg:w-[52.75vw] m-auto bg-white-primary">
                 <div className="border-none bg-transparent h-max py-0">
                     {showSuccessBanner && (
-                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#08170E] border-[#166533] w-full text-[#BBF7D1]">
+                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[#071C0F]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
                                 onClick={() => {
@@ -284,7 +284,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 >
                                     <path
                                         d="M32 6C17.6637 6 6 17.6637 6 32C6 46.3363 17.6637 58 32 58C46.3363 58 58 46.3363 58 32C58 17.6637 46.3363 6 32 6ZM45.5312 23.2862L28.7313 43.2863C28.547 43.5058 28.3177 43.6831 28.0589 43.8062C27.8001 43.9294 27.5178 43.9955 27.2313 44H27.1975C26.9172 43.9999 26.64 43.9409 26.384 43.8267C26.1279 43.7126 25.8987 43.5459 25.7113 43.3375L18.5112 35.3375C18.3284 35.1436 18.1862 34.915 18.0929 34.6653C17.9996 34.4156 17.9572 34.1498 17.9681 33.8835C17.9791 33.6171 18.0431 33.3557 18.1565 33.1145C18.27 32.8733 18.4305 32.6571 18.6286 32.4788C18.8267 32.3005 19.0585 32.1636 19.3103 32.0762C19.5621 31.9887 19.8288 31.9525 20.0948 31.9696C20.3608 31.9867 20.6207 32.0568 20.8592 32.1758C21.0978 32.2948 21.3101 32.4603 21.4837 32.6625L27.145 38.9525L42.4688 20.7138C42.8125 20.3163 43.2988 20.0702 43.8226 20.0284C44.3463 19.9867 44.8655 20.1528 45.2678 20.4907C45.6701 20.8287 45.9233 21.3114 45.9726 21.8345C46.0219 22.3576 45.8634 22.8791 45.5312 23.2862Z"
-                                        fill="#4ADE80"
+                                        fill="#1F9D41"
                                     />
                                 </svg>
                                 <div className="text-center">
@@ -332,7 +332,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     </svg>
                                 </div>
                                 <div className="flex flex-col">
-                                    <div className="text-black-200 text-sm">
+                                    <div className="text-black-200 text-sm font-bold">
                                         My Wallet
                                     </div>
                                     <Popover>
@@ -392,7 +392,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 <div className="ml-auto"></div>
 
                                 <div className="text-black flex flex-col items-end mr-6">
-                                    <div className="text-sm text-black-200">
+                                    <div className="text-sm text-black-200 font-bold">
                                         EOA
                                     </div>
                                     <Popover>
@@ -424,7 +424,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                         fillRule="evenodd"
                                                         clipRule="evenodd"
                                                         d="M4.37315 1.75L4.375 1.75H12.8125L12.8143 1.75C13.5591 1.75212 14.2728 2.04893 14.7994 2.57558C15.3261 3.10224 15.6229 3.81592 15.625 4.56072C15.625 4.56565 15.625 4.57059 15.6249 4.57552L15.6186 4.875H15.8984C17.4733 4.875 18.75 6.15169 18.75 7.72656V16.3984C18.75 17.9733 17.4733 19.25 15.8984 19.25H7.22656C5.65169 19.25 4.375 17.9733 4.375 16.3984V16.125H4.0625L4.06072 16.125C3.31592 16.1229 2.60224 15.8261 2.07558 15.2994C1.54893 14.7728 1.25212 14.0591 1.25 13.3143L1.25 13.3125V4.875L1.25 4.87315C1.25245 4.04559 1.58228 3.25263 2.16745 2.66745C2.75263 2.08228 3.54559 1.75245 4.37315 1.75ZM5.625 16.3984C5.625 17.283 6.34204 18 7.22656 18H15.8984C16.783 18 17.5 17.283 17.5 16.3984V7.72656C17.5 6.84204 16.783 6.125 15.8984 6.125H14.9826C14.9813 6.125 14.9801 6.125 14.9789 6.125H7.22656C6.34204 6.125 5.625 6.84204 5.625 7.72656V16.3984ZM14.3684 4.875H7.22656C5.65169 4.875 4.375 6.15169 4.375 7.72656V14.875H4.06351C3.64928 14.8736 3.25239 14.7085 2.95947 14.4155C2.66656 14.1226 2.50139 13.7258 2.5 13.3115V4.87599C2.50169 4.37898 2.69988 3.9028 3.05134 3.55134C3.4028 3.19988 3.87898 3.00169 4.37599 3H12.8115C13.2258 3.00139 13.6226 3.16656 13.9155 3.45947C14.207 3.75098 14.372 4.14545 14.375 4.55751L14.3684 4.875Z"
-                                                        fill="#ECEEF2"
+                                                        fill="black"
                                                     />
                                                 </svg>
                                             </div>
@@ -614,7 +614,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                     </div>
 
                     {showTransactionInitiatedBanner && (
-                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#08170E] border-[#166533] w-full text-[#BBF7D1]">
+                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[black]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
                                 onClick={() => {
@@ -628,7 +628,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                             >
                                 <path
                                     d="M9.06193 7.99935L12.0307 5.0306C12.1716 4.88995 12.2508 4.69909 12.251 4.50001C12.2512 4.30093 12.1723 4.10993 12.0316 3.96904C11.891 3.82814 11.7001 3.74889 11.501 3.74871C11.3019 3.74853 11.1109 3.82745 10.9701 3.9681L8.0013 6.93685L5.03255 3.9681C4.89165 3.8272 4.70056 3.74805 4.5013 3.74805C4.30204 3.74805 4.11095 3.8272 3.97005 3.9681C3.82915 4.10899 3.75 4.30009 3.75 4.49935C3.75 4.69861 3.82915 4.8897 3.97005 5.0306L6.9388 7.99935L3.97005 10.9681C3.82915 11.109 3.75 11.3001 3.75 11.4993C3.75 11.6986 3.82915 11.8897 3.97005 12.0306C4.11095 12.1715 4.30204 12.2506 4.5013 12.2506C4.70056 12.2506 4.89165 12.1715 5.03255 12.0306L8.0013 9.06185L10.9701 12.0306C11.1109 12.1715 11.302 12.2506 11.5013 12.2506C11.7006 12.2506 11.8917 12.1715 12.0326 12.0306C12.1734 11.8897 12.2526 11.6986 12.2526 11.4993C12.2526 11.3001 12.1734 11.109 12.0326 10.9681L9.06193 7.99935Z"
-                                    fill="#4ADE80"
+                                    fill="#B1F1C9"
                                 />
                             </svg>
                             <div className="full-w full-h flex flex-col justify-center items-center">
@@ -641,7 +641,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                     )}
 
                     {showTransactionSignedBanner && (
-                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#08170E] border-[#166533] w-full text-[#BBF7D1]">
+                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[black]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
                                 onClick={() => {
@@ -669,7 +669,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 >
                                     <path
                                         d="M32 6C17.6637 6 6 17.6637 6 32C6 46.3363 17.6637 58 32 58C46.3363 58 58 46.3363 58 32C58 17.6637 46.3363 6 32 6ZM45.5312 23.2862L28.7313 43.2863C28.547 43.5058 28.3177 43.6831 28.0589 43.8062C27.8001 43.9294 27.5178 43.9955 27.2313 44H27.1975C26.9172 43.9999 26.64 43.9409 26.384 43.8267C26.1279 43.7126 25.8987 43.5459 25.7113 43.3375L18.5112 35.3375C18.3284 35.1436 18.1862 34.915 18.0929 34.6653C17.9996 34.4156 17.9572 34.1498 17.9681 33.8835C17.9791 33.6171 18.0431 33.3557 18.1565 33.1145C18.27 32.8733 18.4305 32.6571 18.6286 32.4788C18.8267 32.3005 19.0585 32.1636 19.3103 32.0762C19.5621 31.9887 19.8288 31.9525 20.0948 31.9696C20.3608 31.9867 20.6207 32.0568 20.8592 32.1758C21.0978 32.2948 21.3101 32.4603 21.4837 32.6625L27.145 38.9525L42.4688 20.7138C42.8125 20.3163 43.2988 20.0702 43.8226 20.0284C44.3463 19.9867 44.8655 20.1528 45.2678 20.4907C45.6701 20.8287 45.9233 21.3114 45.9726 21.8345C46.0219 22.3576 45.8634 22.8791 45.5312 23.2862Z"
-                                        fill="#4ADE80"
+                                        fill="#1F9D41"
                                     />
                                 </svg>
                                 <div className="text-center">
