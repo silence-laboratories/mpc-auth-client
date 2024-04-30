@@ -10,6 +10,14 @@ export function getEoa(): accountType {
     return JSON.parse(localStorage.getItem("eoa") || "null");
 }
 
+export function setOldEoa(eoa: accountType) {
+    localStorage.setItem("oldEoa", JSON.stringify(eoa));
+}
+
+export function getOldEoa(): accountType {
+    return JSON.parse(localStorage.getItem("oldEoa") || "null");
+}
+
 export function setWalletAccount(walletAccount: accountType) {
     localStorage.setItem("walletAccount", JSON.stringify(walletAccount));
 }
@@ -28,6 +36,7 @@ export function getTxHash() {
 
 export function clearAccount() {
     localStorage.removeItem("eoa");
+    localStorage.removeItem("oldEoa");
     localStorage.removeItem("walletAccount");
 }
 

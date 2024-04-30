@@ -23,6 +23,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [walletAccount, setWalletAccount] = useState<store.accountType>();
     const [walletBalance, setWalletBalance] = useState<string>("0");
     const [eoa, setEoa] = useState<store.accountType>();
+    const [oldEoa, setOldEoa] = useState<store.accountType>();
     const [network, setNetwork] = useState("...");
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
         "none"
@@ -51,6 +52,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         // get wallet account and eoa
         setWalletAccount(account);
         setEoa(eoa);
+        setOldEoa(store.getOldEoa());
     }, []);
 
     const SEPOLIA = {
@@ -151,7 +153,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
     useEffect(() => {
         setIsPasswordReady(store.isPasswordReady());
-    }, []);
+    }, [openPasswordBackupDialog]);
 
     useEffect(() => {
         setIsSendValid(
@@ -161,7 +163,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         );
     }, [recipientAddress, amount, switchChain]);
 
-    function handleRecipientAddressChange(address_: string) {
+    const handleRecipientAddressChange = (address_: string) => {
         setRecipientAddress(address_);
 
         function isValidAddress(address: string): boolean {
@@ -173,9 +175,9 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         isValidAddress(address_)
             ? setRecipientAddressError("")
             : setRecipientAddressError("Invalid Address");
-    }
+    };
 
-    function handleAmountChange(amount_: string) {
+    const handleAmountChange = (amount_: string) => {
         setAmount(amount_);
 
         function isValidAmount(amount: string): boolean {
@@ -193,9 +195,9 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         isValidAmount(amount_)
             ? setAmountError("")
             : setAmountError("Invalid Amount");
-    }
+    };
 
-    function handleSend(event: React.MouseEvent): void {
+    const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
 
         (async () => {
@@ -243,21 +245,25 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
             // send sign request to server
         })();
-    }
+    };
 
     const handleBackupProceed = () => {
         setOpenPasswordBackupDialog(false);
     };
 
-    function logout(event: React.MouseEvent): void {
+    const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
         signOut();
         router.push("/intro");
-    }
+    };
 
-    const onRePairing = () => {};
+    const handleRecover = () => {
+        if (eoa) {
+            store.setOldEoa(eoa);
+            router.push("/pair");
+        } // TODO: handle undefined eoa case
+    };
 
-    console.log(walletAccount);
     return (
         <div className="">
             <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none  w-[92vw] lg:w-[52.75vw] m-auto bg-white-primary">
@@ -295,9 +301,11 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     />
                                 </svg>
                                 <div className="text-center">
-                                    Your Distributed AA wallet is ready! Add
-                                    funds to your wallet from a faucet to get
-                                    started!
+                                    {`${
+                                        eoa === oldEoa
+                                            ? "Your Distributed AA wallet is ready! Add funds to your wallet from a faucet to get started!"
+                                            : "Your Silent Account is operational again!"
+                                    }`}
                                 </div>
                             </div>
                         </div>
@@ -475,7 +483,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                     onClick={
                                                         !isPasswordReady
                                                             ? undefined
-                                                            : onRePairing
+                                                            : handleRecover
                                                     }
                                                 >
                                                     <div
@@ -493,8 +501,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                             fill="none"
                                                         >
                                                             <path
-                                                                fill-rule="evenodd"
-                                                                clip-rule="evenodd"
+                                                                fillRule="evenodd"
+                                                                clipRule="evenodd"
                                                                 d="M17.4716 7.42794C17.904 8.43841 18.1263 9.52629 18.125 10.6254C18.1248 15.111 14.4857 18.75 9.99999 18.75C5.51419 18.75 1.87499 15.1108 1.87499 10.625V10.625C1.87511 8.94458 2.396 7.30553 3.36599 5.93338C4.33597 4.56123 5.70737 3.52342 7.29147 2.96276C7.61686 2.8476 7.97401 3.01802 8.08918 3.34342C8.20435 3.66882 8.03392 4.02597 7.70852 4.14114C6.36803 4.61557 5.20752 5.49379 4.3867 6.65493C3.56589 7.81606 3.1251 9.20304 3.12499 10.625L16.875 10.6254C16.875 10.6252 16.875 10.6251 16.875 10.625V10.6246L16.875 10.6242C16.8762 9.69457 16.6881 8.7744 16.3224 7.91971C15.9587 7.06979 15.4268 6.30229 14.7588 5.66338L14.3051 5.27342L12.3168 7.26175C11.923 7.6555 11.25 7.3766 11.25 6.81957V2.50003C11.25 2.33427 11.3158 2.1753 11.4331 2.05809C11.5503 1.94088 11.7092 1.87503 11.875 1.87503H16.1945C16.7516 1.87503 17.0312 2.54808 16.6367 2.94183L15.1915 4.38702L15.598 4.73639L15.6095 4.74735C16.4056 5.50532 17.0391 6.41735 17.4716 7.42794ZM16.875 10.6254L3.12499 10.625C3.12502 14.4205 6.20456 17.5 9.99999 17.5C13.7953 17.5 16.8748 14.4206 16.875 10.6254Z"
                                                                 fill="#23272E"
                                                             />
@@ -542,29 +550,29 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                                 d="M20 6H4C2.89543 6 2 6.89543 2 8V16C2 17.1046 2.89543 18 4 18H20C21.1046 18 22 17.1046 22 16V8C22 6.89543 21.1046 6 20 6Z"
                                                                 stroke="#23272E"
                                                                 stroke-width="2"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
                                                             />
                                                             <path
                                                                 d="M12 12H12.01"
                                                                 stroke="#23272E"
                                                                 stroke-width="2"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
                                                             />
                                                             <path
                                                                 d="M17 12H17.01"
                                                                 stroke="#23272E"
                                                                 stroke-width="2"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
                                                             />
                                                             <path
                                                                 d="M7 12H7.01"
                                                                 stroke="#23272E"
                                                                 stroke-width="2"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
                                                             />
                                                         </svg>
                                                     </div>
@@ -731,8 +739,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 fill="none"
                             >
                                 <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
                                     d="M7.84467 3.46967C8.13756 3.17678 8.61244 3.17678 8.90533 3.46967L13.4053 7.96967C13.6982 8.26256 13.6982 8.73744 13.4053 9.03033L8.90533 13.5303C8.61244 13.8232 8.13756 13.8232 7.84467 13.5303C7.55178 13.2374 7.55178 12.7626 7.84467 12.4697L11.0643 9.25H3.125C2.71079 9.25 2.375 8.91421 2.375 8.5C2.375 8.08579 2.71079 7.75 3.125 7.75H11.0643L7.84467 4.53033C7.55178 4.23744 7.55178 3.76256 7.84467 3.46967Z"
                                     fill="#EAB308"
                                 />
