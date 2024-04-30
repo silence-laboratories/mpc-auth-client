@@ -8,7 +8,8 @@ import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
 import { getSilentShareStorage } from "@/mpc/storage/wallet";
-import { createSmartAccountClient} from "@biconomy/account";
+import { SupportedSigner, createSmartAccountClient} from "@biconomy/account";
+import { mintBiconomyWallet } from "@/aaSDK/mintingService";
 
 import LoadingScreen from "@/components/loadingScreen";
 import { AwardIcon } from "lucide-react";
@@ -28,28 +29,7 @@ function Page() {
     const handleMint = () => {
         (async () => {
             setLoading(true);
-            const keyshards = getSilentShareStorage();
-            const distributedKey = keyshards.newPairingState?.distributedKey;
-            const keyShareData = distributedKey?.keyShareData ?? null; 
-            const provider = new providers.JsonRpcProvider(
-                "https://rpc.sepolia.org",
-              );
-          
-            const client =  new SilentWallet(
-                        store.getEoa().address,
-                        distributedKey?.publicKey ?? "",
-                        keyShareData,
-                        { distributedKey },
-                        provider,
-                    )
-
-            const biconomySmartAccount = await createSmartAccountClient({
-                signer : client,
-                bundlerUrl:"https://bundler.biconomy.io/api/v2/11155111/J51Gd5gX3.fca10d8b-6619-4ed3-a580-3ce21fc0d717",
-            })
-            console.log("bicooonomySmart",biconomySmartAccount)
-            const response = await biconomySmartAccount.getAccountAddress();
-            store.setWalletAccount({ address: response });
+            await mintBiconomyWallet(eoa);
             setLoading(true);
             router.replace("/homescreen");
         })();

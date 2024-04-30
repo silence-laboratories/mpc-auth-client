@@ -11,11 +11,13 @@ import { SilentWallet } from "@/silentWallet";
 import { formatEther } from "ethers/lib/utils";
 import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Store } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import { signOut } from "@/mpc";
-import { createSmartAccountClient } from "@biconomy/account";
+import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
+import { sendTransaction } from "@/aaSDK/transactionService";
+import { Result } from "postcss";
 
 
 interface HomescreenProps {}
@@ -154,11 +156,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         );
     }, [recipientAddress, amount, switchChain]);
 
-    function convertEtherToWei(etherString: string) {
-        const ether = Number(etherString);
-        const weiString = (ether * 1e18).toString();
-        return BigInt(weiString);
-    }
 
     function handleRecipientAddressChange(address_: string) {
         setRecipientAddress(address_);
@@ -201,41 +198,12 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             // clear banners
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);                 
-            const requestData = {
-                to: recipientAddress,
-                value: convertEtherToWei(amount),
-
-            };
-          
-            const provider = new providers.JsonRpcProvider(
-                "https://rpc.sepolia.org",
-              );
-            const keyshards = getSilentShareStorage();
-            const distributedKey = keyshards.newPairingState?.distributedKey;
-            const client =  new SilentWallet(
-                        store.getEoa().address,
-                        distributedKey?.publicKey ?? "",
-                        distributedKey?.keyShareData,
-                        { distributedKey },
-                        provider,
-                    )
-
-            const biconomySmartAccount = await createSmartAccountClient({
-                signer : client,
-                bundlerUrl:"https://bundler.biconomy.io/api/v2/11155111/J51Gd5gX3.fca10d8b-6619-4ed3-a580-3ce21fc0d717",
-            })
-
-            const userOpResponse = await biconomySmartAccount.sendTransaction(requestData)
-            const {transactionHash} = await userOpResponse.waitForTxHash();
-            console.log("Transaction Hash", transactionHash);
-
-            const userOpReceipt = await userOpResponse.wait();
-       
-            console.log("transactionHash", userOpReceipt?.success ?? null);
-
+            const result = await sendTransaction(recipientAddress, amount);
+            console.log("transactionHash", result.transactionHash);     
+            console.log("receipt",result.userOpReceipt);
             setShowTransactionInitiatedBanner(false);
-
-            setShowTransactionSignedBanner(true);
+            setShowTransactionSignedBanner(true);     
+           
         })();
     }
 
@@ -678,10 +646,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     <span className="font-bold">
                                         <a
                                             href={
-                                                "https://mumbai.polygonscan.com/tx/" +
-                                                `${localStorage.getItem(
-                                                    "txHash"
-                                                )}`
+                                                "https://sepolia.etherscan.io/tx/" +
+                                                `${store.getTxHash()}`
                                             }
                                         >
                                             {" "}
