@@ -24,13 +24,14 @@ function Page() {
     const [loading, setLoading] = useState<boolean>(false);
     const [qr, setQr] = useState<string | null>("placeholderQR");
     const [seconds, setSeconds] = useState<number>(30);
+    const [enterPwSeconds, setEnterPwSeconds] = useState<number>(60);
     const [showPasswordScreen, setShowPasswordScreen] = useState<boolean>(false);
     const [pairingSessionDataState, setPairingSessionDataState] =
         useState<PairingSessionData | null>(null);
 
     const step = 1;
-
     const MAX_SECONDS = 30;
+    const MAX_ENTER_PW_SECONDS = 60; // According to pairing API timeout
     const handleAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
         setPairingStatus("Paired");
@@ -54,11 +55,13 @@ function Page() {
             throw error;
         }
     };
+
     const generateWallet = async () => {
         (async () => {
             const qrCode = await initPairing("stackup");
             setQr(qrCode);
             setSeconds(MAX_SECONDS);
+            setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
             const pairingSessionData = await runStartPairingSession();
             setLoading(true);
@@ -96,8 +99,21 @@ function Page() {
         }
     }, [seconds]);
 
+    useEffect(() => {
+        if (enterPwSeconds > 0) {
+            const interval = setInterval(() => {
+                setEnterPwSeconds((prev) => prev - 1);
+            }, 1000);
+            return () => clearInterval(interval);
+        } else {
+            setShowPasswordScreen(false);
+            setLoading(false);
+        }
+    }, [enterPwSeconds]);
+
     const onTryAgainClick = () => {
         setSeconds(MAX_SECONDS);
+        setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
         generateWallet();
     };
 
