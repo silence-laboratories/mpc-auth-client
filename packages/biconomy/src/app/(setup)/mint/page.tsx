@@ -3,17 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/popover";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@/mpc/storage/wallet";
-import { SupportedSigner, createSmartAccountClient} from "@biconomy/account";
+import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
+import LoadingScreen from "@/components/loadingScreen";
 import { mintBiconomyWallet } from "@/aaSDK/mintingService";
 
-import LoadingScreen from "@/components/loadingScreen";
-import { AwardIcon } from "lucide-react";
-import {  providers } from "ethers";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
@@ -23,16 +20,24 @@ function Page() {
     const step = 2;
 
     useEffect(() => {
+        if (getPairingStatus() == "Unpaired") {
+            router.replace("/intro");
+            return;
+        }
+        
         setEoa(store.getEoa());
     }, []);
 
-    const handleMint = () => {
-        (async () => {
-            setLoading(true);
+    const handleMint = async () => {
+        setLoading(true);
+        try {
             await mintBiconomyWallet(eoa);
             setLoading(true);
             router.replace("/homescreen");
-        })();
+        } catch (error) {
+            console.log("Minting failed.", error);
+            setLoading(false);
+        }
     };
 
     return (

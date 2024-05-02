@@ -26,7 +26,7 @@ export async function sendTransaction(recipientAddress: string, amount: string){
         to: recipientAddress,
         value:convertEtherToWei(amount),
     };
-
+    
     try {
         const userOpResponse = await biconomySmartAccount.sendTransaction(requestData);
         const { transactionHash } = await userOpResponse.waitForTxHash();

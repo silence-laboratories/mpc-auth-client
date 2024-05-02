@@ -1,27 +1,6 @@
 ## AA Demo Frontend
 This is the frontend of the AA demo project. It is a next app that uses the ERC-4337 stackup sdk.Application allows users to pair with silentShard app and mint their smart contact account and create transactions on blockchain.
 
-### Project architecture
-AA-FRONTEND
-```
--README.md                 
--src/
-    -app/
-        -setup/
-            -introPage
-            -mint
-            -pair
-            -layout.tsx
-        - homescreen/
-        - layout.tsx
-        - page.tsx
-    - components/
-    - utils/
-- public/
-
-```   
-
-
 ## How to run
 1. `npm install`
 2. `npm run dev` to run dev version

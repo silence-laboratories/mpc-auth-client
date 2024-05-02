@@ -54,11 +54,12 @@ async function runStartPairingSession() {
 
 async function runEndPairingSession(
     pairingSessionData: PairingSessionData,
-    password?: string
+    password?: string,
+    currentAccountAddress?: string
 ) {
     const result = await PairingAction.endPairingSession(
         pairingSessionData,
-        undefined,
+        currentAccountAddress,
         password
     );
     saveSilentShareStorage({
@@ -72,53 +73,6 @@ async function runEndPairingSession(
         newAccountAddress: distributedKey
             ? getAddressFromDistributedKey(distributedKey)
             : null,
-        deviceName: result.deviceName,
-        elapsedTime: result.elapsedTime,
-    };
-}
-
-async function runRePairing() {
-    let silentShareStorage: StorageData = getSilentShareStorage();
-    // const wallets = Object.values(silentShareStorage.wallets);
-    // const currentAccount = wallets.length > 0 ? wallets[0] : null;
-    // if (!currentAccount) {
-    //     throw new SnapError("Not Paired", SnapErrorCode.NotPaired);
-    // }
-    // const currentAccountAddress = getAddressFromDistributedKey(
-    //     currentAccount?.distributedKey
-    // );
-
-    const currentAccountAddress = getEoa().address;
-
-    const pairingSessionData = await PairingAction.startPairingSession();
-    const result = await PairingAction.endPairingSession(
-        pairingSessionData,
-        currentAccountAddress
-    );
-
-    const distributedKey = result.newPairingState.distributedKey;
-    const newAccountAddress = distributedKey
-        ? getAddressFromDistributedKey(distributedKey)
-        : null;
-
-    if (newAccountAddress === currentAccountAddress) {
-        saveSilentShareStorage({
-            ...silentShareStorage,
-            pairingData: result.newPairingState.pairingData,
-        });
-    } else {
-        saveSilentShareStorage({
-            ...silentShareStorage,
-            newPairingState: result.newPairingState,
-        });
-    }
-
-    return {
-        pairingStatus: "paired",
-        currentAccountAddress: currentAccountAddress
-            ? [currentAccountAddress]
-            : [],
-        newAccountAddress,
         deviceName: result.deviceName,
         elapsedTime: result.elapsedTime,
     };
@@ -245,5 +199,4 @@ export {
     signOut,
     isPaired,
     refreshPairing,
-    runRePairing,
 };

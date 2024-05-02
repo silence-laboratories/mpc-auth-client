@@ -5,7 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/button";
 import { Avatar, AvatarFallback } from "@/components/avatar";
 import { Progress } from "@/components/progress";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
     initPairing,
@@ -17,48 +17,66 @@ import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 import { setPairingStatus } from "@/mpc/storage/wallet";
-import { accountType, setEoa } from "@/mpc/storage/account";
+import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
+import { AddressCopyPopover } from "@/components/addressCopyPopover";
 
 function Page() {
     const router = useRouter();
+    const query = useSearchParams();
+    const isRepairing = query.get("repair");
     const [loading, setLoading] = useState<boolean>(false);
     const [qr, setQr] = useState<string | null>("placeholderQR");
     const [seconds, setSeconds] = useState<number>(30);
-    const [showPasswordScreen, setShowPasswordScreen] = useState<boolean>(false);
+    const [enterPwSeconds, setEnterPwSeconds] = useState<number>(60);
+    const [showPasswordScreen, setShowPasswordScreen] =
+        useState<boolean>(false);
     const [pairingSessionDataState, setPairingSessionDataState] =
         useState<PairingSessionData | null>(null);
 
     const step = 1;
-
     const MAX_SECONDS = 30;
+    const MAX_ENTER_PW_SECONDS = 60; // According to pairing API timeout
+    const oldEoa = getOldEoa();
+
     const handleAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
         setPairingStatus("Paired");
-        setLoading(false);
+        if (eoa && oldEoa && eoa.address !== oldEoa.address && oldEoa.address !== "") {
+            console.log(eoa);
+            console.log(oldEoa);
+            router.replace("/mismatchAccounts");
+        } else {
+            router.replace("/mint");
+        }
     };
 
     const handlePairingWithBackup = async (
         pairingSessionData: PairingSessionData,
         password: string
     ) => {
-        try {            
+        try {
             const runPairingResp = await runEndPairingSession(
                 pairingSessionData,
-                password
+                password,
+                oldEoa?.address
             );
             handleAfterPairing({
                 address: runPairingResp.newAccountAddress ?? "",
             });
+            setLoading(false);
         } catch (error) {
             // TODO: handle error
-            console.error(error);
+            throw error;
         }
     };
+
     const generateWallet = async () => {
         (async () => {
             const qrCode = await initPairing("biconomy");
             setQr(qrCode);
             setSeconds(MAX_SECONDS);
+            setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
+
             const pairingSessionData = await runStartPairingSession();
             setLoading(true);
             if (pairingSessionData.backupData) {
@@ -95,8 +113,21 @@ function Page() {
         }
     }, [seconds]);
 
+    useEffect(() => {
+        if (enterPwSeconds > 0) {
+            const interval = setInterval(() => {
+                setEnterPwSeconds((prev) => prev - 1);
+            }, 1000);
+            return () => clearInterval(interval);
+        } else {
+            setShowPasswordScreen(false);
+            setLoading(false);
+        }
+    }, [enterPwSeconds]);
+
     const onTryAgainClick = () => {
         setSeconds(MAX_SECONDS);
+        setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
         generateWallet();
     };
 
@@ -106,7 +137,10 @@ function Page() {
         <PasswordEnterScreen
             onProceed={async (password) => {
                 if (pairingSessionDataState) {
-                    await handlePairingWithBackup(pairingSessionDataState, password);
+                    await handlePairingWithBackup(
+                        pairingSessionDataState,
+                        password
+                    );
                 }
             }}
         />
@@ -182,6 +216,17 @@ function Page() {
                             browser generates a distributed key.
                         </div>
                     </div>
+                    {isRepairing && (
+                        <div className="flex items-center justify-center">
+                            <div className="b2-regular">
+                                Currently active account:
+                            </div>
+                            <AddressCopyPopover
+                                address={oldEoa?.address ?? ""}
+                                className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
+                            />
+                        </div>
+                    )}
                     {qr && seconds !== null && seconds > 0 && (
                         <div className="flex flex-col items-center justify-center full-w mt-2">
                             <div
