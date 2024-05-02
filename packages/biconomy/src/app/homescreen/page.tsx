@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { Client, Presets } from "userop";
 import { Button } from "@/components/button";
 import {
     Popover,

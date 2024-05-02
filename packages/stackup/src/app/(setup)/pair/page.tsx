@@ -41,7 +41,7 @@ function Page() {
     const handleAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
         setPairingStatus("Paired");
-        if (eoa.address !== oldEoa.address && oldEoa.address !== "") {
+        if (eoa && oldEoa && eoa.address !== oldEoa.address && oldEoa.address !== "") {
             console.log(eoa);
             console.log(oldEoa);
             router.replace("/mismatchAccounts");
