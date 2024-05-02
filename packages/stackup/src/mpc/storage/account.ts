@@ -38,6 +38,7 @@ export function clearAccount() {
     localStorage.removeItem("eoa");
     localStorage.removeItem("oldEoa");
     localStorage.removeItem("walletAccount");
+    localStorage.removeItem("passwordReady");
 }
 
 export function clearOldAccount() {

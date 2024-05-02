@@ -42,7 +42,9 @@ function Page() {
         setEoa(eoa);
         setLoading(false);
         setPairingStatus("Paired");
-        if (eoa !== oldEoa) {
+        if (eoa.address !== oldEoa.address) {
+            console.log(eoa);
+            console.log(oldEoa);
             router.replace("/mismatchAccounts");
         } else {
             router.replace("/mint");
