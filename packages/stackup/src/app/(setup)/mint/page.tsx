@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
 import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
+import { mintWallet } from "@/aaSDK/mintingService";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
@@ -29,21 +30,8 @@ function Page() {
 
     const handleMint = async () => {
         setLoading(true);
-        const keyshards = getSilentShareStorage();
-        const distributedKey = keyshards.newPairingState?.distributedKey;
-        const keyShareData = distributedKey?.keyShareData ?? null; // Add null check here
         try {
-            const simpleAccount = await Presets.Builder.SimpleAccount.init(
-                new SilentWallet(
-                    store.getEoa().address,
-                    distributedKey?.publicKey ?? "",
-                    keyShareData,
-                    { distributedKey }
-                ),
-                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
-            );
-            const response = simpleAccount.getSender();
-            store.setWalletAccount({ address: response });
+            await mintWallet(eoa);
             setLoading(true);
             router.replace("/homescreen");
         } catch (error) {

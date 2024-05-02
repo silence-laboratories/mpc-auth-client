@@ -15,12 +15,12 @@ import { SilentWallet } from "@/silentWallet";
 import { formatEther } from "ethers/lib/utils";
 import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Receipt } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
-
+import { sendTransaction } from "@/aaSDK/transactionService";
 interface HomescreenProps {}
 
 const Homescreen: React.FC<HomescreenProps> = ({}) => {
@@ -208,44 +208,11 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             // clear banners
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
-
-            const requestData = {
-                to: recipientAddress,
-                amount: amount,
-            };
-            // TODO: Move this to `mpc`
-            const keyshards = getSilentShareStorage();
-            const distributedKey = keyshards.newPairingState?.distributedKey;
-            const simpleAccount = await Presets.Builder.SimpleAccount.init(
-                new SilentWallet(
-                    store.getEoa().address,
-                    distributedKey?.publicKey as string,
-                    distributedKey?.keyShareData,
-                    { distributedKey }
-                ),
-                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
-            );
-            const client = await Client.init(
-                "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
-            );
-
-            const target = ethers.utils.getAddress(requestData.to);
-            const value = ethers.utils.parseEther(requestData.amount);
-            const res = await client.sendUserOperation(
-                simpleAccount.execute(target, value, "0x"),
-                {
-                    // Add necessary options as needed
-                    onBuild: (op) => console.log("Signed UserOperation:", op),
-                }
-            );
-            console.log("userOp Hash", res.userOpHash);
-
-            const ev = await res.wait();
-            console.log("transactionHash", ev?.transactionHash ?? null);
-
-            setShowTransactionInitiatedBanner(false);
-
-            setShowTransactionSignedBanner(true);
+            
+            const result = await sendTransaction(recipientAddress, amount);
+            result.success ? setShowSuccessBanner(true) : setShowSuccessBanner(false);
+            store.setTxHash(result?.transactionHash ?? '');
+            await updateBalance();
 
             // send sign request to server
         })();
@@ -623,10 +590,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     <span className="font-bold">
                                         <a
                                             href={
-                                                "https://mumbai.polygonscan.com/tx/" +
-                                                `${localStorage.getItem(
-                                                    "txHash"
-                                                )}`
+                                                "https://sepolia.etherscan.io/tx/" +
+                                                `${store.getTxHash()}`
                                             }
                                         >
                                             {" "}
