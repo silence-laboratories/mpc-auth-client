@@ -40,6 +40,11 @@ export function clearAccount() {
     localStorage.removeItem("walletAccount");
 }
 
+export function clearOldAccount() {
+    localStorage.removeItem("oldEoa");
+    localStorage.removeItem("walletAccount");
+}
+
 export function isPasswordReady() {
     return JSON.parse(localStorage.getItem("passwordReady") || "false");
 }

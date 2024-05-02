@@ -47,7 +47,6 @@ export const PasswordEnterScreen: React.FunctionComponent<{
         setIsLoading(true);
         try {
             await onProceed(currentPassword);
-            router.replace("/mint");
             setIsLoading(false);
         } catch (error) {
             setIsLoading(false);
