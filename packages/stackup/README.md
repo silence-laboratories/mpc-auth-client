@@ -20,23 +20,18 @@ AA-FRONTEND
 - public/
 
 ```   
-## Requirements
-> ERC-4337 sdk server should be running on `http://localhost:3001`
 
-> [Gitlab link](https://gitlab.com/com.silencelaboratories/experiments/erc-4337-examples/-/tree/server)
 
-### make sure to run the server first
-
-### Installation guide to run server
-``` bash
-git clone https://gitlab.com/com.silencelaboratories/experiments/erc-4337-examples/-/tree/server
-npm install
-ts-node server.ts
-```
-
-## Installation
+## How to run
 1. `npm install`
 2. `npm run dev` to run dev version
+
+or if you're using `Yarn`
+
+1. `yarn`
+2. `yarn dev` to run dev version
+
+Once started, the app is running on http://localhost:3000/
 
 ## Screenshots
 Intro 

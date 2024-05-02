@@ -7,7 +7,15 @@ export function setEoa(eoa: accountType) {
 }
 
 export function getEoa(): accountType {
-    return JSON.parse(localStorage.getItem("eoa") || "{}");
+    return JSON.parse(localStorage.getItem("eoa") || "null");
+}
+
+export function setOldEoa(eoa: accountType) {
+    localStorage.setItem("oldEoa", JSON.stringify(eoa));
+}
+
+export function getOldEoa(): accountType {
+    return JSON.parse(localStorage.getItem("oldEoa") || "null");
 }
 
 export function setWalletAccount(walletAccount: accountType) {
@@ -15,7 +23,7 @@ export function setWalletAccount(walletAccount: accountType) {
 }
 
 export function getWalletAccount(): accountType {
-    return JSON.parse(localStorage.getItem("walletAccount") || "{}");
+    return JSON.parse(localStorage.getItem("walletAccount") || "null");
 }
 
 export function setTxHash(txHash: string) {
@@ -28,6 +36,13 @@ export function getTxHash() {
 
 export function clearAccount() {
     localStorage.removeItem("eoa");
+    localStorage.removeItem("oldEoa");
+    localStorage.removeItem("walletAccount");
+    localStorage.removeItem("passwordReady");
+}
+
+export function clearOldAccount() {
+    localStorage.removeItem("oldEoa");
     localStorage.removeItem("walletAccount");
 }
 

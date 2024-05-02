@@ -84,7 +84,7 @@ function setPairingStatus(status: pairingStatusType) {
 }
 
 function getPairingStatus(): pairingStatusType {
-    return localStorage.getItem("pairingStatus") as pairingStatusType;
+    return (localStorage.getItem("pairingStatus") ?? "Unpaired") as pairingStatusType;
 }
 
 export {

@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { Client, Presets } from "userop";
 import { Button } from "@/components/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import { TextInput } from "@/components/textInput";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
@@ -15,16 +19,16 @@ import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import { signOut } from "@/mpc";
+import { AddressCopyPopover } from "@/components/addressCopyPopover";
 
 interface HomescreenProps {}
 
 const Homescreen: React.FC<HomescreenProps> = ({}) => {
+    const oldEoa = store.getOldEoa();
     const router = useRouter();
-    const placeholderAccount = { address: "...", balance: 0 };
-    const [walletAccount, setWalletAccount] =
-        useState<store.accountType>(placeholderAccount);
+    const [walletAccount, setWalletAccount] = useState<store.accountType>();
     const [walletBalance, setWalletBalance] = useState<string>("0");
-    const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
+    const [eoa, setEoa] = useState<store.accountType>();
     const [network, setNetwork] = useState("...");
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
         "none"
@@ -39,9 +43,20 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             router.replace("/intro");
             return;
         }
+
+        const account = store.getWalletAccount();
+        if (!account) {
+            router.replace("/intro");
+        }
+
+        const eoa = store.getEoa();
+        if (!eoa) {
+            router.replace("/intro");
+        }
+
         // get wallet account and eoa
-        setWalletAccount(store.getWalletAccount());
-        setEoa(store.getEoa());
+        setWalletAccount(account);
+        setEoa(eoa);
     }, []);
 
     const SEPOLIA = {
@@ -56,8 +71,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         blockExplorerUrls: ["https://sepolia.etherscan.io/"],
     };
     useEffect(() => {
-        if (walletAccount.address == "...") return;
-        if (eoa.address == "...") return;
+        if (!walletAccount) return;
+        if (!eoa) return;
         (async () => {
             if (!(await isChainSepolia())) {
                 setSwitchChain("popup");
@@ -70,7 +85,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             }
 
             setNetwork("Sepolia Test Network");
-            let { balance_wallet, balance_eoa } = await updateBalance();
+            await updateBalance();
             setWalletAccount({
                 ...walletAccount,
             });
@@ -78,7 +93,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 ...eoa,
             });
         })();
-    }, [walletAccount.address, eoa.address]);
+    }, [walletAccount, eoa]);
 
     async function onSwitchChainClick() {
         if (switchChain === "popup") return;
@@ -109,8 +124,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             if (true) {
                 setNetwork("Sepolia Test Network");
                 return true;
-            } else {
-                return false;
             }
         } catch (e: unknown) {
             console.log("error", e);
@@ -119,6 +132,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     }
 
     async function updateBalance() {
+        if (!walletAccount) return;
+        if (!eoa) return;
         // @ts-ignore
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const balance_wallet = await provider.getBalance(walletAccount.address);
@@ -142,7 +157,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
     useEffect(() => {
         setIsPasswordReady(store.isPasswordReady());
-    }, []);
+    }, [openPasswordBackupDialog]);
 
     useEffect(() => {
         setIsSendValid(
@@ -152,7 +167,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         );
     }, [recipientAddress, amount, switchChain]);
 
-    function handleRecipientAddressChange(address_: string) {
+    const handleRecipientAddressChange = (address_: string) => {
         setRecipientAddress(address_);
 
         function isValidAddress(address: string): boolean {
@@ -164,9 +179,9 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         isValidAddress(address_)
             ? setRecipientAddressError("")
             : setRecipientAddressError("Invalid Address");
-    }
+    };
 
-    function handleAmountChange(amount_: string) {
+    const handleAmountChange = (amount_: string) => {
         setAmount(amount_);
 
         function isValidAmount(amount: string): boolean {
@@ -184,9 +199,9 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         isValidAmount(amount_)
             ? setAmountError("")
             : setAmountError("Invalid Amount");
-    }
+    };
 
-    function handleSend(event: React.MouseEvent): void {
+    const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
 
         (async () => {
@@ -234,19 +249,24 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
             // send sign request to server
         })();
-    }
+    };
 
     const handleBackupProceed = () => {
         setOpenPasswordBackupDialog(false);
-    }
+    };
 
-    function logout(event: React.MouseEvent): void {
+    const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
         signOut();
         router.push("/intro");
-    }
+    };
 
-    const onRePairing = () => {};
+    const handleRecover = () => {
+        if (eoa) {
+            store.setOldEoa(eoa);
+            router.push("/pair?repair=true");
+        } // TODO: handle undefined eoa case
+    };
 
     return (
         <div className="">
@@ -285,9 +305,11 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     />
                                 </svg>
                                 <div className="text-center">
-                                    Your Distributed AA wallet is ready! Add
-                                    funds to your wallet from a faucet to get
-                                    started!
+                                    {`${
+                                        eoa === oldEoa
+                                            ? "Your Silent Account is operational again!"
+                                            : "Your Distributed AA wallet is ready! Add funds to your wallet from a faucet to get started!"
+                                    }`}
                                 </div>
                             </div>
                         </div>
@@ -332,53 +354,14 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     <div className="text-black-200 text-sm">
                                         My Wallet
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
-                                            <div
-                                                className="flex items-center"
-                                                onClick={async () => {
-                                                    navigator.clipboard.writeText(
-                                                        walletAccount.address
-                                                    );
-                                                }}
-                                            >
-                                                <span className="mr-1 text-[black] b1-bold ">
-                                                    {walletAccount.address.slice(
-                                                        0,
-                                                        5
-                                                    )}
-                                                    {"..."}
-                                                    {walletAccount.address.slice(
-                                                        walletAccount.address
-                                                            .length - 5,
-                                                        walletAccount.address
-                                                            .length
-                                                    )}
-                                                </span>
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="20"
-                                                    height="21"
-                                                    viewBox="0 0 20 21"
-                                                    fill="none"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        clipRule="evenodd"
-                                                        d="M4.37315 1.75L4.375 1.75H12.8125L12.8143 1.75C13.5591 1.75212 14.2728 2.04893 14.7994 2.57558C15.3261 3.10224 15.6229 3.81592 15.625 4.56072C15.625 4.56565 15.625 4.57059 15.6249 4.57552L15.6186 4.875H15.8984C17.4733 4.875 18.75 6.15169 18.75 7.72656V16.3984C18.75 17.9733 17.4733 19.25 15.8984 19.25H7.22656C5.65169 19.25 4.375 17.9733 4.375 16.3984V16.125H4.0625L4.06072 16.125C3.31592 16.1229 2.60224 15.8261 2.07558 15.2994C1.54893 14.7728 1.25212 14.0591 1.25 13.3143L1.25 13.3125V4.875L1.25 4.87315C1.25245 4.04559 1.58228 3.25263 2.16745 2.66745C2.75263 2.08228 3.54559 1.75245 4.37315 1.75ZM5.625 16.3984C5.625 17.283 6.34204 18 7.22656 18H15.8984C16.783 18 17.5 17.283 17.5 16.3984V7.72656C17.5 6.84204 16.783 6.125 15.8984 6.125H14.9826C14.9813 6.125 14.9801 6.125 14.9789 6.125H7.22656C6.34204 6.125 5.625 6.84204 5.625 7.72656V16.3984ZM14.3684 4.875H7.22656C5.65169 4.875 4.375 6.15169 4.375 7.72656V14.875H4.06351C3.64928 14.8736 3.25239 14.7085 2.95947 14.4155C2.66656 14.1226 2.50139 13.7258 2.5 13.3115V4.87599C2.50169 4.37898 2.69988 3.9028 3.05134 3.55134C3.4028 3.19988 3.87898 3.00169 4.37599 3H12.8115C13.2258 3.00139 13.6226 3.16656 13.9155 3.45947C14.207 3.75098 14.372 4.14545 14.375 4.55751L14.3684 4.875Z"
-                                                        fill="black"
-                                                    />
-                                                </svg>
-                                            </div>
-                                        </PopoverTrigger>
-                                        <PopoverContent
-                                            align="start"
-                                            side="right"
-                                            className="flex justify-center w-18 p-1 b2-md"
-                                        >
-                                            Copied!
-                                        </PopoverContent>
-                                    </Popover>
+                                    <AddressCopyPopover
+                                        className="text-[black] b1-bold"
+                                        address={
+                                            walletAccount?.address ||
+                                            "Address not found"
+                                        }
+                                    />
+
                                     {
                                         <div className="text-sm text-black-300 mt-2 font-bold">
                                             Balance: {walletBalance} ETH
@@ -392,48 +375,13 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     <div className="text-sm text-black-200">
                                         EOA
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
-                                            <div
-                                                className="flex items-center"
-                                                onClick={async () => {
-                                                    navigator.clipboard.writeText(
-                                                        eoa.address
-                                                    );
-                                                }}
-                                            >
-                                                <span className="mr-1 text-[black] b1-bold">
-                                                    {eoa.address.slice(0, 5)}
-                                                    {"..."}
-                                                    {eoa.address.slice(
-                                                        eoa.address.length - 5,
-                                                        eoa.address.length
-                                                    )}
-                                                </span>
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="20"
-                                                    height="21"
-                                                    viewBox="0 0 20 21"
-                                                    fill="none"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        clipRule="evenodd"
-                                                        d="M4.37315 1.75L4.375 1.75H12.8125L12.8143 1.75C13.5591 1.75212 14.2728 2.04893 14.7994 2.57558C15.3261 3.10224 15.6229 3.81592 15.625 4.56072C15.625 4.56565 15.625 4.57059 15.6249 4.57552L15.6186 4.875H15.8984C17.4733 4.875 18.75 6.15169 18.75 7.72656V16.3984C18.75 17.9733 17.4733 19.25 15.8984 19.25H7.22656C5.65169 19.25 4.375 17.9733 4.375 16.3984V16.125H4.0625L4.06072 16.125C3.31592 16.1229 2.60224 15.8261 2.07558 15.2994C1.54893 14.7728 1.25212 14.0591 1.25 13.3143L1.25 13.3125V4.875L1.25 4.87315C1.25245 4.04559 1.58228 3.25263 2.16745 2.66745C2.75263 2.08228 3.54559 1.75245 4.37315 1.75ZM5.625 16.3984C5.625 17.283 6.34204 18 7.22656 18H15.8984C16.783 18 17.5 17.283 17.5 16.3984V7.72656C17.5 6.84204 16.783 6.125 15.8984 6.125H14.9826C14.9813 6.125 14.9801 6.125 14.9789 6.125H7.22656C6.34204 6.125 5.625 6.84204 5.625 7.72656V16.3984ZM14.3684 4.875H7.22656C5.65169 4.875 4.375 6.15169 4.375 7.72656V14.875H4.06351C3.64928 14.8736 3.25239 14.7085 2.95947 14.4155C2.66656 14.1226 2.50139 13.7258 2.5 13.3115V4.87599C2.50169 4.37898 2.69988 3.9028 3.05134 3.55134C3.4028 3.19988 3.87898 3.00169 4.37599 3H12.8115C13.2258 3.00139 13.6226 3.16656 13.9155 3.45947C14.207 3.75098 14.372 4.14545 14.375 4.55751L14.3684 4.875Z"
-                                                        fill="#ECEEF2"
-                                                    />
-                                                </svg>
-                                            </div>
-                                        </PopoverTrigger>
-                                        <PopoverContent
-                                            align="start"
-                                            side="right"
-                                            className="flex justify-center w-18 p-1 b2-md"
-                                        >
-                                            Copied!
-                                        </PopoverContent>
-                                    </Popover>
+                                    <AddressCopyPopover
+                                        className="text-[black] b1-bold"
+                                        address={
+                                            eoa?.address || "Address not found"
+                                        }
+                                    />
+
                                     <div className="mt-4 rounded-full bg-[#E8EDF3] text-sm py-2 px-3 flex flex-row">
                                         {network === "Sepolia Test Network" && (
                                             <img
@@ -464,7 +412,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                     onClick={
                                                         !isPasswordReady
                                                             ? undefined
-                                                            : onRePairing
+                                                            : handleRecover
                                                     }
                                                 >
                                                     <div
@@ -482,8 +430,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                             fill="none"
                                                         >
                                                             <path
-                                                                fill-rule="evenodd"
-                                                                clip-rule="evenodd"
+                                                                fillRule="evenodd"
+                                                                clipRule="evenodd"
                                                                 d="M17.4716 7.42794C17.904 8.43841 18.1263 9.52629 18.125 10.6254C18.1248 15.111 14.4857 18.75 9.99999 18.75C5.51419 18.75 1.87499 15.1108 1.87499 10.625V10.625C1.87511 8.94458 2.396 7.30553 3.36599 5.93338C4.33597 4.56123 5.70737 3.52342 7.29147 2.96276C7.61686 2.8476 7.97401 3.01802 8.08918 3.34342C8.20435 3.66882 8.03392 4.02597 7.70852 4.14114C6.36803 4.61557 5.20752 5.49379 4.3867 6.65493C3.56589 7.81606 3.1251 9.20304 3.12499 10.625L16.875 10.6254C16.875 10.6252 16.875 10.6251 16.875 10.625V10.6246L16.875 10.6242C16.8762 9.69457 16.6881 8.7744 16.3224 7.91971C15.9587 7.06979 15.4268 6.30229 14.7588 5.66338L14.3051 5.27342L12.3168 7.26175C11.923 7.6555 11.25 7.3766 11.25 6.81957V2.50003C11.25 2.33427 11.3158 2.1753 11.4331 2.05809C11.5503 1.94088 11.7092 1.87503 11.875 1.87503H16.1945C16.7516 1.87503 17.0312 2.54808 16.6367 2.94183L15.1915 4.38702L15.598 4.73639L15.6095 4.74735C16.4056 5.50532 17.0391 6.41735 17.4716 7.42794ZM16.875 10.6254L3.12499 10.625C3.12502 14.4205 6.20456 17.5 9.99999 17.5C13.7953 17.5 16.8748 14.4206 16.875 10.6254Z"
                                                                 fill="#23272E"
                                                             />
@@ -531,29 +479,29 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                                 d="M20 6H4C2.89543 6 2 6.89543 2 8V16C2 17.1046 2.89543 18 4 18H20C21.1046 18 22 17.1046 22 16V8C22 6.89543 21.1046 6 20 6Z"
                                                                 stroke="#23272E"
                                                                 stroke-width="2"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
                                                             />
                                                             <path
                                                                 d="M12 12H12.01"
                                                                 stroke="#23272E"
                                                                 stroke-width="2"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
                                                             />
                                                             <path
                                                                 d="M17 12H17.01"
                                                                 stroke="#23272E"
                                                                 stroke-width="2"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
                                                             />
                                                             <path
                                                                 d="M7 12H7.01"
                                                                 stroke="#23272E"
                                                                 stroke-width="2"
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
                                                             />
                                                         </svg>
                                                     </div>
@@ -720,8 +668,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 fill="none"
                             >
                                 <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
                                     d="M7.84467 3.46967C8.13756 3.17678 8.61244 3.17678 8.90533 3.46967L13.4053 7.96967C13.6982 8.26256 13.6982 8.73744 13.4053 9.03033L8.90533 13.5303C8.61244 13.8232 8.13756 13.8232 7.84467 13.5303C7.55178 13.2374 7.55178 12.7626 7.84467 12.4697L11.0643 9.25H3.125C2.71079 9.25 2.375 8.91421 2.375 8.5C2.375 8.08579 2.71079 7.75 3.125 7.75H11.0643L7.84467 4.53033C7.55178 4.23744 7.55178 3.76256 7.84467 3.46967Z"
                                     fill="#EAB308"
                                 />
@@ -778,7 +726,10 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 e.preventDefault();
                             }}
                         >
-                            <PasswordBackupScreen showSkipButton={false} onProceed={handleBackupProceed}/>
+                            <PasswordBackupScreen
+                                showSkipButton={false}
+                                onProceed={handleBackupProceed}
+                            />
                         </DialogContent>
                     </Dialog>
                 </div>

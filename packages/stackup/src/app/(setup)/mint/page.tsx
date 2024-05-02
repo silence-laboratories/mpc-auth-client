@@ -3,12 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/popover";
-import { Client, Presets } from "userop";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Presets } from "userop";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@/mpc/storage/wallet";
+import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
@@ -19,15 +19,20 @@ function Page() {
     const step = 2;
 
     useEffect(() => {
+        if (getPairingStatus() == "Unpaired") {
+            router.replace("/intro");
+            return;
+        }
+        
         setEoa(store.getEoa());
     }, []);
 
-    const handleMint = () => {
-        (async () => {
-            setLoading(true);
-            const keyshards = getSilentShareStorage();
-            const distributedKey = keyshards.newPairingState?.distributedKey;
-            const keyShareData = distributedKey?.keyShareData ?? null; // Add null check here
+    const handleMint = async () => {
+        setLoading(true);
+        const keyshards = getSilentShareStorage();
+        const distributedKey = keyshards.newPairingState?.distributedKey;
+        const keyShareData = distributedKey?.keyShareData ?? null; // Add null check here
+        try {
             const simpleAccount = await Presets.Builder.SimpleAccount.init(
                 new SilentWallet(
                     store.getEoa().address,
@@ -41,7 +46,10 @@ function Page() {
             store.setWalletAccount({ address: response });
             setLoading(true);
             router.replace("/homescreen");
-        })();
+        } catch (error) {
+            console.log("Minting failed.", error);
+            setLoading(false);
+        }
     };
 
     return (
