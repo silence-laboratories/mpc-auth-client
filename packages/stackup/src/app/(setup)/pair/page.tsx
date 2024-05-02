@@ -40,7 +40,6 @@ function Page() {
 
     const handleAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
-        setLoading(false);
         setPairingStatus("Paired");
         if (eoa.address !== oldEoa.address) {
             console.log(eoa);
@@ -64,6 +63,7 @@ function Page() {
             handleAfterPairing({
                 address: runPairingResp.newAccountAddress ?? "",
             });
+            setLoading(false);
         } catch (error) {
             // TODO: handle error
             throw error;
