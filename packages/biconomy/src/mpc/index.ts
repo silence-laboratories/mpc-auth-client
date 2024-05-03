@@ -16,7 +16,6 @@ import {
 import { PairingSessionData, SignMetadata, StorageData } from "./types";
 import { SnapError, SnapErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-import { getEoa } from "@/mpc/storage/account";
 
 const TOKEN_LIFE_TIME = 60000;
 
@@ -54,6 +53,7 @@ async function runStartPairingSession() {
 
 async function runEndPairingSession(
     pairingSessionData: PairingSessionData,
+    isBackedUp: boolean,
     password?: string,
     currentAccountAddress?: string
 ) {
@@ -67,7 +67,7 @@ async function runEndPairingSession(
         pairingData: result.newPairingState.pairingData,
     });
     const distributedKey = result.newPairingState.distributedKey;
-
+    runBackup(password ?? "", isBackedUp);
     return {
         pairingStatus: "paired",
         newAccountAddress: distributedKey
@@ -124,10 +124,14 @@ async function runKeygen() {
     };
 }
 
-async function runBackup(password: string, isSkip: boolean) {
+async function runBackup(password: string, isBackedUp: boolean) {
     let { pairingData, silentShareStorage } = await getPairingDataAndStorage();
-    if (isSkip) {
-        await Backup.backup(pairingData, "");
+    if (password.length === 0 && !isBackedUp) {
+        await Backup.backup(pairingData, "", isBackedUp);
+        return;
+    }
+    if(password && password.length === 0 && isBackedUp) {
+        await Backup.backup(pairingData, "", isBackedUp);
         return;
     }
     if (password && password.length >= 8) {
@@ -138,7 +142,7 @@ async function runBackup(password: string, isSkip: boolean) {
                 ),
                 password
             );
-            await Backup.backup(pairingData, encryptedMessage);
+            await Backup.backup(pairingData, encryptedMessage, isBackedUp);
         } catch (error) {
             if (error instanceof Error) {
                 throw error;

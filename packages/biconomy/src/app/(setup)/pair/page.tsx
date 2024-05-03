@@ -17,7 +17,7 @@ import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 import { setPairingStatus } from "@/mpc/storage/wallet";
-import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
+import { accountType, getOldEoa,isPasswordReady, setEoa } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 
 function Page() {
@@ -42,8 +42,6 @@ function Page() {
         setEoa(eoa);
         setPairingStatus("Paired");
         if (eoa && oldEoa && eoa.address !== oldEoa.address && oldEoa.address !== "") {
-            console.log(eoa);
-            console.log(oldEoa);
             router.replace("/mismatchAccounts");
         } else {
             router.replace("/mint");
@@ -57,6 +55,7 @@ function Page() {
         try {
             const runPairingResp = await runEndPairingSession(
                 pairingSessionData,
+                isPasswordReady(),
                 password,
                 oldEoa?.address
             );
@@ -83,7 +82,7 @@ function Page() {
                 setPairingSessionDataState(pairingSessionData);
                 setShowPasswordScreen(true);
             } else {
-                await runEndPairingSession(pairingSessionData);
+                await runEndPairingSession(pairingSessionData, isPasswordReady());
                 const keygenRes = await runKeygen();
                 handleAfterPairing({
                     address:

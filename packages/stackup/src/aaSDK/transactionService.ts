@@ -11,7 +11,6 @@ export async function sendTransaction(recipientAddress: string, amount: string) 
         amount: convertEtherToWei(amount),
     };
 
-    console.log("requestData",requestData)
     // TODO: Move this to `mpc`
     const keyshards = getSilentShareStorage();
     const distributedKey = keyshards.newPairingState?.distributedKey;
@@ -31,7 +30,6 @@ export async function sendTransaction(recipientAddress: string, amount: string) 
     const target = ethers.utils.getAddress(requestData.to);
     const value = requestData.amount;
 
-    console.log("requestData",requestData)
     const res = await client.sendUserOperation(
         simpleAccount.execute(target, value, "0x"),
         {

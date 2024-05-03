@@ -8,6 +8,7 @@ import { sendMessage } from '../transport/firebaseApi';
 export const backup = async (
 	pairingData: PairingData,
 	encryptedMessage: string,
+	isBackedUp: boolean,
 ) => {
 	try {
 		const response = await sendMessage(
@@ -18,6 +19,7 @@ export const backup = async (
 				pairingId: pairingData.pairingId,
 				createdAt: Date.now(),
 				expiry: 30000,
+				isBackedUp
 			} as BackupConversation,
 			false,
 		);
