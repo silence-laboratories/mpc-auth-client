@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Presets } from "userop";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { SilentWallet } from "@/silentWallet";
 import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
-import { mintWallet } from "@/aaSDK/mintingService";
+import { mintBiconomyWallet } from "@/aaSDK/mintingService";
+
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
@@ -31,7 +31,7 @@ function Page() {
     const handleMint = async () => {
         setLoading(true);
         try {
-            await mintWallet(eoa);
+            await mintBiconomyWallet(eoa);
             setLoading(true);
             router.replace("/homescreen");
         } catch (error) {

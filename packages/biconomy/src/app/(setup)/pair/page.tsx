@@ -41,9 +41,7 @@ function Page() {
     const handleAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
         setPairingStatus("Paired");
-
-        if (isRepairing && oldEoa !== null && eoa.address !== oldEoa.address) {
-
+        if (eoa && oldEoa && eoa.address !== oldEoa.address && oldEoa.address !== "") {
             console.log(eoa);
             console.log(oldEoa);
             router.replace("/mismatchAccounts");
@@ -74,7 +72,7 @@ function Page() {
 
     const generateWallet = async () => {
         (async () => {
-            const qrCode = await initPairing("stackup");
+            const qrCode = await initPairing("biconomy");
             setQr(qrCode);
             setSeconds(MAX_SECONDS);
             setEnterPwSeconds(MAX_ENTER_PW_SECONDS);

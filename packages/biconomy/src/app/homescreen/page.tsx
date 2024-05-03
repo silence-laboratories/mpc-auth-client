@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { Client, Presets } from "userop";
 import { Button } from "@/components/button";
 import {
     Popover,
@@ -21,6 +20,8 @@ import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen
 import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
+import { Result } from "postcss";
+
 interface HomescreenProps {}
 
 const Homescreen: React.FC<HomescreenProps> = ({}) => {
@@ -145,6 +146,9 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [showSuccessBanner, setShowSuccessBanner] = useState(true);
     const [showTransactionInitiatedBanner, setShowTransactionInitiatedBanner] =
         useState(false);
+    const [showTransactionfailBanner, setShowTransactionfailBanner] = useState(
+        false
+    );
     const [showTransactionSignedBanner, setShowTransactionSignedBanner] =
         useState(false);
 
@@ -208,9 +212,17 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             // clear banners
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
-            
+          
             const result = await sendTransaction(recipientAddress, amount);
-            result.success ? setShowSuccessBanner(true) : setShowSuccessBanner(false);
+            if (!result.transactionHash) {
+                console.log("error", result);
+                setShowTransactionInitiatedBanner(false);
+                setShowTransactionfailBanner(true);
+                return;
+            }
+            console.log("result", result.transactionHash);
+            setShowTransactionSignedBanner(true);
+            setShowTransactionInitiatedBanner(false);
             store.setTxHash(result?.transactionHash ?? '');
             await updateBalance();
 
@@ -240,7 +252,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none  w-[92vw] lg:w-[52.75vw] m-auto bg-white-primary">
                 <div className="border-none bg-transparent h-max py-0">
                     {showSuccessBanner && (
-                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#08170E] border-[#166533] w-full text-[#BBF7D1]">
+                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[#071C0F]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
                                 onClick={() => {
@@ -268,7 +280,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 >
                                     <path
                                         d="M32 6C17.6637 6 6 17.6637 6 32C6 46.3363 17.6637 58 32 58C46.3363 58 58 46.3363 58 32C58 17.6637 46.3363 6 32 6ZM45.5312 23.2862L28.7313 43.2863C28.547 43.5058 28.3177 43.6831 28.0589 43.8062C27.8001 43.9294 27.5178 43.9955 27.2313 44H27.1975C26.9172 43.9999 26.64 43.9409 26.384 43.8267C26.1279 43.7126 25.8987 43.5459 25.7113 43.3375L18.5112 35.3375C18.3284 35.1436 18.1862 34.915 18.0929 34.6653C17.9996 34.4156 17.9572 34.1498 17.9681 33.8835C17.9791 33.6171 18.0431 33.3557 18.1565 33.1145C18.27 32.8733 18.4305 32.6571 18.6286 32.4788C18.8267 32.3005 19.0585 32.1636 19.3103 32.0762C19.5621 31.9887 19.8288 31.9525 20.0948 31.9696C20.3608 31.9867 20.6207 32.0568 20.8592 32.1758C21.0978 32.2948 21.3101 32.4603 21.4837 32.6625L27.145 38.9525L42.4688 20.7138C42.8125 20.3163 43.2988 20.0702 43.8226 20.0284C44.3463 19.9867 44.8655 20.1528 45.2678 20.4907C45.6701 20.8287 45.9233 21.3114 45.9726 21.8345C46.0219 22.3576 45.8634 22.8791 45.5312 23.2862Z"
-                                        fill="#4ADE80"
+                                        fill="#1F9D41"
                                     />
                                 </svg>
                                 <div className="text-center">
@@ -318,7 +330,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                     </svg>
                                 </div>
                                 <div className="flex flex-col">
-                                    <div className="text-black-200 text-sm">
+                                    <div className="text-black-200 text-sm font-bold">
                                         My Wallet
                                     </div>
                                     <AddressCopyPopover
@@ -526,7 +538,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                     </div>
 
                     {showTransactionInitiatedBanner && (
-                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#08170E] border-[#166533] w-full text-[#BBF7D1]">
+                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[black]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
                                 onClick={() => {
@@ -540,13 +552,39 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                             >
                                 <path
                                     d="M9.06193 7.99935L12.0307 5.0306C12.1716 4.88995 12.2508 4.69909 12.251 4.50001C12.2512 4.30093 12.1723 4.10993 12.0316 3.96904C11.891 3.82814 11.7001 3.74889 11.501 3.74871C11.3019 3.74853 11.1109 3.82745 10.9701 3.9681L8.0013 6.93685L5.03255 3.9681C4.89165 3.8272 4.70056 3.74805 4.5013 3.74805C4.30204 3.74805 4.11095 3.8272 3.97005 3.9681C3.82915 4.10899 3.75 4.30009 3.75 4.49935C3.75 4.69861 3.82915 4.8897 3.97005 5.0306L6.9388 7.99935L3.97005 10.9681C3.82915 11.109 3.75 11.3001 3.75 11.4993C3.75 11.6986 3.82915 11.8897 3.97005 12.0306C4.11095 12.1715 4.30204 12.2506 4.5013 12.2506C4.70056 12.2506 4.89165 12.1715 5.03255 12.0306L8.0013 9.06185L10.9701 12.0306C11.1109 12.1715 11.302 12.2506 11.5013 12.2506C11.7006 12.2506 11.8917 12.1715 12.0326 12.0306C12.1734 11.8897 12.2526 11.6986 12.2526 11.4993C12.2526 11.3001 12.1734 11.109 12.0326 10.9681L9.06193 7.99935Z"
-                                    fill="#4ADE80"
+                                    fill="#B1F1C9"
                                 />
                             </svg>
                             <div className="full-w full-h flex flex-col justify-center items-center">
                                 <div className="text-center">
                                     Transaction initiated. Approve the signature
                                     on your phone{" "}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                {showTransactionfailBanner && (
+                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[white] border-[#166533] w-full text-[red]">
+                            <svg
+                                className="absolute top-4 right-4 cursor-pointer"
+                                onClick={() => {
+                                    setShowTransactionfailBanner(false);
+                                }}
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                            >
+                                <path
+                                    d="M9.06193 7.99935L12.0307 5.0306C12.1716 4.88995 12.2508 4.69909 12.251 4.50001C12.2512 4.30093 12.1723 4.10993 12.0316 3.96904C11.891 3.82814 11.7001 3.74889 11.501 3.74871C11.3019 3.74853 11.1109 3.82745 10.9701 3.9681L8.0013 6.93685L5.03255 3.9681C4.89165 3.8272 4.70056 3.74805 4.5013 3.74805C4.30204 3.74805 4.11095 3.8272 3.97005 3.9681C3.82915 4.10899 3.75 4.30009 3.75 4.49935C3.75 4.69861 3.82915 4.8897 3.97005 5.0306L6.9388 7.99935L3.97005 10.9681C3.82915 11.109 3.75 11.3001 3.75 11.4993C3.75 11.6986 3.82915 11.8897 3.97005 12.0306C4.11095 12.1715 4.30204 12.2506 4.5013 12.2506C4.70056 12.2506 4.89165 12.1715 5.03255 12.0306L8.0013 9.06185L10.9701 12.0306C11.1109 12.1715 11.302 12.2506 11.5013 12.2506C11.7006 12.2506 11.8917 12.1715 12.0326 12.0306C12.1734 11.8897 12.2526 11.6986 12.2526 11.4993C12.2526 11.3001 12.1734 11.109 12.0326 10.9681L9.06193 7.99935Z"
+                                    fill="red"
+                                />
+                            </svg>
+                            <div className="full-w full-h flex flex-col justify-center items-center">
+                                <div className="text-center">
+                                    Transaction failed!!
                                 </div>
                             </div>
                         </div>
@@ -567,7 +605,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                             >
                                 <path
                                     d="M9.06193 7.99935L12.0307 5.0306C12.1716 4.88995 12.2508 4.69909 12.251 4.50001C12.2512 4.30093 12.1723 4.10993 12.0316 3.96904C11.891 3.82814 11.7001 3.74889 11.501 3.74871C11.3019 3.74853 11.1109 3.82745 10.9701 3.9681L8.0013 6.93685L5.03255 3.9681C4.89165 3.8272 4.70056 3.74805 4.5013 3.74805C4.30204 3.74805 4.11095 3.8272 3.97005 3.9681C3.82915 4.10899 3.75 4.30009 3.75 4.49935C3.75 4.69861 3.82915 4.8897 3.97005 5.0306L6.9388 7.99935L3.97005 10.9681C3.82915 11.109 3.75 11.3001 3.75 11.4993C3.75 11.6986 3.82915 11.8897 3.97005 12.0306C4.11095 12.1715 4.30204 12.2506 4.5013 12.2506C4.70056 12.2506 4.89165 12.1715 5.03255 12.0306L8.0013 9.06185L10.9701 12.0306C11.1109 12.1715 11.302 12.2506 11.5013 12.2506C11.7006 12.2506 11.8917 12.1715 12.0326 12.0306C12.1734 11.8897 12.2526 11.6986 12.2526 11.4993C12.2526 11.3001 12.1734 11.109 12.0326 10.9681L9.06193 7.99935Z"
-                                    fill="#4ADE80"
+                                    fill="#B1F1C9"
                                 />
                             </svg>
                             <div className="full-w full-h flex flex-col justify-center items-center">
@@ -581,7 +619,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                 >
                                     <path
                                         d="M32 6C17.6637 6 6 17.6637 6 32C6 46.3363 17.6637 58 32 58C46.3363 58 58 46.3363 58 32C58 17.6637 46.3363 6 32 6ZM45.5312 23.2862L28.7313 43.2863C28.547 43.5058 28.3177 43.6831 28.0589 43.8062C27.8001 43.9294 27.5178 43.9955 27.2313 44H27.1975C26.9172 43.9999 26.64 43.9409 26.384 43.8267C26.1279 43.7126 25.8987 43.5459 25.7113 43.3375L18.5112 35.3375C18.3284 35.1436 18.1862 34.915 18.0929 34.6653C17.9996 34.4156 17.9572 34.1498 17.9681 33.8835C17.9791 33.6171 18.0431 33.3557 18.1565 33.1145C18.27 32.8733 18.4305 32.6571 18.6286 32.4788C18.8267 32.3005 19.0585 32.1636 19.3103 32.0762C19.5621 31.9887 19.8288 31.9525 20.0948 31.9696C20.3608 31.9867 20.6207 32.0568 20.8592 32.1758C21.0978 32.2948 21.3101 32.4603 21.4837 32.6625L27.145 38.9525L42.4688 20.7138C42.8125 20.3163 43.2988 20.0702 43.8226 20.0284C44.3463 19.9867 44.8655 20.1528 45.2678 20.4907C45.6701 20.8287 45.9233 21.3114 45.9726 21.8345C46.0219 22.3576 45.8634 22.8791 45.5312 23.2862Z"
-                                        fill="#4ADE80"
+                                        fill="#1F9D41"
                                     />
                                 </svg>
                                 <div className="text-center">
