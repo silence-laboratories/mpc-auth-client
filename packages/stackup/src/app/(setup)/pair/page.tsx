@@ -38,7 +38,7 @@ function Page() {
     const MAX_ENTER_PW_SECONDS = 60; // According to pairing API timeout
     const oldEoa = getOldEoa();
 
-    const handleAfterPairing = (eoa: accountType) => {
+    const saveEoaAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
         setPairingStatus("Paired");
 
@@ -61,7 +61,7 @@ function Page() {
                 password,
                 oldEoa?.address
             );
-            handleAfterPairing({
+            saveEoaAfterPairing({
                 address: runPairingResp.newAccountAddress ?? "",
             });
             setLoading(false);
@@ -86,7 +86,7 @@ function Page() {
             } else {
                 await runEndPairingSession(pairingSessionData, isPasswordReady());
                 const keygenRes = await runKeygen();
-                handleAfterPairing({
+                saveEoaAfterPairing({
                     address:
                         "0x" +
                         pubToAddress(

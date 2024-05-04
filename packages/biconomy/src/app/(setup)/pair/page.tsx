@@ -17,7 +17,7 @@ import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 import { setPairingStatus } from "@/mpc/storage/wallet";
-import { accountType, getOldEoa,isPasswordReady, setEoa } from "@/mpc/storage/account";
+import { accountType, getOldEoa, isPasswordReady, setEoa } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 
 function Page() {
@@ -38,10 +38,12 @@ function Page() {
     const MAX_ENTER_PW_SECONDS = 60; // According to pairing API timeout
     const oldEoa = getOldEoa();
 
-    const handleAfterPairing = (eoa: accountType) => {
+    const saveEoaAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
         setPairingStatus("Paired");
-        if (eoa && oldEoa && eoa.address !== oldEoa.address && oldEoa.address !== "") {
+
+        if (isRepairing && oldEoa !== null && eoa.address !== oldEoa.address) {
+
             router.replace("/mismatchAccounts");
         } else {
             router.replace("/mint");
@@ -59,7 +61,7 @@ function Page() {
                 password,
                 oldEoa?.address
             );
-            handleAfterPairing({
+            saveEoaAfterPairing({
                 address: runPairingResp.newAccountAddress ?? "",
             });
             setLoading(false);
@@ -84,7 +86,7 @@ function Page() {
             } else {
                 await runEndPairingSession(pairingSessionData, isPasswordReady());
                 const keygenRes = await runKeygen();
-                handleAfterPairing({
+                saveEoaAfterPairing({
                     address:
                         "0x" +
                         pubToAddress(
