@@ -8,7 +8,7 @@ import { Label } from "../ui/label";
 import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { checkPassword } from "@/utils/password";
 import LoadingScreen from "../loadingScreen";
-import { runBackup } from "@/mpc";
+import { setPasswordReady } from "@/mpc/storage/account";
 
 export const PasswordEnterScreen: React.FunctionComponent<{
     onProceed: (password: string) => Promise<void>;
@@ -47,9 +47,9 @@ export const PasswordEnterScreen: React.FunctionComponent<{
         }
         setIsLoading(true);
         try {
-            await runBackup("", true); // It's empty to make sure we are NOT encrypting the backup data again
             onProceed(currentPassword);
             setIsLoading(false);
+            setPasswordReady();
         } catch (error) {
             setIsLoading(false);
             setPasswordErr(PasswordInputErr.IncorrectPassword);
