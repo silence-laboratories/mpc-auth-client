@@ -3,10 +3,8 @@
 
 import { SnapError, SnapErrorCode } from '../error';
 
-// const baseUrl = process.env.IS_PRODUCTION
-// 	? 'https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net'
-// 	: 'https://cloudfunction.silencelaboratories.com';
-const baseUrl = 'https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net'
+const baseUrl = 'https://cloudfuntion-stage.silencelaboratories.com'
+// const baseUrl = 'https://cloudfuntion-prod.silencelaboratories.com'
 interface Response {
 	response: any;
 	error: string;
