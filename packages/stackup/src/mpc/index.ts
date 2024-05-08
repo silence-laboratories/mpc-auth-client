@@ -130,7 +130,7 @@ async function runBackup(password: string, isBackedUp: boolean) {
         await Backup.backup(pairingData, "", isBackedUp);
         return;
     }
-    if(password && password.length === 0 && isBackedUp) {
+    if (password && password.length === 0 && isBackedUp) {
         await Backup.backup(pairingData, "", isBackedUp);
         return;
     }
@@ -185,7 +185,7 @@ async function runSign(
         messageHash,
         signMetadata,
         accountId,
-        walletId
+        walletId,
     });
 }
 

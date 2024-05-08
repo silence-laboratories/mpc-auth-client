@@ -47,7 +47,7 @@ export const PasswordEnterScreen: React.FunctionComponent<{
         }
         setIsLoading(true);
         try {
-            onProceed(currentPassword);
+            await onProceed(currentPassword);
             setIsLoading(false);
             setPasswordReady();
         } catch (error) {
