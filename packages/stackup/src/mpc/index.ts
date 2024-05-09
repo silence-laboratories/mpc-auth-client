@@ -16,6 +16,7 @@ import {
 import { PairingSessionData, SignMetadata, StorageData } from "./types";
 import { SnapError, SnapErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
+import { isPasswordReady } from "./storage/account";
 
 const TOKEN_LIFE_TIME = 60000;
 
@@ -53,7 +54,6 @@ async function runStartPairingSession() {
 
 async function runEndPairingSession(
     pairingSessionData: PairingSessionData,
-    isBackedUp: boolean,
     password?: string,
     currentAccountAddress?: string
 ) {
@@ -67,7 +67,7 @@ async function runEndPairingSession(
         pairingData: result.newPairingState.pairingData,
     });
     const distributedKey = result.newPairingState.distributedKey;
-    runBackup(password ?? "", isBackedUp);
+    runBackup("", isPasswordReady());
     return {
         pairingStatus: "paired",
         newAccountAddress: distributedKey

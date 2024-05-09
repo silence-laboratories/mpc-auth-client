@@ -57,7 +57,6 @@ function Page() {
         try {
             const runPairingResp = await runEndPairingSession(
                 pairingSessionData,
-                isPasswordReady(),
                 password,
                 oldEoa?.address
             );
