@@ -208,10 +208,12 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             // clear banners
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
-            
+
             const result = await sendTransaction(recipientAddress, amount);
-            result.success ? setShowSuccessBanner(true) : setShowSuccessBanner(false);
-            store.setTxHash(result?.transactionHash ?? '');
+            result.success
+                ? setShowSuccessBanner(true)
+                : setShowSuccessBanner(false);
+            store.setTxHash(result?.transactionHash ?? "");
             await updateBalance();
 
             // send sign request to server
@@ -428,13 +430,23 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                 <Separator className="w-[248px] ml-3 my-1 bg-[#3A4252]" />
                                                 <div
                                                     className="flex justify-center items-center rounded-[8px] cursor-pointer p-2"
-                                                    onClick={() => {
-                                                        setOpenPasswordBackupDialog(
-                                                            true
-                                                        );
-                                                    }}
+                                                    onClick={
+                                                        isPasswordReady
+                                                            ? undefined
+                                                            : () => {
+                                                                  setOpenPasswordBackupDialog(
+                                                                      true
+                                                                  );
+                                                              }
+                                                    }
                                                 >
-                                                    <div className="flex rounded-full p-2 mr-2 bg-[#ECEEF2]">
+                                                    <div
+                                                        className={`flex rounded-full p-2 mr-2 bg-[#ECEEF2] ${
+                                                            isPasswordReady
+                                                                ? "opacity-50"
+                                                                : "opacity-100"
+                                                        }`}
+                                                    >
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
                                                             width="24"
@@ -472,7 +484,15 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                             />
                                                         </svg>
                                                     </div>
-                                                    Set Password
+                                                    <span
+                                                        className={`${
+                                                            isPasswordReady
+                                                                ? "opacity-50"
+                                                                : "opacity-100"
+                                                        }`}
+                                                    >
+                                                        Set Password
+                                                    </span>
                                                     <div className="flex-1"></div>
                                                 </div>
                                                 <Separator className="w-[248px] ml-3 my-1 bg-[#3A4252]" />

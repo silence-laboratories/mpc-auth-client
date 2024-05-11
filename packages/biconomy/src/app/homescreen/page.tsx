@@ -10,17 +10,15 @@ import {
 import { TextInput } from "@/components/textInput";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { SilentWallet } from "@/silentWallet";
 import { formatEther } from "ethers/lib/utils";
-import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
+import { getPairingStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
-import { MoreVertical, Receipt } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
-import { Result } from "postcss";
 
 interface HomescreenProps {}
 
@@ -146,9 +144,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [showSuccessBanner, setShowSuccessBanner] = useState(true);
     const [showTransactionInitiatedBanner, setShowTransactionInitiatedBanner] =
         useState(false);
-    const [showTransactionfailBanner, setShowTransactionfailBanner] = useState(
-        false
-    );
+    const [showTransactionfailBanner, setShowTransactionfailBanner] =
+        useState(false);
     const [showTransactionSignedBanner, setShowTransactionSignedBanner] =
         useState(false);
 
@@ -212,7 +209,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             // clear banners
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
-          
+
             const result = await sendTransaction(recipientAddress, amount);
             if (!result.transactionHash) {
                 console.log("error", result);
@@ -223,7 +220,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             console.log("result", result.transactionHash);
             setShowTransactionSignedBanner(true);
             setShowTransactionInitiatedBanner(false);
-            store.setTxHash(result?.transactionHash ?? '');
+            store.setTxHash(result?.transactionHash ?? "");
             await updateBalance();
 
             // send sign request to server
@@ -440,13 +437,23 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                 <Separator className="w-[248px] ml-3 my-1 bg-[#3A4252]" />
                                                 <div
                                                     className="flex justify-center items-center rounded-[8px] cursor-pointer p-2"
-                                                    onClick={() => {
-                                                        setOpenPasswordBackupDialog(
-                                                            true
-                                                        );
-                                                    }}
+                                                    onClick={
+                                                        isPasswordReady
+                                                            ? undefined
+                                                            : () => {
+                                                                  setOpenPasswordBackupDialog(
+                                                                      true
+                                                                  );
+                                                              }
+                                                    }
                                                 >
-                                                    <div className="flex rounded-full p-2 mr-2 bg-[#ECEEF2]">
+                                                    <div
+                                                        className={`flex rounded-full p-2 mr-2 bg-[#ECEEF2] ${
+                                                            isPasswordReady
+                                                                ? "opacity-50"
+                                                                : "opacity-100"
+                                                        }`}
+                                                    >
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
                                                             width="24"
@@ -484,7 +491,15 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                                                             />
                                                         </svg>
                                                     </div>
-                                                    Set Password
+                                                    <span
+                                                        className={`${
+                                                            isPasswordReady
+                                                                ? "opacity-50"
+                                                                : "opacity-100"
+                                                        }`}
+                                                    >
+                                                        Set Password
+                                                    </span>
                                                     <div className="flex-1"></div>
                                                 </div>
                                                 <Separator className="w-[248px] ml-3 my-1 bg-[#3A4252]" />
@@ -564,7 +579,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                         </div>
                     )}
 
-                {showTransactionfailBanner && (
+                    {showTransactionfailBanner && (
                         <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[white] border-[#166533] w-full text-[red]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
