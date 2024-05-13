@@ -3,8 +3,8 @@
 
 import { SnapError, SnapErrorCode } from '../error';
 
-const baseUrl = 'https://cloudfuntion-stage.silencelaboratories.com'
-// const baseUrl = 'https://cloudfuntion-prod.silencelaboratories.com'
+// const baseUrl = 'https://cloudfuntion-stage.silencelaboratories.com'
+const baseUrl = 'https://cloudfuntion-prod.silencelaboratories.com'
 interface Response {
 	response: any;
 	error: string;
