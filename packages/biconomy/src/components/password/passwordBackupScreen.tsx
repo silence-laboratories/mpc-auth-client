@@ -88,7 +88,7 @@ export const PasswordBackupScreen: React.FunctionComponent<{
             return;
         }
         try {
-            await runBackup(currentPassword, true);
+            await runBackup(currentPassword);
             onProceed?.();
             setPasswordReady();
         } catch (error) {
@@ -102,7 +102,7 @@ export const PasswordBackupScreen: React.FunctionComponent<{
     };
 
     const handleTakeRisk = () => {
-        runBackup("", false);
+        runBackup("");
         onTakeRisk?.();
     };
 

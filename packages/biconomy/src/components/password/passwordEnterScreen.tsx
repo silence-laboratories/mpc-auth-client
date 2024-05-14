@@ -9,7 +9,6 @@ import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { checkPassword } from "@/utils/password";
 import LoadingScreen from "../loadingScreen";
 import { setPasswordReady } from "@/mpc/storage/account";
-import { runBackup } from "@/mpc";
 
 export const PasswordEnterScreen: React.FunctionComponent<{
     onProceed: (password: string) => Promise<void>;
@@ -50,7 +49,6 @@ export const PasswordEnterScreen: React.FunctionComponent<{
         try {
             await onProceed(currentPassword);
             setIsLoading(false);
-            runBackup("", true);
             setPasswordReady();
         } catch (error) {
             setIsLoading(false);

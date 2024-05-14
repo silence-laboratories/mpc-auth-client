@@ -10,8 +10,8 @@
     "test": "jest --watch"
   },
   "dependencies": {
-    "@biconomy/account": "^4.1.1",
-    "@ethereumjs/util": "^8.0.5",
+    "@biconomy/account": "^4.2.0",
+    "@ethereumjs/util": "^8.1.0",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",
