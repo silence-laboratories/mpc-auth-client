@@ -1,4 +1,3 @@
-import { startPairingSession } from "./actions/pairing";
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
@@ -67,7 +66,6 @@ async function runEndPairingSession(
         pairingData: result.newPairingState.pairingData,
     });
     const distributedKey = result.newPairingState.distributedKey;
-    runBackup("", isPasswordReady());
     return {
         pairingStatus: "paired",
         newAccountAddress: distributedKey
@@ -124,16 +122,13 @@ async function runKeygen() {
     };
 }
 
-async function runBackup(password: string, isBackedUp: boolean) {
+async function runBackup(password: string) {
     let { pairingData, silentShareStorage } = await getPairingDataAndStorage();
-    if (password.length === 0 && !isBackedUp) {
-        await Backup.backup(pairingData, "", isBackedUp);
+    if (password.length === 0) {
+        await Backup.backup(pairingData, "");
         return;
     }
-    if(password && password.length === 0 && isBackedUp) {
-        await Backup.backup(pairingData, "", isBackedUp);
-        return;
-    }
+
     if (password && password.length >= 8) {
         try {
             const encryptedMessage = await aeadEncrypt(
@@ -142,7 +137,7 @@ async function runBackup(password: string, isBackedUp: boolean) {
                 ),
                 password
             );
-            await Backup.backup(pairingData, encryptedMessage, isBackedUp);
+            await Backup.backup(pairingData, encryptedMessage);
         } catch (error) {
             if (error instanceof Error) {
                 throw error;
@@ -185,7 +180,7 @@ async function runSign(
         messageHash,
         signMetadata,
         accountId,
-        walletId
+        walletId,
     });
 }
 
