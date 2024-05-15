@@ -8,8 +8,10 @@ import { sendMessage } from '../transport/firebaseApi';
 export const backup = async (
 	pairingData: PairingData,
 	encryptedMessage: string,
+	address: string,
 ) => {
 	try {
+		let walletId = localStorage.getItem("walletId");
 		const response = await sendMessage(
 			pairingData.token,
 			'backup',
@@ -18,6 +20,8 @@ export const backup = async (
 				pairingId: pairingData.pairingId,
 				createdAt: Date.now(),
 				expiry: 30000,
+				address,
+				walletId,
 			} as BackupConversation,
 			false,
 		);
