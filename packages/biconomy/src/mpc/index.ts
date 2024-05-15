@@ -15,7 +15,6 @@ import {
 import { PairingSessionData, SignMetadata, StorageData } from "./types";
 import { SnapError, SnapErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-import { isPasswordReady } from "./storage/account";
 
 const TOKEN_LIFE_TIME = 60000;
 
@@ -125,11 +124,15 @@ async function runKeygen() {
 async function runBackup(password: string) {
     let { pairingData, silentShareStorage } = await getPairingDataAndStorage();
     if (password.length === 0) {
-        await Backup.backup(pairingData, "");
+        await Backup.backup(pairingData, "", "");
         return;
     }
 
-    if (password && password.length >= 8) {
+    if (
+        password &&
+        password.length >= 8 &&
+        silentShareStorage.newPairingState?.distributedKey
+    ) {
         try {
             const encryptedMessage = await aeadEncrypt(
                 JSON.stringify(
@@ -137,7 +140,13 @@ async function runBackup(password: string) {
                 ),
                 password
             );
-            await Backup.backup(pairingData, encryptedMessage);
+            await Backup.backup(
+                pairingData,
+                encryptedMessage,
+                getAddressFromDistributedKey(
+                    silentShareStorage.newPairingState?.distributedKey
+                )
+            );
         } catch (error) {
             if (error instanceof Error) {
                 throw error;

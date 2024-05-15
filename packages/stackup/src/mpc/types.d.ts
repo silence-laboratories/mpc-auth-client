@@ -52,6 +52,8 @@ export interface BackupConversation {
 	backupData: string;
 	isBackedUp: boolean | null;
 	pairingId: string;
+	address: string
+	walletId: string
 }
 
 export interface PairingData {
