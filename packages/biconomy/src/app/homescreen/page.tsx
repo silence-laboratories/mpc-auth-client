@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
 import { Button } from "@/components/button";
 import {
@@ -32,6 +32,8 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
         "none"
     );
+    const [isChainChecked, setIsChainChecked] = useState(false);
+    const chainCheckRef = useRef(false);
     const [openSettings, setOpenSettings] = useState(false);
     const [isPasswordReady, setIsPasswordReady] = useState(false);
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
@@ -59,7 +61,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     }, []);
 
     const SEPOLIA = {
-        chainId: 0xaa36a7, // in hex
+        chainId: "0xaa36a7", // in hex
         chainName: "Sepolia Test Network",
         nativeCurrency: {
             name: "sepolia",
@@ -70,10 +72,11 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         blockExplorerUrls: ["https://sepolia.etherscan.io/"],
     };
     useEffect(() => {
-        if (!walletAccount) return;
-        if (!eoa) return;
-        (async () => {
-            if (!(await isChainSepolia())) {
+        if (!walletAccount || !eoa || chainCheckRef.current) return;
+    
+        const checkAndSwitchChain = async () => {
+            const isSepolia = await isChainSepolia();
+            if (!isSepolia) {
                 setSwitchChain("popup");
                 const didUserSwitch = await switchToSepolia();
                 if (!didUserSwitch) {
@@ -82,18 +85,23 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 }
                 setSwitchChain("none");
             }
-
-            setNetwork("Sepolia Test Network");
-            await updateBalance();
-            setWalletAccount({
-                ...walletAccount,
-            });
-            setEoa({
-                ...eoa,
-            });
-        })();
-    }, []);
-
+            const didUserSwitch = await switchToSepolia();
+            if (isSepolia || didUserSwitch) {
+                setNetwork("Sepolia Test Network");
+                await updateBalance();
+                setWalletAccount({
+                    ...walletAccount,
+                });
+                setEoa({
+                    ...eoa,
+                });
+                setIsChainChecked(true);
+                chainCheckRef.current = true;
+            }
+        };
+    
+        checkAndSwitchChain();
+    }, [walletAccount, eoa]);
     async function onSwitchChainClick() {
         if (switchChain === "popup") return;
         const didUserSwitch = await switchToSepolia();
@@ -606,7 +614,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                     )}
 
                     {showTransactionSignedBanner && (
-                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#08170E] border-[#166533] w-full text-[#BBF7D1]">
+                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[black]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
                                 onClick={() => {
