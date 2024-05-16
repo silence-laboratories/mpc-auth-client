@@ -70,6 +70,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         rpcUrls: ["https://rpc.sepolia.org"],
         blockExplorerUrls: ["https://sepolia.etherscan.io/"],
     };
+
     useEffect(() => {
         if (!walletAccount) return;
         if (!eoa) return;
@@ -93,7 +94,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 ...eoa,
             });
         })();
-    }, [walletAccount, eoa]);
+    }, []);
 
     async function onSwitchChainClick() {
         if (switchChain === "popup") return;
