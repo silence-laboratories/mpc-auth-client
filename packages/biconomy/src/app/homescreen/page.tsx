@@ -92,7 +92,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 ...eoa,
             });
         })();
-    }, [walletAccount, eoa]);
+    }, []);
 
     async function onSwitchChainClick() {
         if (switchChain === "popup") return;
