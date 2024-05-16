@@ -217,7 +217,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
         (async () => {
             // clear banners
-            setShowTransactionSignedBanner(false);
+            setShowTransactionSignedBanner(true);
             setShowTransactionInitiatedBanner(true);
 
             const result = await sendTransaction(recipientAddress, amount);
@@ -617,7 +617,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
 
                     {showTransactionSignedBanner && (
-                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#08170E] border-[#166533] w-full text-[#BBF7D1]">
+                        <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[#000000]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
                                 onClick={() => {
