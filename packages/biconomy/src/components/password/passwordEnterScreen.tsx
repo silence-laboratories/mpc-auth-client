@@ -3,17 +3,19 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import { useRouter } from "next/navigation";
 import { Label } from "../ui/label";
 import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { checkPassword } from "@/utils/password";
 import LoadingScreen from "../loadingScreen";
 import { setPasswordReady } from "@/mpc/storage/account";
 
-export const PasswordEnterScreen: React.FunctionComponent<{
+export type PasswordEnterScreenProps = {
     onProceed: (password: string) => Promise<void>;
-}> = ({ onProceed }) => {
-    const router = useRouter();
+};
+
+export const PasswordEnterScreen: React.FC<PasswordEnterScreenProps> = ({
+    onProceed,
+}) => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
     const [isLoading, setIsLoading] = useState(false);

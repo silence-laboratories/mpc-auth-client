@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { PasswordInput, PasswordInputErr } from "./passwordInput";
@@ -7,19 +9,24 @@ import { checkPassword } from "@/utils/password";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
 import { runBackup } from "@/mpc";
-import { useRouter } from "next/navigation";
 import { setPasswordReady } from "@/mpc/storage/account";
 
-export const PasswordBackupScreen: React.FunctionComponent<{
+export type PasswordBackupScreenProps = {
     onProceed?: () => void;
     onTakeRisk?: () => void;
     showSkipButton?: boolean;
-}> = ({ onProceed, onTakeRisk, showSkipButton = true }) => {
-    const router = useRouter();
+};
+
+export function PasswordBackupScreen({
+    onProceed,
+    onTakeRisk,
+    showSkipButton = true,
+}: PasswordBackupScreenProps) {
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
-    const [passwordConfirmErr, setPasswordConfirmErr] = useState<PasswordInputErr>();
+    const [passwordConfirmErr, setPasswordConfirmErr] =
+        useState<PasswordInputErr>();
 
     const [openSkipDialog, setOpenSkipDialog] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
@@ -343,4 +350,4 @@ export const PasswordBackupScreen: React.FunctionComponent<{
             )}
         </div>
     );
-};
+}

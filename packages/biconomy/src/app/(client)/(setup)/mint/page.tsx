@@ -3,18 +3,21 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import * as store from "@/mpc/storage/account";
+import {
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+} from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
-import { SilentWallet } from "@/silentWallet";
-import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
+import { accountType, getEoa } from "@/mpc/storage/account";
+import { getPairingStatus } from "@/mpc/storage/wallet";
 import { mintBiconomyWallet } from "@/aaSDK/mintingService";
 
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
-    const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
+    const [eoa, setEoa] = useState<accountType>(placeholderAccount);
     const router = useRouter();
 
     const step = 2;
@@ -24,8 +27,7 @@ function Page() {
             router.replace("/intro");
             return;
         }
-        
-        setEoa(store.getEoa());
+        setEoa(getEoa());
     }, []);
 
     const handleMint = async () => {
