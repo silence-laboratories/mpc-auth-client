@@ -15,14 +15,13 @@ import { getPairingStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
+import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 
-interface HomescreenProps {}
 
-const Homescreen: React.FC<HomescreenProps> = ({}) => {
+const Homescreen: React.FC = ({}) => {
     const oldEoa = store.getOldEoa();
     const router = useRouter();
     const [walletAccount, setWalletAccount] = useState<store.accountType>();
@@ -32,7 +31,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
         "none"
     );
-    const [isChainChecked, setIsChainChecked] = useState(false);
     const chainCheckRef = useRef(false);
     const [openSettings, setOpenSettings] = useState(false);
     const [isPasswordReady, setIsPasswordReady] = useState(false);
@@ -73,7 +71,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     };
     useEffect(() => {
         if (!walletAccount || !eoa || chainCheckRef.current) return;
-    
+
         const checkAndSwitchChain = async () => {
             const isSepolia = await isChainSepolia();
             if (!isSepolia) {
@@ -95,11 +93,10 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 setEoa({
                     ...eoa,
                 });
-                setIsChainChecked(true);
                 chainCheckRef.current = true;
             }
         };
-    
+
         checkAndSwitchChain();
     }, [walletAccount, eoa]);
     async function onSwitchChainClick() {

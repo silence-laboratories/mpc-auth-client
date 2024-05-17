@@ -14,11 +14,23 @@ import {
     runEndPairingSession,
 } from "@/mpc";
 import { pubToAddress } from "@ethereumjs/util";
-import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 import { setPairingStatus } from "@/mpc/storage/wallet";
 import { accountType, getOldEoa, isPasswordReady, setEoa } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
+
+import dynamic from "next/dynamic";
+import { PasswordEnterScreenProps } from "@/components/password/passwordEnterScreen";
+
+const PasswordEnterScreen = dynamic<PasswordEnterScreenProps>(
+    () =>
+        import("@/components/password/passwordEnterScreen").then(
+            (module) => module.PasswordEnterScreen
+        ),
+    {
+        ssr: false,
+    }
+);
 
 function Page() {
     const router = useRouter();

@@ -4,8 +4,18 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import { PasswordBackupScreenProps } from "@/components/password/passwordBackupScreen";
 
-import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
+const PasswordBackupScreen = dynamic<PasswordBackupScreenProps>(
+    () =>
+        import("@/components/password/passwordBackupScreen").then(
+            (mod) => mod.PasswordBackupScreen
+        ),
+    {
+        ssr: false,
+    }
+);
 
 function Page() {
     const router = useRouter();
