@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
-import frontAnimation from "../../../../public/frontAnimation.json";
+import frontAnimation from "../../../../../public/frontAnimation.json";
 import dynamic from "next/dynamic";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
