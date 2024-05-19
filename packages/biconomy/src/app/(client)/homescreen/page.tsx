@@ -19,7 +19,7 @@ import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
-
+import Image from "next/image";
 
 const Homescreen: React.FC = ({}) => {
     const oldEoa = store.getOldEoa();
@@ -56,7 +56,7 @@ const Homescreen: React.FC = ({}) => {
         // get wallet account and eoa
         setWalletAccount(account);
         setEoa(eoa);
-    }, []);
+    }, [router]);
 
     const SEPOLIA = {
         chainId: "0xaa36a7", // in hex
@@ -365,9 +365,12 @@ const Homescreen: React.FC = ({}) => {
 
                                     <div className="mt-4 rounded-full bg-[#E8EDF3] text-sm py-2 px-3 flex flex-row">
                                         {network === "Sepolia Test Network" && (
-                                            <img
+                                            <Image
                                                 src="./ethereum.svg"
                                                 className="mr-2"
+                                                width="10"
+                                                height="10"
+                                                alt="ethereum"
                                             />
                                         )}
                                         <div>{network}</div>

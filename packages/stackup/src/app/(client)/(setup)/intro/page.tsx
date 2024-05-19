@@ -5,6 +5,7 @@ import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import frontAnimation from "../../../../../public/frontAnimation.json";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
@@ -46,10 +47,13 @@ function Page() {
                 Account Abstraction to enable a 2FA- like experience
             </div>
             <br></br>
-            <img
+
+            <Image
                 src="/slxstackup.svg"
-                alt="qr code"
-                className="w-1/2 h-1/2 m-auto"
+                alt="logo 1"
+                className="m-auto"
+                width="213"
+                height="32"
             />
 
             <div className="flex items-center justify-center">

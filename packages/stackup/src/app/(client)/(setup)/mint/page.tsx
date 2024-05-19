@@ -24,7 +24,7 @@ function Page() {
         }
 
         setEoa(store.getEoa());
-    }, []);
+    }, [router]);
 
     const handleMint = async () => {
         setLoading(true);

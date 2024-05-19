@@ -6,7 +6,7 @@ import { Button } from "@/components/button";
 import { Avatar, AvatarFallback } from "@/components/avatar";
 import { Progress } from "@/components/progress";
 import { useRouter, useSearchParams } from "next/navigation";
-
+import loadingGif from "../../../../../public/loading.gif";
 import {
     initPairing,
     runKeygen,
@@ -17,8 +17,14 @@ import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 import { setPairingStatus } from "@/mpc/storage/wallet";
-import { accountType, getOldEoa, isPasswordReady, setEoa } from "@/mpc/storage/account";
+import {
+    accountType,
+    getOldEoa,
+    isPasswordReady,
+    setEoa,
+} from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
+import Image from "next/image";
 
 function Page() {
     const router = useRouter();
@@ -43,7 +49,6 @@ function Page() {
         setPairingStatus("Paired");
 
         if (isRepairing && oldEoa !== null && eoa.address !== oldEoa.address) {
-
             router.replace("/mismatchAccounts");
         } else {
             router.replace("/mint");
@@ -83,7 +88,10 @@ function Page() {
                 setPairingSessionDataState(pairingSessionData);
                 setShowPasswordScreen(true);
             } else {
-                await runEndPairingSession(pairingSessionData, isPasswordReady());
+                await runEndPairingSession(
+                    pairingSessionData,
+                    isPasswordReady()
+                );
                 const keygenRes = await runKeygen();
                 saveEoaAfterPairing({
                     address:
@@ -182,9 +190,9 @@ function Page() {
 
             {loading && (
                 <div className="flex flex-col items-center justify-center h-[50vh]">
-                    <img
+                    <Image
                         className="h-[50%] mb-8"
-                        src="/loading.gif"
+                        src={loadingGif}
                         alt="loading"
                     />
                     <div
@@ -239,9 +247,9 @@ function Page() {
                             >
                                 {qr == "placeholder" ? (
                                     <div className="flex items-center justify-center">
-                                        <img
+                                        <Image
                                             className="h-24 mb-8"
-                                            src="/loading.gif"
+                                            src={loadingGif}
                                             alt="loading"
                                         />
                                     </div>
@@ -352,15 +360,12 @@ function Page() {
                             </Avatar>
                             <div className="flex items-center flex-wrap flex-1">
                                 Install{" "}
-                                <img
-                                    className="mx-2"
+                                <Image
+                                    className="mx-2 rounded-[4px]"
                                     src="/sl-logo.png"
                                     alt="sllogosm"
-                                    style={{
-                                        height: 20,
-                                        width: 20,
-                                        borderRadius: 4,
-                                    }}
+                                    height="20"
+                                    width="20"
                                 />
                                 <div className="mr-1 text-blackb2-bold">
                                     Silent Shard

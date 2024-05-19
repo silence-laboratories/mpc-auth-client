@@ -1,4 +1,3 @@
-"use client";
 import { cn } from "@/utils/ui";
 
 export type PasswordCheckState = "init" | "checked" | "unchecked";

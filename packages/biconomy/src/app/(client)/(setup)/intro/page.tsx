@@ -5,6 +5,7 @@ import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import frontAnimation from "../../../../../public/frontAnimation.json";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
@@ -47,10 +48,11 @@ function Page() {
             </div>
             <br></br>
 
-            <img
+            <Image
                 src="/slxbcnmy.svg"
+                width="237" height="33"
                 alt="qr code"
-                className="w-1/2 h-1/2 m-auto"
+                className="m-auto"
             />
 
             <div className="flex items-center justify-center">
