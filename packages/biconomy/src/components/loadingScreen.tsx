@@ -1,4 +1,6 @@
+import Image from "next/image";
 import React from "react";
+import loadingGif from "../../public/loading.gif";
 
 export default function LoadingScreen({
     children,
@@ -7,7 +9,7 @@ export default function LoadingScreen({
 }>) {
     return (
         <div className="flex flex-col items-center justify-center h-[50vh]">
-            <img className="h-[50%] mb-8" src="/loading.gif" alt="loading" />
+            <Image className="my-4 w-[50%] h-auto" src={loadingGif} alt="loading" />
             <div
                 className="text-center text-blackh2-bold"
                 style={{ marginBottom: 140 }}

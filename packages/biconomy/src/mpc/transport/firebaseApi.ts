@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { SnapError, SnapErrorCode } from '../error';
+import { MpcError, MpcErrorCode } from '../error';
 
 const baseUrl = 'https://cloudfuntion-stage.silencelaboratories.com'
 // const baseUrl = 'https://cloudfuntion-prod.silencelaboratories.com'
@@ -15,19 +15,19 @@ const modifiedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
 		.then(async (data) => {
 			const temp: Response = await data.json();
 			if (temp.error) {
-				throw new SnapError(temp.error, SnapErrorCode.FirebaseError);
+				throw new MpcError(temp.error, MpcErrorCode.FirebaseError);
 			} else return temp.response;
 		})
 		.catch((error) => {
-			if (error instanceof SnapError) {
+			if (error instanceof MpcError) {
 				throw error;
 			}
 			if (error instanceof Error) {
-				throw new SnapError(error.message, SnapErrorCode.FirebaseError);
+				throw new MpcError(error.message, MpcErrorCode.FirebaseError);
 			} else
-				throw new SnapError(
+				throw new MpcError(
 					`unkown-error`,
-					SnapErrorCode.FirebaseError,
+					MpcErrorCode.FirebaseError,
 				);
 		});
 };

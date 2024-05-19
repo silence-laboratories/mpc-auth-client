@@ -9,7 +9,7 @@ import {
 } from "../transport/firebaseApi";
 import _sodium from "libsodium-wrappers-sumo";
 import { DistributedKey, PairingData, PairingSessionData } from "../types";
-import { SnapError, SnapErrorCode } from "../error";
+import { MpcError, MpcErrorCode } from "../error";
 import { aeadDecrypt } from "../crypto";
 
 export enum PairingRemark {
@@ -50,8 +50,8 @@ export const init = async (walletId: string) => {
         return qrCode;
     } catch (error) {
         if (error instanceof Error) {
-            throw new SnapError(error.message, SnapErrorCode.UnknownError);
-        } else throw new SnapError("unkown-error", SnapErrorCode.UnknownError);
+            throw new MpcError(error.message, MpcErrorCode.UnknownError);
+        } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
 };
 
@@ -88,14 +88,14 @@ const decryptAndDeserializeBackupData = async (
             isPaired: false,
             pairingRemark: PairingRemark.INVALID_BACKUP_DATA,
         });
-        if (error instanceof SnapError) {
+        if (error instanceof MpcError) {
             throw error;
         } else if (error instanceof Error) {
-            throw new SnapError(error.message, SnapErrorCode.InvalidBackupData);
+            throw new MpcError(error.message, MpcErrorCode.InvalidBackupData);
         } else
-            throw new SnapError(
+            throw new MpcError(
                 "wrong secret key for the given ciphertext",
-                SnapErrorCode.InvalidBackupData
+                MpcErrorCode.InvalidBackupData
             );
     }
 };
@@ -128,9 +128,9 @@ const validatePairingAccount = async (
 export const startPairingSession = async () => {
     try {
         if (!pairingDataInit) {
-            throw new SnapError(
+            throw new MpcError(
                 "Pairing data not initialized",
-                SnapErrorCode.PairingNotInitialized
+                MpcErrorCode.PairingNotInitialized
             );
         }
 
@@ -148,7 +148,7 @@ export const startPairingSession = async () => {
     } catch (error) {
         if (error instanceof Error) {
             throw error;
-        } else throw new SnapError("unkown-error", SnapErrorCode.UnknownError);
+        } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
 };
 
@@ -211,7 +211,7 @@ export const endPairingSession = async (
     } catch (error) {
         if (error instanceof Error) {
             throw error;
-        } else throw new SnapError("unkown-error", SnapErrorCode.UnknownError);
+        } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
 };
 
@@ -239,6 +239,6 @@ export const refreshToken = async (pairingData: PairingData) => {
     } catch (error) {
         if (error instanceof Error) {
             throw error;
-        } else throw new SnapError(`unkown-error`, SnapErrorCode.UnknownError);
+        } else throw new MpcError(`unkown-error`, MpcErrorCode.UnknownError);
     }
 };

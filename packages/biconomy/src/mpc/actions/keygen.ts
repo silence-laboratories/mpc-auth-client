@@ -10,7 +10,7 @@ import * as utils from '../utils';
 import { KeygenConversation, PairingData } from '../types';
 import { sendMessage } from '../transport/firebaseApi';
 import _sodium, { base64_variants } from 'libsodium-wrappers-sumo';
-import { SnapError, SnapErrorCode } from '../error';
+import { MpcError, MpcErrorCode } from '../error';
 
 let running = false;
 
@@ -27,9 +27,9 @@ export const keygen = async (
 ): Promise<KeygenResult> => {
 	try {
 		if (running) {
-			throw new SnapError(
+			throw new MpcError(
 				`Keygen already running`,
-				SnapErrorCode.KeygenResourceBusy,
+				MpcErrorCode.KeygenResourceBusy,
 			);
 		}
 		running = true;
@@ -80,9 +80,9 @@ export const keygen = async (
 			const msg = await p1
 				.processMessage(decodedMessage)
 				.catch((error) => {
-					throw new SnapError(
+					throw new MpcError(
 						`Internal library error: ${error}`,
-						SnapErrorCode.InternalLibError,
+						MpcErrorCode.InternalLibError,
 					);
 				});
 			if (msg.p1_key_share) {
@@ -123,9 +123,9 @@ export const keygen = async (
 				keygenConversation = keygenConversationNew;
 			}
 			if (keygenConversation.isApproved === false) {
-				throw new SnapError(
+				throw new MpcError(
 					`User(phone) denied keygen`,
-					SnapErrorCode.UserPhoneDenied,
+					MpcErrorCode.UserPhoneDenied,
 				);
 			}
 			round++;
@@ -138,13 +138,13 @@ export const keygen = async (
 			elapsedTime: Date.now() - startTime,
 		};
 	} catch (error) {
-		if (error instanceof SnapError) {
-			if (error.code != SnapErrorCode.KeygenResourceBusy) {
+		if (error instanceof MpcError) {
+			if (error.code != MpcErrorCode.KeygenResourceBusy) {
 				running = false;
 			}
 			throw error;
 		} else if (error instanceof Error) {
-			throw new SnapError(error.message, SnapErrorCode.KeygenFailed);
-		} else throw new SnapError('unknown-error', SnapErrorCode.UnknownError);
+			throw new MpcError(error.message, MpcErrorCode.KeygenFailed);
+		} else throw new MpcError('unknown-error', MpcErrorCode.UnknownError);
 	}
 };

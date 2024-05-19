@@ -25,6 +25,7 @@ import {
 } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
+import LoadingScreen from "@/components/loadingScreen";
 
 function Page() {
     const router = useRouter();
@@ -77,33 +78,37 @@ function Page() {
 
     const generateWallet = async () => {
         (async () => {
-            const qrCode = await initPairing("stackup");
-            setQr(qrCode);
-            setSeconds(MAX_SECONDS);
-            setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
+            try {
+                const qrCode = await initPairing("stackup");
+                setQr(qrCode);
+                setSeconds(MAX_SECONDS);
+                setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
-            const pairingSessionData = await runStartPairingSession();
-            setLoading(true);
-            if (pairingSessionData.backupData) {
-                setPairingSessionDataState(pairingSessionData);
-                setShowPasswordScreen(true);
-            } else {
-                await runEndPairingSession(
-                    pairingSessionData,
-                    isPasswordReady()
-                );
-                const keygenRes = await runKeygen();
-                saveEoaAfterPairing({
-                    address:
-                        "0x" +
-                        pubToAddress(
-                            Buffer.from(
-                                keygenRes.distributedKey.publicKey,
-                                "hex"
-                            )
-                        ).toString("hex"),
-                });
-                router.replace("/backup");
+                const pairingSessionData = await runStartPairingSession();
+                setLoading(true);
+                if (pairingSessionData.backupData) {
+                    setPairingSessionDataState(pairingSessionData);
+                    setShowPasswordScreen(true);
+                } else {
+                    await runEndPairingSession(
+                        pairingSessionData,
+                        isPasswordReady()
+                    );
+                    const keygenRes = await runKeygen();
+                    saveEoaAfterPairing({
+                        address:
+                            "0x" +
+                            pubToAddress(
+                                Buffer.from(
+                                    keygenRes.distributedKey.publicKey,
+                                    "hex"
+                                )
+                            ).toString("hex"),
+                    });
+                    router.replace("/backup");
+                }
+            } catch (error) {
+                console.error(error);
             }
         })();
     };
@@ -188,21 +193,7 @@ function Page() {
                 Pair with Phone
             </div>
 
-            {loading && (
-                <div className="flex flex-col items-center justify-center h-[50vh]">
-                    <Image
-                        className="h-[50%] mb-8"
-                        src={loadingGif}
-                        alt="loading"
-                    />
-                    <div
-                        className="text-center text-blackh2-bold"
-                        style={{ marginBottom: 140 }}
-                    >
-                        Pairing...
-                    </div>
-                </div>
-            )}
+            {loading && <LoadingScreen>Pairing...</LoadingScreen>}
             {!loading && (
                 <>
                     <div className="b2-regular p-2 flex rounded-lg border bg-[rgba(96,154,250,0.1)] border-[#1e55af] text-[#1567E4] my-4">
@@ -248,7 +239,7 @@ function Page() {
                                 {qr == "placeholder" ? (
                                     <div className="flex items-center justify-center">
                                         <Image
-                                            className="h-24 mb-8"
+                                            className="w-[50%] h-auto mb-8"
                                             src={loadingGif}
                                             alt="loading"
                                         />
