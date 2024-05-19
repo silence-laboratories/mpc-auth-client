@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { SnapError, SnapErrorCode } from "./error";
+import { MpcError, MpcErrorCode } from "./error";
 import _sodium from "libsodium-wrappers-sumo";
 
 export const requestEntropy = async (salt?: Uint8Array) => {
@@ -29,9 +29,9 @@ export const aeadEncrypt = async (message: string, pwd: string) => {
 export const aeadDecrypt = async (cipherText: string, pwd: string): Promise<Uint8Array> => {
     const array = cipherText.split(".");
     if (array.length !== 3) {
-      throw new SnapError(
+      throw new MpcError(
         "Invalid backup data",
-        SnapErrorCode.InvalidBackupData
+        MpcErrorCode.InvalidBackupData
       );
     }
     const salt = _sodium.from_hex(array[0]);

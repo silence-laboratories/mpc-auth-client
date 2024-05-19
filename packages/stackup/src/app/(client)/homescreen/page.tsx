@@ -37,7 +37,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [isPasswordReady, setIsPasswordReady] = useState(false);
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
-    const [isChainChecked, setIsChainChecked] = useState(false);
     const chainCheckRef = useRef(false);
     useEffect(() => {
         if (getPairingStatus() == "Unpaired") {
@@ -55,7 +54,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             router.replace("/intro");
         }
 
-        // get wallet account and eoa
         setWalletAccount(account);
         setEoa(eoa);
     }, []);
@@ -96,7 +94,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 setEoa({
                     ...eoa,
                 });
-                setIsChainChecked(true);
                 chainCheckRef.current = true;
             }
         };
@@ -118,7 +115,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         if (currentChainId == sepoliaChainId) {
             return true;
         }
-        // else not sepolia
         console.log("chain id not sepolia");
         return false;
     }
@@ -159,7 +155,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [showTransactionSignedBanner, setShowTransactionSignedBanner] =
         useState(false);
 
-    //transaction
     const [recipientAddress, setRecipientAddress] = useState("0x");
     const [amount, setAmount] = useState("0");
     const [isSendValid, setIsSendValid] = useState(false);
@@ -216,7 +211,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         event.preventDefault();
 
         (async () => {
-            // clear banners
             setShowTransactionSignedBanner(true);
             setShowTransactionInitiatedBanner(true);
 
@@ -232,9 +226,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
             setShowTransactionInitiatedBanner(false);
             store.setTxHash(result?.transactionHash ?? "");
             await updateBalance();
-
-
-            // send sign request to server
         })();
     };
 

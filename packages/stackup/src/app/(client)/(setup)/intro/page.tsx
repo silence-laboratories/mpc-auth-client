@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import frontAnimation from "../../../../../public/frontAnimation.json";

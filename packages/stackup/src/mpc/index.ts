@@ -13,7 +13,7 @@ import {
     getSilentShareStorage,
 } from "./storage/wallet";
 import { PairingSessionData, SignMetadata, StorageData } from "./types";
-import { SnapError, SnapErrorCode } from "./error";
+import { MpcError, MpcErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 
 const TOKEN_LIFE_TIME = 60000;
@@ -151,7 +151,7 @@ async function runBackup(password: string) {
             if (error instanceof Error) {
                 throw error;
             } else
-                throw new SnapError("unkown-error", SnapErrorCode.UnknownError);
+                throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
         }
     }
 }
@@ -173,9 +173,9 @@ async function runSign(
     let { pairingData } = await getPairingDataAndStorage();
     let messageHash = fromHexStringToBytes(messageHashHex);
     if (messageHash.length !== 32) {
-        throw new SnapError(
+        throw new MpcError(
             "Invalid length of messageHash, should be 32 bytes",
-            SnapErrorCode.InvalidMessageHashLength
+            MpcErrorCode.InvalidMessageHashLength
         );
     }
 
