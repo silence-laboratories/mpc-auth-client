@@ -21,6 +21,7 @@ import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen
 import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
+import Image from "next/image";
 interface HomescreenProps {}
 
 const Homescreen: React.FC<HomescreenProps> = ({}) => {
@@ -72,7 +73,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
     useEffect(() => {
         if (!walletAccount || !eoa || chainCheckRef.current) return;
-    
+
         const checkAndSwitchChain = async () => {
             const isSepolia = await isChainSepolia();
             if (!isSepolia) {
@@ -97,10 +98,10 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 chainCheckRef.current = true;
             }
         };
-    
+
         checkAndSwitchChain();
     }, [walletAccount, eoa]);
-    
+
     async function onSwitchChainClick() {
         if (switchChain === "popup") return;
         const didUserSwitch = await switchToSepolia();
@@ -151,7 +152,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [showTransactionInitiatedBanner, setShowTransactionInitiatedBanner] =
         useState(false);
     const [showTransactionfailBanner, setShowTransactionfailBanner] =
-    useState(false);
+        useState(false);
     const [showTransactionSignedBanner, setShowTransactionSignedBanner] =
         useState(false);
 
@@ -362,9 +363,12 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
                                     <div className="mt-4 rounded-full bg-[#E8EDF3] text-sm py-2 px-3 flex flex-row">
                                         {network === "Sepolia Test Network" && (
-                                            <img
+                                            <Image
                                                 src="./ethereum.svg"
                                                 className="mr-2"
+                                                width="10"
+                                                height="10"
+                                                alt="ethereum"
                                             />
                                         )}
                                         <div>{network}</div>
@@ -580,7 +584,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                             </div>
                         </div>
                     )}
-                      {showTransactionfailBanner && (
+                    {showTransactionfailBanner && (
                         <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[white] border-[#166533] w-full text-[red]">
                             <svg
                                 className="absolute top-4 right-4 cursor-pointer"
@@ -605,7 +609,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                             </div>
                         </div>
                     )}
-
 
                     {showTransactionSignedBanner && (
                         <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[#000000]">
