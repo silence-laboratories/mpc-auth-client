@@ -1,0 +1,18 @@
+name: ko-publish-aggregator-and-operator
+
+on:
+  push:
+    branches: ['CI/CD']
+  # we can also trigger manually in case needed
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: mpc-account-abstraction-sdk-builder
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v2
+      - run: yarn i && yarn build
