@@ -11,9 +11,8 @@ import {
 import { TextInput } from "@/components/textInput";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { SilentWallet } from "@/silentWallet";
 import { formatEther } from "ethers/lib/utils";
-import { getPairingStatus, getSilentShareStorage } from "@/mpc/storage/wallet";
+import { getPairingStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical, Receipt } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
