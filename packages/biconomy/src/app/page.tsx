@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { getPairingStatus } from "@/mpc/storage/wallet";
+import 'animate.css';
 
 export default function Home() {
     const router = useRouter();
