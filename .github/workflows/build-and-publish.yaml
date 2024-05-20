@@ -9,7 +9,7 @@ on:
 jobs:
   publish:
     name: Publish
-    runs-on: mpc-account-abstraction-sdk-builder
+    runs-on: mpc-account-abstraction-sdk-deployer
     permissions:
       packages: write
       contents: read
