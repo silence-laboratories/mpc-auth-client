@@ -15,4 +15,6 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v2
-      - run: yarn i && yarn build
+      - run: | 
+            pushd packages/biconomy && npm i
+            popd && pushd packages/stackup && npm i 
