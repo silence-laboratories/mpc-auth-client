@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { getPairingStatus } from "@/mpc/storage/wallet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
+import Image from "next/image";
 function Page() {
     const router = useRouter();
     const oldEoa = store.getOldEoa();
@@ -22,7 +23,7 @@ function Page() {
                 try {
                     router.replace("/mint");
                     store.clearOldAccount();
-                } catch(err) {
+                } catch (err) {
                     console.error(err);
                 }
             }
@@ -49,7 +50,7 @@ function Page() {
             router.replace("/intro");
             return;
         }
-    }, []);
+    }, [router]);
 
     return (
         <div>
@@ -137,15 +138,12 @@ function Page() {
                 </>
             ) : (
                 <>
-                    <img
+                    <Image
                         className="mx-auto"
                         src="/mismatch-repair.svg"
                         alt="mismatch-repair"
-                        style={{
-                            width: "187px",
-                            height: "145.676px",
-                            flexShrink: "0",
-                        }}
+                        width="187"
+                        height="147"
                     />
                     <div
                         className="mt-6 mb-4"

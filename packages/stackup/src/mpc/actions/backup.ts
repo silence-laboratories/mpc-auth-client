@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { SnapError, SnapErrorCode } from '../error';
+import { MpcError, MpcErrorCode } from '../error';
 import { BackupConversation, PairingData } from '../types';
 import { sendMessage } from '../transport/firebaseApi';
 
@@ -26,13 +26,13 @@ export const backup = async (
 			false,
 		);
 		if (response) {
-			throw new SnapError('Backup failed', SnapErrorCode.BackupFailed);
+			throw new MpcError('Backup failed', MpcErrorCode.BackupFailed);
 		}
 	} catch (error) {
-		if (error instanceof SnapError) {
+		if (error instanceof MpcError) {
 			throw error;
 		} else if (error instanceof Error) {
-			throw new SnapError(error.message, SnapErrorCode.BackupFailed);
-		} else throw new SnapError('unknown-error', SnapErrorCode.UnknownError);
+			throw new MpcError(error.message, MpcErrorCode.BackupFailed);
+		} else throw new MpcError('unknown-error', MpcErrorCode.UnknownError);
 	}
 };

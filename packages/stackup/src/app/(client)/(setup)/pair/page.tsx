@@ -6,7 +6,7 @@ import { Button } from "@/components/button";
 import { Avatar, AvatarFallback } from "@/components/avatar";
 import { Progress } from "@/components/progress";
 import { useRouter, useSearchParams } from "next/navigation";
-
+import loadingGif from "../../../../../public/loading.gif";
 import {
     initPairing,
     runKeygen,
@@ -17,8 +17,15 @@ import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 import { setPairingStatus } from "@/mpc/storage/wallet";
-import { accountType, getOldEoa, isPasswordReady, setEoa } from "@/mpc/storage/account";
+import {
+    accountType,
+    getOldEoa,
+    isPasswordReady,
+    setEoa,
+} from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
+import Image from "next/image";
+import LoadingScreen from "@/components/loadingScreen";
 
 function Page() {
     const router = useRouter();
@@ -43,7 +50,6 @@ function Page() {
         setPairingStatus("Paired");
 
         if (isRepairing && oldEoa !== null && eoa.address !== oldEoa.address) {
-
             router.replace("/mismatchAccounts");
         } else {
             router.replace("/mint");
@@ -72,30 +78,37 @@ function Page() {
 
     const generateWallet = async () => {
         (async () => {
-            const qrCode = await initPairing("stackup");
-            setQr(qrCode);
-            setSeconds(MAX_SECONDS);
-            setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
+            try {
+                const qrCode = await initPairing("stackup");
+                setQr(qrCode);
+                setSeconds(MAX_SECONDS);
+                setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
-            const pairingSessionData = await runStartPairingSession();
-            setLoading(true);
-            if (pairingSessionData.backupData) {
-                setPairingSessionDataState(pairingSessionData);
-                setShowPasswordScreen(true);
-            } else {
-                await runEndPairingSession(pairingSessionData, isPasswordReady());
-                const keygenRes = await runKeygen();
-                saveEoaAfterPairing({
-                    address:
-                        "0x" +
-                        pubToAddress(
-                            Buffer.from(
-                                keygenRes.distributedKey.publicKey,
-                                "hex"
-                            )
-                        ).toString("hex"),
-                });
-                router.replace("/backup");
+                const pairingSessionData = await runStartPairingSession();
+                setLoading(true);
+                if (pairingSessionData.backupData) {
+                    setPairingSessionDataState(pairingSessionData);
+                    setShowPasswordScreen(true);
+                } else {
+                    await runEndPairingSession(
+                        pairingSessionData,
+                        isPasswordReady()
+                    );
+                    const keygenRes = await runKeygen();
+                    saveEoaAfterPairing({
+                        address:
+                            "0x" +
+                            pubToAddress(
+                                Buffer.from(
+                                    keygenRes.distributedKey.publicKey,
+                                    "hex"
+                                )
+                            ).toString("hex"),
+                    });
+                    router.replace("/backup");
+                }
+            } catch (error) {
+                console.error(error);
             }
         })();
     };
@@ -180,21 +193,7 @@ function Page() {
                 Pair with Phone
             </div>
 
-            {loading && (
-                <div className="flex flex-col items-center justify-center h-[50vh]">
-                    <img
-                        className="h-[50%] mb-8"
-                        src="/loading.gif"
-                        alt="loading"
-                    />
-                    <div
-                        className="text-center text-blackh2-bold"
-                        style={{ marginBottom: 140 }}
-                    >
-                        Pairing...
-                    </div>
-                </div>
-            )}
+            {loading && <LoadingScreen>Pairing...</LoadingScreen>}
             {!loading && (
                 <>
                     <div className="b2-regular p-2 flex rounded-lg border bg-[rgba(96,154,250,0.1)] border-[#1e55af] text-[#1567E4] my-4">
@@ -239,9 +238,9 @@ function Page() {
                             >
                                 {qr == "placeholder" ? (
                                     <div className="flex items-center justify-center">
-                                        <img
-                                            className="h-24 mb-8"
-                                            src="/loading.gif"
+                                        <Image
+                                            className="w-[50%] h-auto mb-8"
+                                            src={loadingGif}
                                             alt="loading"
                                         />
                                     </div>
@@ -352,15 +351,12 @@ function Page() {
                             </Avatar>
                             <div className="flex items-center flex-wrap flex-1">
                                 Install{" "}
-                                <img
-                                    className="mx-2"
+                                <Image
+                                    className="mx-2 rounded-[4px]"
                                     src="/sl-logo.png"
                                     alt="sllogosm"
-                                    style={{
-                                        height: 20,
-                                        width: 20,
-                                        borderRadius: 4,
-                                    }}
+                                    height="20"
+                                    width="20"
                                 />
                                 <div className="mr-1 text-blackb2-bold">
                                     Silent Shard

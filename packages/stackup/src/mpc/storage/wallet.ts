@@ -1,16 +1,16 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { SnapError, SnapErrorCode } from "../error";
+import { MpcError, MpcErrorCode } from "../error";
 import { StorageData, pairingStatusType } from "../types";
 import { clearAccount } from "./account";
 
 const getWalletId = (): string => {
     let walletId = localStorage.getItem("walletId");
     if (walletId === null) {
-        throw new SnapError(
+        throw new MpcError(
             "Wallet id is not found",
-            SnapErrorCode.UnknownError
+            MpcErrorCode.UnknownError
         );
     }
     return walletId;
@@ -44,9 +44,9 @@ const clearWallet = () => {
  */
 const saveSilentShareStorage = (data: StorageData) => {
     if (data == null) {
-        throw new SnapError(
+        throw new MpcError(
             "Storage data cannot be null",
-            SnapErrorCode.InvalidStorageData
+            MpcErrorCode.InvalidStorageData
         );
     }
     let walletId = getWalletId();
@@ -62,15 +62,15 @@ const getSilentShareStorage = (): StorageData => {
     let walletId = getWalletId();
     const _isStorageExist = isStorageExist();
     if (!_isStorageExist) {
-        throw new SnapError("Wallet is not paired", SnapErrorCode.NotPaired);
+        throw new MpcError("Wallet is not paired", MpcErrorCode.NotPaired);
     }
 
     let state = localStorage.getItem(walletId);
 
     if (!state) {
-        throw new SnapError(
+        throw new MpcError(
             "Wallet failed to fetch state",
-            SnapErrorCode.UnknownError
+            MpcErrorCode.UnknownError
         );
     }
 

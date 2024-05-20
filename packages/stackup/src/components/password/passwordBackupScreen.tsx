@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { PasswordInput, PasswordInputErr } from "./passwordInput";

@@ -12,5 +12,5 @@ export default function Home() {
         } else {
             router.replace("/intro");
         }
-    }, []);
+    }, [router]);
 }

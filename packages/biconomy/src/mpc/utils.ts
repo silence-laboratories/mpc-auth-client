@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { SnapError, SnapErrorCode } from './error';
+import { MpcError, MpcErrorCode } from './error';
 import _sodium from 'libsodium-wrappers-sumo';
 import { DistributedKey } from './types';
 import { pubToAddress } from '@ethereumjs/util';
@@ -17,7 +17,7 @@ export const fromHexStringToBytes = (hexString: string) => {
 	} catch (error) {
 		throw error instanceof Error
 			? error
-			: new SnapError(`unknown-error`, SnapErrorCode.UnknownError);
+			: new MpcError(`unknown-error`, MpcErrorCode.UnknownError);
 	}
 };
 
@@ -30,7 +30,7 @@ export const toHexString = (bytes: Uint8Array) => {
 	} catch (error) {
 		throw error instanceof Error
 			? error
-			: new SnapError(`unknown-error`, SnapErrorCode.UnknownError);
+			: new MpcError(`unknown-error`, MpcErrorCode.UnknownError);
 	}
 };
 

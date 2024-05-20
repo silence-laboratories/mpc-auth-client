@@ -10,7 +10,7 @@ import * as utils from "../utils";
 import { sendMessage } from "../transport/firebaseApi";
 import { PairingData, SignConversation, SignMetadata } from "../types";
 import _sodium, { base64_variants } from "libsodium-wrappers-sumo";
-import { SnapError, SnapErrorCode } from "../error";
+import { MpcError, MpcErrorCode } from "../error";
 
 let running: boolean = false;
 
@@ -34,9 +34,9 @@ export interface SignRequest {
 export const sign = async (signRequest: SignRequest): Promise<SignResult> => {
     try {
         if (running) {
-            throw new SnapError(
+            throw new MpcError(
                 `Sign already running`,
-                SnapErrorCode.SignResourceBusy
+                MpcErrorCode.SignResourceBusy
             );
         }
         running = true;
@@ -99,9 +99,9 @@ export const sign = async (signRequest: SignRequest): Promise<SignResult> => {
             const msg = await p1
                 .processMessage(decodedMessage)
                 .catch((error) => {
-                    throw new SnapError(
+                    throw new MpcError(
                         `Internal library error: ${error}`,
-                        SnapErrorCode.InternalLibError
+                        MpcErrorCode.InternalLibError
                     );
                 });
 
@@ -143,9 +143,9 @@ export const sign = async (signRequest: SignRequest): Promise<SignResult> => {
                 signConversation = signConversationNew;
             }
             if (signConversation.isApproved === false) {
-                throw new SnapError(
+                throw new MpcError(
                     `User(phone) rejected sign request`,
-                    SnapErrorCode.UserPhoneDenied
+                    MpcErrorCode.UserPhoneDenied
                 );
             }
             round++;
@@ -158,13 +158,13 @@ export const sign = async (signRequest: SignRequest): Promise<SignResult> => {
             elapsedTime: Date.now() - startTime,
         };
     } catch (error) {
-        if (error instanceof SnapError) {
-            if (error.code != SnapErrorCode.SignResourceBusy) {
+        if (error instanceof MpcError) {
+            if (error.code != MpcErrorCode.SignResourceBusy) {
                 running = false;
             }
             throw error;
         } else if (error instanceof Error) {
-            throw new SnapError(error.message, SnapErrorCode.KeygenFailed);
-        } else throw new SnapError("unknown-error", SnapErrorCode.SignFailed);
+            throw new MpcError(error.message, MpcErrorCode.KeygenFailed);
+        } else throw new MpcError("unknown-error", MpcErrorCode.SignFailed);
     }
 };
