@@ -79,7 +79,7 @@ function Page() {
     const generateWallet = async () => {
         (async () => {
             try {
-                const qrCode = await initPairing("stackup");
+                const qrCode = await initPairing("biconomy");
                 setQr(qrCode);
                 setSeconds(MAX_SECONDS);
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
