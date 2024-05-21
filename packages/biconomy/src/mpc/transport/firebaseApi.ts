@@ -3,8 +3,8 @@
 
 import { MpcError, MpcErrorCode } from '../error';
 
-// const baseUrl = 'https://cloudfuntion-stage.silencelaboratories.com'
-const baseUrl = 'https://cloudfuntion-prod.silencelaboratories.com'
+const baseUrl = 'https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net'
+// const baseUrl = 'https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net'
 interface Response {
 	response: any;
 	error: string;
