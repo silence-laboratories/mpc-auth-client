@@ -17,6 +17,11 @@ jobs:
       - uses: actions/checkout@v2
       - run: | 
             pushd packages/biconomy && npm i
-            popd && pushd packages/stackup && npm i 
+            popd 
+            pushd packages/stackup && npm i 
+            popd
+            if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
+            if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
+            rsync -acP packages/ /opt/service/
             sudo systemctl restart biconomy.service stackup.service
 
