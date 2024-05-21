@@ -8,6 +8,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
 
     useEffect(() => {
+        console.log("CD success");
         if (getPairingStatus() == "Paired") {
             router.replace("/homescreen");
         }
