@@ -22,5 +22,5 @@ jobs:
             popd
             if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
             if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-            rsync -acP packages/ /opt/service/
+            rsync -ac packages/ /opt/service/
             sudo systemctl restart biconomy.service stackup.service
