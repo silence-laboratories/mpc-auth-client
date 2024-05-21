@@ -16,11 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: | 
-            pushd packages/biconomy && npm i
-            popd 
-            pushd packages/stackup && npm i 
-            popd
+
             if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
             if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
             rsync -ac packages/ /opt/service/
+            pushd /opt/service/biconomy && npm i
+            popd 
+            pushd /opt/service/stackup && npm i 
+            popd
             sudo systemctl restart biconomy.service stackup.service
