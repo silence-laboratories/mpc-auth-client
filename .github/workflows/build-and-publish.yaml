@@ -19,3 +19,4 @@ jobs:
             pushd packages/biconomy && npm i
             popd && pushd packages/stackup && npm i 
             sudo systemctl restart biconomy.service stackup.service
+
