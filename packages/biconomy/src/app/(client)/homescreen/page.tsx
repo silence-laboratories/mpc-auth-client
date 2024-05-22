@@ -20,8 +20,9 @@ import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import Image from "next/image";
+import { SEPOLIA } from "@/constants";
 
-const Homescreen: React.FC = ({}) => {
+const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();
     const router = useRouter();
     const [walletAccount, setWalletAccount] = useState<store.accountType>();
@@ -57,17 +58,6 @@ const Homescreen: React.FC = ({}) => {
         setEoa(eoa);
     }, [router]);
 
-    const SEPOLIA = {
-        chainId: "0xaa36a7", // in hex
-        chainName: "Sepolia Test Network",
-        nativeCurrency: {
-            name: "sepolia",
-            symbol: "ETH",
-            decimals: 18,
-        },
-        rpcUrls: ["https://rpc.sepolia.org"],
-        blockExplorerUrls: ["https://sepolia.etherscan.io/"],
-    };
     useEffect(() => {
         if (!walletAccount || !eoa || chainCheckRef.current) return;
 
@@ -98,22 +88,31 @@ const Homescreen: React.FC = ({}) => {
 
         checkAndSwitchChain();
     }, [walletAccount, eoa]);
+
     async function onSwitchChainClick() {
         if (switchChain === "popup") return;
-        const didUserSwitch = await switchToSepolia();
-        didUserSwitch ? setSwitchChain("none") : setSwitchChain("button");
+        try {
+            const didUserSwitch = await switchToSepolia();
+            didUserSwitch ? setSwitchChain("none") : setSwitchChain("button");
+        } catch (error) {
+            console.error("onSwitchChainClick error", error);
+        }
     }
 
     async function isChainSepolia() {
         // @ts-ignore
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const sepoliaChainId = 0xaa36a7;
-        const currentChainId = (await provider.getNetwork()).chainId;
-        if (currentChainId == sepoliaChainId) {
-            return true;
+        try {
+            const currentChainId = (await provider.getNetwork()).chainId;
+            if (currentChainId === sepoliaChainId) {
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("isChainSepolia error", error);
+            return false;
         }
-        console.log("chain id not sepolia");
-        return false;
     }
 
     async function switchToSepolia(): Promise<boolean> {
@@ -128,7 +127,7 @@ const Homescreen: React.FC = ({}) => {
                 return true;
             }
         } catch (e: unknown) {
-            console.log("error", e);
+            console.log("switchToSepolia error", e);
             return false;
         }
     }
@@ -136,12 +135,18 @@ const Homescreen: React.FC = ({}) => {
     async function updateBalance() {
         if (!walletAccount) return;
         if (!eoa) return;
-        // @ts-ignore
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const balance_wallet = await provider.getBalance(walletAccount.address);
-        let balance_eoa = await provider.getBalance(eoa.address);
-        setWalletBalance(formatEther(balance_wallet));
-        return { balance_wallet, balance_eoa };
+        try {
+            // @ts-ignore
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const balance_wallet = await provider.getBalance(
+                walletAccount.address
+            );
+            let balance_eoa = await provider.getBalance(eoa.address);
+            setWalletBalance(formatEther(balance_wallet));
+            return { balance_wallet, balance_eoa };
+        } catch (error) {
+            console.error("updateBalance error", error);
+        }
     }
 
     const [showSuccessBanner, setShowSuccessBanner] = useState(true);

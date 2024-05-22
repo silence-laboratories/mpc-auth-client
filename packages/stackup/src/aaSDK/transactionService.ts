@@ -2,7 +2,6 @@ import { SilentWallet } from "@/silentWallet";
 import { getSilentShareStorage } from "@/mpc/storage/wallet";
 import * as store from "@/mpc/storage/account";
 import { Client, Presets } from "userop";
-import { Address } from "@ethereumjs/util";
 import { ethers } from "ethers";
 
 export async function sendTransaction(recipientAddress: string, amount: string) {

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
-import { Client, Presets } from "userop";
 import { Button } from "@/components/button";
 import {
     Popover,
@@ -14,16 +13,16 @@ import { useRouter } from "next/navigation";
 import { formatEther } from "ethers/lib/utils";
 import { getPairingStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
-import { MoreVertical, Receipt } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import Image from "next/image";
-interface HomescreenProps {}
+import { SEPOLIA } from "@/constants";
 
-const Homescreen: React.FC<HomescreenProps> = ({}) => {
+const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();
     const router = useRouter();
     const [walletAccount, setWalletAccount] = useState<store.accountType>();
@@ -38,6 +37,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
     const chainCheckRef = useRef(false);
+
     useEffect(() => {
         if (getPairingStatus() == "Unpaired") {
             router.replace("/intro");
@@ -57,18 +57,6 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         setWalletAccount(account);
         setEoa(eoa);
     }, []);
-
-    const SEPOLIA = {
-        chainId: "0xaa36a7", // in hex
-        chainName: "Sepolia Test Network",
-        nativeCurrency: {
-            name: "sepolia",
-            symbol: "ETH",
-            decimals: 18,
-        },
-        rpcUrls: ["https://rpc.sepolia.org"],
-        blockExplorerUrls: ["https://sepolia.etherscan.io/"],
-    };
 
     useEffect(() => {
         if (!walletAccount || !eoa || chainCheckRef.current) return;
@@ -103,20 +91,28 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
 
     async function onSwitchChainClick() {
         if (switchChain === "popup") return;
-        const didUserSwitch = await switchToSepolia();
-        didUserSwitch ? setSwitchChain("none") : setSwitchChain("button");
+        try {
+            const didUserSwitch = await switchToSepolia();
+            didUserSwitch ? setSwitchChain("none") : setSwitchChain("button");
+        } catch (error) {
+            console.error("onSwitchChainClick error", error);
+        }
     }
 
     async function isChainSepolia() {
         // @ts-ignore
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const sepoliaChainId = 0xaa36a7;
-        const currentChainId = (await provider.getNetwork()).chainId;
-        if (currentChainId == sepoliaChainId) {
-            return true;
+        try {
+            const currentChainId = (await provider.getNetwork()).chainId;
+            if (currentChainId === sepoliaChainId) {
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("isChainSepolia error", error);
+            return false;
         }
-        console.log("chain id not sepolia");
-        return false;
     }
 
     async function switchToSepolia(): Promise<boolean> {
@@ -131,7 +127,7 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
                 return true;
             }
         } catch (e: unknown) {
-            console.log("error", e);
+            console.log("switchToSepolia error", e);
             return false;
         }
     }
@@ -139,12 +135,18 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
     async function updateBalance() {
         if (!walletAccount) return;
         if (!eoa) return;
-        // @ts-ignore
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const balance_wallet = await provider.getBalance(walletAccount.address);
-        let balance_eoa = await provider.getBalance(eoa.address);
-        setWalletBalance(formatEther(balance_wallet));
-        return { balance_wallet, balance_eoa };
+        try {
+            // @ts-ignore
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const balance_wallet = await provider.getBalance(
+                walletAccount.address
+            );
+            let balance_eoa = await provider.getBalance(eoa.address);
+            setWalletBalance(formatEther(balance_wallet));
+            return { balance_wallet, balance_eoa };
+        } catch (error) {
+            console.error("updateBalance error", error);
+        }
     }
 
     const [showSuccessBanner, setShowSuccessBanner] = useState(true);
@@ -213,19 +215,22 @@ const Homescreen: React.FC<HomescreenProps> = ({}) => {
         (async () => {
             setShowTransactionSignedBanner(true);
             setShowTransactionInitiatedBanner(true);
-
-            const result = await sendTransaction(recipientAddress, amount);
-            if (!result.transactionHash) {
-                console.log("error", result);
+            try {
+                const result = await sendTransaction(recipientAddress, amount);
+                if (!result.transactionHash) {
+                    console.log("error", result);
+                    setShowTransactionInitiatedBanner(false);
+                    setShowTransactionfailBanner(true);
+                    return;
+                }
+                console.log("result", result.transactionHash);
+                setShowTransactionSignedBanner(true);
                 setShowTransactionInitiatedBanner(false);
-                setShowTransactionfailBanner(true);
-                return;
+                store.setTxHash(result?.transactionHash ?? "");
+                await updateBalance();
+            } catch (error) {
+                console.error("sendTransaction error", error);
             }
-            console.log("result", result.transactionHash);
-            setShowTransactionSignedBanner(true);
-            setShowTransactionInitiatedBanner(false);
-            store.setTxHash(result?.transactionHash ?? "");
-            await updateBalance();
         })();
     };
 

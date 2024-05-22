@@ -26,6 +26,7 @@ import {
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import LoadingScreen from "@/components/loadingScreen";
+import { WALLET_ID } from "@/constants";
 
 function Page() {
     const router = useRouter();
@@ -79,7 +80,7 @@ function Page() {
     const generateWallet = async () => {
         (async () => {
             try {
-                const qrCode = await initPairing("biconomy");
+                const qrCode = await initPairing(WALLET_ID);
                 setQr(qrCode);
                 setSeconds(MAX_SECONDS);
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
