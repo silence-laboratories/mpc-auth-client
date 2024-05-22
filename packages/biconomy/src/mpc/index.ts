@@ -42,7 +42,6 @@ async function isPaired() {
 
 async function initPairing(walletId: string) {
     let qrCode = await PairingAction.init(walletId);
-    localStorage.setItem("walletId", walletId);
     return qrCode;
 }
 
