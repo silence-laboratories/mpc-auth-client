@@ -1,27 +1,48 @@
-name: ko-publish-aggregator-and-operator
+name: build-and-publish--biconomy-and-stackup
 
 on:
   push:
-    branches: ['main']
+    branches: ['CI/CD']
   # we can also trigger manually in case needed
   workflow_dispatch:
 
 jobs:
-  publish:
-    name: Publish
-    runs-on: mpc-account-abstraction-sdk-deployer
-    permissions:
-      packages: write
-      contents: read
+  build:
+    runs-on: mpc-account-abstraction-sdk-builder
     steps:
-      - uses: actions/checkout@v2
-      - run: | 
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          pushd packages/biconomy && npm i && npm run build
+          popd 
+          pushd packages/stackup && npm i && npm run build
+          popd
 
-            if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
-            if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-            rsync -ac packages/ /opt/service/
-            pushd /opt/service/biconomy && npm i && npm run build
-            popd 
-            pushd /opt/service/stackup && npm i && npm run build
-            popd
-            sudo systemctl restart biconomy.service stackup.service
+      - name: Build artifact
+        run: |
+          7z a ./biconomy&stackup.7z ../packages/*
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: biconomy&stackup
+          path: ./biconomy&stackup.7z
+          
+  deploy-staging:
+    runs-on: mpc-account-abstraction-sdk-deployer
+    needs: build
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: biconomy&stackup
+          path: ./
+      - name: Build artifact
+        run: |
+          mv ./biconomy&stackup.7z /opt/service/
+          cd /opt/service
+          if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
+          if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
+          7z x biconomy&stackup.7z
+          sudo systemctl restart biconomy.service stackup.service
