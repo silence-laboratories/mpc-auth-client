@@ -30,7 +30,7 @@ jobs:
           path: ./biconomy-stackup.7z
           
   deploy-staging:
-    runs-on: mpc-account-abstraction-sdk-deployer
+    runs-on: mpc-account-abstraction-sdk-stage-deployer-asia
     needs: build
     steps:
       - name: Download artifact
