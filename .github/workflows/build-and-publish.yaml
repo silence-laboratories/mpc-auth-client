@@ -21,13 +21,13 @@ jobs:
 
       - name: Build artifact
         run: |
-          /usr/bin/7z a ./biconomy&stackup.7z ../packages/*
+          /usr/bin/7z a ./biconomy-stackup.7z ../packages/*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: biconomy&stackup
-          path: ./biconomy&stackup.7z
+          name: biconomy-stackup
+          path: ./biconomy-stackup.7z
           
   deploy-staging:
     runs-on: mpc-account-abstraction-sdk-deployer
