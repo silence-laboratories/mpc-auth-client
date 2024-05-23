@@ -49,7 +49,6 @@ function Page() {
             <br></br>
 
             <Image
-                placeholder="blur"
                 priority={true}
                 src="/slxbcnmy.svg"
                 width="237"

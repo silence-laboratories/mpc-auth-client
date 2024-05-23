@@ -10,7 +10,6 @@ export default function LoadingScreen({
     return (
         <div className="flex flex-col items-center justify-center h-[50vh]">
             <Image
-                placeholder="blur"
                 priority={true}
                 className="my-4 w-[50%] h-auto"
                 src={loadingGif}
