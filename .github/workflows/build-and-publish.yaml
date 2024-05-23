@@ -36,7 +36,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: biconomy&stackup
+          name: biconomy-stackup
           path: ./
       - name: Build artifact
         run: |
