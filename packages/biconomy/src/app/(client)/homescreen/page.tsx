@@ -170,9 +170,9 @@ const Homescreen: React.FC = () => {
 
     useEffect(() => {
         setIsSendValid(
-            switchChain == "none" &&
-                recipientAddressError == "" &&
-                amountError == "" &&
+            switchChain === "none" &&
+                recipientAddressError === "" &&
+                amountError === "" &&
                 recipientAddress !== "" &&
                 amount !== ""
         );
