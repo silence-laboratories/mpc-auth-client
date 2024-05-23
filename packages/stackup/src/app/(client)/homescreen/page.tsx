@@ -157,11 +157,12 @@ const Homescreen: React.FC = () => {
     const [showTransactionSignedBanner, setShowTransactionSignedBanner] =
         useState(false);
 
-    const [recipientAddress, setRecipientAddress] = useState("0x");
-    const [amount, setAmount] = useState("0");
+    const [recipientAddress, setRecipientAddress] = useState<string>("");
+    const [amount, setAmount] = useState<string>("");
     const [isSendValid, setIsSendValid] = useState(false);
-    const [recipientAddressError, setRecipientAddressError] = useState("");
-    const [amountError, setAmountError] = useState("");
+    const [recipientAddressError, setRecipientAddressError] =
+        useState<string>("");
+    const [amountError, setAmountError] = useState<string>("");
 
     useEffect(() => {
         setIsPasswordReady(store.isPasswordReady());
@@ -171,10 +172,17 @@ const Homescreen: React.FC = () => {
         setIsSendValid(
             switchChain == "none" &&
                 recipientAddressError == "" &&
-                amountError == ""
+                amountError == "" &&
+                recipientAddress !== "" &&
+                amount !== ""
         );
-    }, [recipientAddress, amount, switchChain]);
-
+    }, [
+        recipientAddress,
+        amount,
+        switchChain,
+        recipientAddressError,
+        amountError,
+    ]);
     const handleRecipientAddressChange = (address_: string) => {
         setRecipientAddress(address_);
 
@@ -211,6 +219,7 @@ const Homescreen: React.FC = () => {
 
     const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
+        if (!isSendValid) return;
 
         (async () => {
             setShowTransactionSignedBanner(true);
@@ -727,7 +736,11 @@ const Homescreen: React.FC = () => {
                         />
                         <Button
                             onClick={handleSend}
-                            className="bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active self-center mb-4 w-full"
+                            className={`self-center mb-4 w-full ${
+                                isSendValid
+                                    ? "bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active"
+                                    : "bg-gray-400 cursor-not-allowed"
+                            }`}
                             disabled={!isSendValid}
                         >
                             Send
