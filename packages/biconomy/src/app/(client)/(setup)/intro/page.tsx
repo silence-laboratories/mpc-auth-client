@@ -49,8 +49,11 @@ function Page() {
             <br></br>
 
             <Image
+                placeholder="blur"
+                priority={true}
                 src="/slxbcnmy.svg"
-                width="237" height="33"
+                width="237"
+                height="33"
                 alt="qr code"
                 className="m-auto"
             />

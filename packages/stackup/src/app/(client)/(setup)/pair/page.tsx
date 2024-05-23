@@ -240,6 +240,8 @@ function Page() {
                                 {qr == "placeholder" ? (
                                     <div className="flex items-center justify-center">
                                         <Image
+                                            placeholder="blur"
+                                            priority={true}
                                             className="w-[50%] h-auto mb-8"
                                             src={loadingGif}
                                             alt="loading"
@@ -353,6 +355,8 @@ function Page() {
                             <div className="flex items-center flex-wrap flex-1">
                                 Install{" "}
                                 <Image
+                                    placeholder="blur"
+                                    priority={true}
                                     className="mx-2 rounded-[4px]"
                                     src="/sl-logo.png"
                                     alt="sllogosm"
