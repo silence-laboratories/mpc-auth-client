@@ -40,9 +40,9 @@ jobs:
           path: ./
       - name: Build artifact
         run: |
-          mv ./biconomy&stackup.7z /opt/service/
+          mv ./biconomy-stackup.7z /opt/service/
           cd /opt/service
           if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
           if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-          7z x biconomy&stackup.7z
+          7z x biconomy-stackup.7z
           sudo systemctl restart biconomy.service stackup.service
