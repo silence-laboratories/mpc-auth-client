@@ -49,7 +49,6 @@ function Page() {
             <br></br>
 
             <Image
-                placeholder="blur"
                 priority={true}
                 src="/slxstackup.svg"
                 alt="logo 1"

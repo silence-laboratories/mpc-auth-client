@@ -23,7 +23,6 @@ export default function RootLayout({
                         <div className="flex w-full flex-wrap items-center justify-between h-[8.88vh]">
                             <div className="flex items-center">
                                 <Image
-                                    placeholder="blur"
                                     priority={true}
                                     src="/slxstackup.svg"
                                     alt="logo 1"
@@ -32,7 +31,6 @@ export default function RootLayout({
                                     height="32"
                                 />
                                 <Image
-                                    placeholder="blur"
                                     priority={true}
                                     src="/demoLogo.svg"
                                     alt="Demo Logo"
@@ -53,7 +51,6 @@ export default function RootLayout({
 
                     <div className="w-full relative" style={{ zIndex: 1 }}>
                         <Image
-                            placeholder="blur"
                             priority={true}
                             className="bg-pattern-2nd-layer -z-10"
                             src="/pattern.png"

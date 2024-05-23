@@ -363,7 +363,6 @@ const Homescreen: React.FC = () => {
                                 <div className="mt-4 rounded-full bg-[#E8EDF3] text-sm py-2 px-3 flex flex-row text-nowrap">
                                     {network === "Sepolia Test Network" && (
                                         <Image
-                                            placeholder="blur"
                                             priority={true}
                                             src="./ethereum.svg"
                                             className="mr-2"
