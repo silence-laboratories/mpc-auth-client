@@ -139,6 +139,7 @@ function Page() {
             ) : (
                 <>
                     <Image
+                        priority={true}
                         className="mx-auto"
                         src="/mismatch-repair.svg"
                         alt="mismatch-repair"
