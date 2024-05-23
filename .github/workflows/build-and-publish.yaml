@@ -20,8 +20,8 @@ jobs:
             if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
             if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
             rsync -ac packages/ /opt/service/
-            pushd /opt/service/biconomy && npm i
+            pushd /opt/service/biconomy && npm i && npm run build
             popd 
-            pushd /opt/service/stackup && npm i 
+            pushd /opt/service/stackup && npm i && npm run build
             popd
             sudo systemctl restart biconomy.service stackup.service
