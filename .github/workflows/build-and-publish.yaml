@@ -21,7 +21,7 @@ jobs:
 
       - name: Build artifact
         run: |
-          /usr/bin/7z a ./biconomy-stackup.7z ../packages/*
+          /usr/bin/7z a ./biconomy-stackup.7z ./packages/*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
