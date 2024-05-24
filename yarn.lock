@@ -1509,6 +1509,7 @@
     react "^18"
     react-dom "^18"
     react-toastify "^10.0.4"
+    sharp "^0.33.4"
     tailwind-merge "^2.2.2"
     tailwindcss-animate "^1.0.7"
     web3 "^4.7.0"

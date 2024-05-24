@@ -20,7 +20,6 @@ import { setPairingStatus } from "@/mpc/storage/wallet";
 import {
     accountType,
     getOldEoa,
-    isPasswordReady,
     setEoa,
 } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
@@ -93,7 +92,6 @@ function Page() {
                 } else {
                     await runEndPairingSession(
                         pairingSessionData,
-                        isPasswordReady()
                     );
                     const keygenRes = await runKeygen();
                     saveEoaAfterPairing({
