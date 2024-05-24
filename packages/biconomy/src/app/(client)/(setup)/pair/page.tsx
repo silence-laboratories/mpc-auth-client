@@ -17,12 +17,7 @@ import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 import { setPairingStatus } from "@/mpc/storage/wallet";
-import {
-    accountType,
-    getOldEoa,
-    isPasswordReady,
-    setEoa,
-} from "@/mpc/storage/account";
+import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import LoadingScreen from "@/components/loadingScreen";
@@ -91,10 +86,7 @@ function Page() {
                     setPairingSessionDataState(pairingSessionData);
                     setShowPasswordScreen(true);
                 } else {
-                    await runEndPairingSession(
-                        pairingSessionData,
-                        isPasswordReady()
-                    );
+                    await runEndPairingSession(pairingSessionData);
                     const keygenRes = await runKeygen();
                     saveEoaAfterPairing({
                         address:
