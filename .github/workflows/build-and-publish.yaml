@@ -2,7 +2,7 @@ name: build-and-publish--biconomy-and-stackup
 
 on:
   push:
-    branches: ['CI/CD']
+    branches: ['main']
   # we can also trigger manually in case needed
   workflow_dispatch:
 
