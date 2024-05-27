@@ -166,7 +166,7 @@ const Homescreen: React.FC = () => {
 
     useEffect(() => {
         setIsPasswordReady(store.isPasswordReady());
-    }, [openPasswordBackupDialog]);
+    }, [openSettings]);
 
     useEffect(() => {
         setIsSendValid(
@@ -460,22 +460,14 @@ const Homescreen: React.FC = () => {
                                             <Separator className="w-[248px] ml-3 my-1 bg-[#3A4252]" />
                                             <div
                                                 className="flex justify-center items-center rounded-[8px] cursor-pointer p-2"
-                                                onClick={
-                                                    isPasswordReady
-                                                        ? undefined
-                                                        : () => {
-                                                              setOpenPasswordBackupDialog(
-                                                                  true
-                                                              );
-                                                          }
-                                                }
+                                                onClick={() => {
+                                                    setOpenPasswordBackupDialog(
+                                                        true
+                                                    );
+                                                }}
                                             >
                                                 <div
-                                                    className={`flex rounded-full p-2 mr-2 bg-[#ECEEF2] ${
-                                                        isPasswordReady
-                                                            ? "opacity-50"
-                                                            : "opacity-100"
-                                                    }`}
+                                                    className={`flex rounded-full p-2 mr-2 bg-[#ECEEF2] opacity-100`}
                                                 >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
@@ -515,11 +507,7 @@ const Homescreen: React.FC = () => {
                                                     </svg>
                                                 </div>
                                                 <span
-                                                    className={`${
-                                                        isPasswordReady
-                                                            ? "opacity-50"
-                                                            : "opacity-100"
-                                                    }`}
+                                                    className={`opacity-100`}
                                                 >
                                                     Set Password
                                                 </span>
