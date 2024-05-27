@@ -149,7 +149,7 @@ const Homescreen: React.FC = () => {
         }
     }
 
-    const [showSuccessBanner, setShowSuccessBanner] = useState(true);
+    const [showSuccessBanner, setShowSuccessBanner] = useState(false);
     const [showTransactionInitiatedBanner, setShowTransactionInitiatedBanner] =
         useState(false);
     const [showTransactionfailBanner, setShowTransactionfailBanner] =
@@ -222,7 +222,7 @@ const Homescreen: React.FC = () => {
         if (!isSendValid) return;
 
         (async () => {
-            setShowTransactionSignedBanner(true);
+            setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
             try {
                 const result = await sendTransaction(recipientAddress, amount);
@@ -238,6 +238,8 @@ const Homescreen: React.FC = () => {
                 store.setTxHash(result?.transactionHash ?? "");
                 await updateBalance();
             } catch (error) {
+                setShowTransactionfailBanner(true);
+                setShowTransactionInitiatedBanner(false);
                 console.error("sendTransaction error", error);
             }
         })();
