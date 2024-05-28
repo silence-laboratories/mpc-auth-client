@@ -107,6 +107,12 @@ function Page() {
     };
 
     useEffect(() => {
+        if(pairingSessionDataState) {
+            localStorage.setItem("deviceName", pairingSessionDataState.deviceName);
+        }
+    }, [pairingSessionDataState])
+
+    useEffect(() => {
         generateWallet();
     }, []);
 

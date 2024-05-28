@@ -107,6 +107,12 @@ function Page() {
     };
 
     useEffect(() => {
+        if(pairingSessionDataState) {
+            localStorage.setItem("deviceName", pairingSessionDataState.deviceName);
+        }
+    }, [pairingSessionDataState])
+
+    useEffect(() => {
         generateWallet();
     }, []);
 
@@ -149,6 +155,12 @@ function Page() {
                     );
                 }
             }}
+            onMoveBack={() => {
+                setLoading(false);
+                setPairingSessionDataState(null);
+                setShowPasswordScreen(false);
+                generateWallet();
+            }}
         />
     ) : (
         <div>
@@ -162,9 +174,8 @@ function Page() {
             <Button
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
-                disabled={true}
                 onClick={() => {
-                    console.log("clicked");
+                    router.back();
                 }}
             >
                 <svg
@@ -182,8 +193,8 @@ function Page() {
                     />
                 </svg>
             </Button>
-            <div className="h2-bold text-blackleading-[38.4px] mt-4">
-                Pair with Phone
+            <div className="h2-bold text-black leading-[38.4px] mt-4">
+                {`${isRepairing ? "Recover" : "Pair"} with Phone`}
             </div>
 
             {loading && <LoadingScreen>Pairing...</LoadingScreen>}
@@ -316,7 +327,7 @@ function Page() {
                         </div>
                     )}
                     <div
-                        className={`b2-regular flex flex-col space-y-2 text-[black] mt-4 ${
+                        className={`b2-regular flex flex-col space-y-2  text-[#8E95A2] mt-4 ${
                             isQrExpired ? "opacity-30" : ""
                         }`}
                     >
@@ -353,12 +364,12 @@ function Page() {
                                     height="20"
                                     width="20"
                                 />
-                                <div className="mr-1 text-blackb2-bold">
+                                <div className="mr-1 text-[#25272C] b2-bold">
                                     Silent Shard
                                 </div>{" "}
                                 app from
                                 <a
-                                    className="underline mx-1 text-indigo-custom"
+                                    className="underline mx-1 text-[#745EF6] b2-bold"
                                     href="https://play.google.com/store/apps/details?id=com.silencelaboratories.silentshard"
                                     target="_blank"
                                     rel="noreferrer"
@@ -367,7 +378,7 @@ function Page() {
                                 </a>{" "}
                                 or{" "}
                                 <a
-                                    className="underline mx-1 text-indigo-custom"
+                                    className="underline mx-1 text-[#745EF6] b2-bold"
                                     href="https://apps.apple.com/in/app/silent-shard/id6468993285"
                                     target="_blank"
                                     rel="noreferrer"
@@ -420,7 +431,7 @@ function Page() {
                             </Avatar>
                             <div className="flex-1 flex-wrap">
                                 Click on{" "}
-                                <span className="mx-1 text-blackb2-bold">
+                                <span className="text-[#25272C] b2-bold">
                                     Pair with a new Account
                                 </span>{" "}
                                 and scan the QR code displayed on this screen.

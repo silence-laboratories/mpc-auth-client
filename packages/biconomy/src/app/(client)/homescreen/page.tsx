@@ -21,6 +21,7 @@ import { sendTransaction } from "@/aaSDK/transactionService";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
+import Footer from "@/components/footer";
 
 const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();
@@ -166,7 +167,7 @@ const Homescreen: React.FC = () => {
 
     useEffect(() => {
         setIsPasswordReady(store.isPasswordReady());
-    }, [openSettings]);
+    }, [openPasswordBackupDialog]);
 
     useEffect(() => {
         setIsSendValid(
@@ -264,7 +265,7 @@ const Homescreen: React.FC = () => {
         <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none  w-[92vw] lg:w-[52.75vw] m-auto bg-white-primary">
             <div className="border-none bg-transparent h-max py-0">
                 {showSuccessBanner && (
-                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[#071C0F]">
+                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#F2FFFB] border-[#166533] w-full text-[#071C0F]">
                         <svg
                             className="absolute top-4 right-4 cursor-pointer"
                             onClick={() => {
@@ -295,7 +296,7 @@ const Homescreen: React.FC = () => {
                                     fill="#1F9D41"
                                 />
                             </svg>
-                            <div className="text-center">
+                            <div className="text-center text-[#15803C]">
                                 {`${
                                     eoa === oldEoa
                                         ? "Your Silent Account is operational again!"
@@ -500,9 +501,7 @@ const Homescreen: React.FC = () => {
                                                         />
                                                     </svg>
                                                 </div>
-                                                <span
-                                                    className={`opacity-100`}
-                                                >
+                                                <span className={`opacity-100`}>
                                                     Set Password
                                                 </span>
                                                 <div className="flex-1"></div>
@@ -558,7 +557,7 @@ const Homescreen: React.FC = () => {
                 </div>
 
                 {showTransactionInitiatedBanner && (
-                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[black]">
+                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#F2FFFB] border-[#166533] w-full text-[black]">
                         <svg
                             className="absolute top-4 right-4 cursor-pointer"
                             onClick={() => {
@@ -611,7 +610,7 @@ const Homescreen: React.FC = () => {
                 )}
 
                 {showTransactionSignedBanner && (
-                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[black]">
+                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#F2FFFB] border-[#166533] w-full text-[black]">
                         <svg
                             className="absolute top-4 right-4 cursor-pointer"
                             onClick={() => {
@@ -752,6 +751,9 @@ const Homescreen: React.FC = () => {
                         />
                     </DialogContent>
                 </Dialog>
+            </div>
+            <div className="mt-6 w-full flex justify-center">
+                <Footer />
             </div>
         </div>
     );
