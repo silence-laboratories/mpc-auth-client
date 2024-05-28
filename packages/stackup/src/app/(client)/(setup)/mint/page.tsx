@@ -5,10 +5,11 @@ import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { getPairingStatus } from "@/mpc/storage/wallet";
+import { clearWallet, getPairingStatus } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 import { mintWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
+import { WALLET_STATUS } from "@/constants";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
@@ -18,7 +19,7 @@ function Page() {
     const step = 2;
 
     useEffect(() => {
-        if (getPairingStatus() == "Unpaired") {
+        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
@@ -38,6 +39,11 @@ function Page() {
         }
     };
 
+    const handleMoveBack = () => {
+        clearWallet();
+        router.replace("/intro");
+    }
+
     return (
         <div>
             <div className="absolute w-full top-0 right-0">
@@ -50,10 +56,7 @@ function Page() {
             <Button
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
-                disabled={false}
-                onClick={() => {
-                    console.log("clicked");
-                }}
+                onClick={handleMoveBack}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

@@ -93,5 +93,3 @@ export interface PairingSessionData {
     tokenExpiration: number;
     backupData?: string | undefined;
 }
-
-export type pairingStatusType = "Paired" | "Unpaired";

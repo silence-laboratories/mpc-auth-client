@@ -1,4 +1,5 @@
 export const WALLET_ID = "biconomy";
+
 export const SEPOLIA = {
     chainId: "0xaa36a7", // in hex
     chainName: "Sepolia Test Network",
@@ -10,3 +11,8 @@ export const SEPOLIA = {
     rpcUrls: ["https://rpc.sepolia.org"],
     blockExplorerUrls: ["https://sepolia.etherscan.io/"],
 };
+
+export enum WALLET_STATUS {
+    Paired = "Paired",
+    Unpaired = "Unpaired",
+}

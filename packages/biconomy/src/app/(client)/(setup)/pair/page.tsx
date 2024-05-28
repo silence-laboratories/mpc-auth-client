@@ -21,7 +21,7 @@ import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import LoadingScreen from "@/components/loadingScreen";
-import { WALLET_ID } from "@/constants";
+import { WALLET_ID, WALLET_STATUS } from "@/constants";
 
 function Page() {
     const router = useRouter();
@@ -43,7 +43,7 @@ function Page() {
 
     const saveEoaAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
-        setPairingStatus("Paired");
+        setPairingStatus(WALLET_STATUS.Paired);
 
         if (isRepairing && oldEoa !== null && eoa.address !== oldEoa.address) {
             router.replace("/mismatchAccounts");

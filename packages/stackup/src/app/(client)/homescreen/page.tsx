@@ -20,7 +20,7 @@ import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import Image from "next/image";
-import { SEPOLIA } from "@/constants";
+import { SEPOLIA, WALLET_STATUS } from "@/constants";
 
 const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();
@@ -39,12 +39,12 @@ const Homescreen: React.FC = () => {
     const chainCheckRef = useRef(false);
 
     useEffect(() => {
-        if (getPairingStatus() == "Unpaired") {
+        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
 
-        const account = store.getWalletAccount();
+        const account = store.getSmartContractAccount();
         if (!account) {
             router.replace("/intro");
         }
