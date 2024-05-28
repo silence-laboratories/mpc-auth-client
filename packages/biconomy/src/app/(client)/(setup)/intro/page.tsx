@@ -3,11 +3,7 @@
 import React from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
-import frontAnimation from "../../../../../public/frontAnimation.json";
-import dynamic from "next/dynamic";
 import Image from "next/image";
-
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 function Page() {
     const router = useRouter();
@@ -18,47 +14,50 @@ function Page() {
     return (
         <div>
             <div
-                className="text-center text-black h2-bold"
+                className="text-black h2-bold"
                 style={{
                     fontFamily: "Epilogue",
                     fontSize: "24px",
                     fontWeight: 800,
                     lineHeight: "38px",
                     letterSpacing: "0px",
-                    textAlign: "center",
                 }}
             >
                 Eliminate Single Points of failure with<br></br>
                 Distributed Smart Contract Accounts
             </div>
             <div
-                className="text-center text-black"
+                className="text-black"
                 style={{
                     fontFamily: "Epilogue",
                     fontSize: "14px",
                     fontWeight: 400,
                     lineHeight: "22px",
                     letterSpacing: "0px",
-                    textAlign: "center",
                     marginTop: "24px",
                 }}
             >
-                A beautiful confluence between Multi Party Computation and
-                Account Abstraction to enable a 2FA- like experience
+                A beautiful confluence between{" "}
+                <span className="text-[#745EF6] b2-bold">
+                    Multi Party Computation
+                </span>{" "}
+                and{" "}
+                <span className="text-[#745EF6] b2-bold">
+                    Account Abstraction
+                </span>{" "}
+                to enable a 2FA- like experience
             </div>
             <br></br>
 
-            <Image
-                priority={true}
-                src="/slxbcnmy.svg"
-                width="237"
-                height="33"
-                alt="qr code"
-                className="m-auto"
-            />
-
             <div className="flex items-center justify-center">
-                <Lottie className="w-[600px]" animationData={frontAnimation} />
+                <Image
+                    priority={true}
+                    src="/aaxmpc.gif"
+                    alt="logo 1"
+                    className="m-auto rounded-[12px]"
+                    width="414"
+                    height="264"
+                />
             </div>
 
             <Button

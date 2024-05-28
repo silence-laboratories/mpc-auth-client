@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import { useRouter } from "next/navigation";
 import { Label } from "../ui/label";
 import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { checkPassword } from "@/utils/password";
@@ -12,8 +11,8 @@ import { setPasswordReady } from "@/mpc/storage/account";
 
 export const PasswordEnterScreen: React.FunctionComponent<{
     onProceed: (password: string) => Promise<void>;
-}> = ({ onProceed }) => {
-    const router = useRouter();
+    onMoveBack: () => void;
+}> = ({ onProceed, onMoveBack }) => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
     const [isLoading, setIsLoading] = useState(false);
@@ -75,10 +74,7 @@ export const PasswordEnterScreen: React.FunctionComponent<{
             <Button
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
-                disabled={true}
-                onClick={() => {
-                    console.log("clicked");
-                }}
+                onClick={onMoveBack}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

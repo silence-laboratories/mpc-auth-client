@@ -11,10 +11,12 @@ import { setPasswordReady } from "@/mpc/storage/account";
 
 export type PasswordEnterScreenProps = {
     onProceed: (password: string) => Promise<void>;
+    onMoveBack: () => void;
 };
 
 export const PasswordEnterScreen: React.FC<PasswordEnterScreenProps> = ({
     onProceed,
+    onMoveBack,
 }) => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
@@ -78,9 +80,7 @@ export const PasswordEnterScreen: React.FC<PasswordEnterScreenProps> = ({
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
                 disabled={true}
-                onClick={() => {
-                    console.log("clicked");
-                }}
+                onClick={onMoveBack}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
