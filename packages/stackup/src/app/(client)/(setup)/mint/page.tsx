@@ -5,7 +5,7 @@ import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { getPairingStatus } from "@/mpc/storage/wallet";
+import { clearWallet, getPairingStatus } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 import { mintWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
@@ -39,6 +39,11 @@ function Page() {
         }
     };
 
+    const handleMoveBack = () => {
+        clearWallet();
+        router.replace("/intro");
+    }
+
     return (
         <div>
             <div className="absolute w-full top-0 right-0">
@@ -51,10 +56,7 @@ function Page() {
             <Button
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
-                disabled={false}
-                onClick={() => {
-                    console.log("clicked");
-                }}
+                onClick={handleMoveBack}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
