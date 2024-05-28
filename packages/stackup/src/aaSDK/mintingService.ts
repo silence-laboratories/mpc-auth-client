@@ -17,6 +17,6 @@ export async function mintWallet(eoa: { address: string; }) {
         "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
     );
     const response = simpleAccount.getSender();
-    store.setWalletAccount({ address: response });
+    store.setSmartContractAccount({ address: response });
     return response;
 }

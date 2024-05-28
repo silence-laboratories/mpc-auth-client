@@ -18,11 +18,11 @@ export function getOldEoa(): accountType {
     return JSON.parse(localStorage.getItem("oldEoa") || "null");
 }
 
-export function setWalletAccount(walletAccount: accountType) {
+export function setSmartContractAccount(walletAccount: accountType) {
     localStorage.setItem("walletAccount", JSON.stringify(walletAccount));
 }
 
-export function getWalletAccount(): accountType {
+export function getSmartContractAccount(): accountType {
     return JSON.parse(localStorage.getItem("walletAccount") || "null");
 }
 
@@ -35,9 +35,8 @@ export function getTxHash() {
 }
 
 export function clearAccount() {
+    clearOldAccount();
     localStorage.removeItem("eoa");
-    localStorage.removeItem("oldEoa");
-    localStorage.removeItem("walletAccount");
     localStorage.removeItem("passwordReady");
 }
 

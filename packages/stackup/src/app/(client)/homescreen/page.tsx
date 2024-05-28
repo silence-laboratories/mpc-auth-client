@@ -44,7 +44,7 @@ const Homescreen: React.FC = () => {
             return;
         }
 
-        const account = store.getWalletAccount();
+        const account = store.getSmartContractAccount();
         if (!account) {
             router.replace("/intro");
         }

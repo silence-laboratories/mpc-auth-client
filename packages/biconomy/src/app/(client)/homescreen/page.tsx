@@ -20,7 +20,7 @@ import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import Image from "next/image";
-import { SEPOLIA } from "@/constants";
+import { SEPOLIA, WALLET_STATUS } from "@/constants";
 
 const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();
@@ -44,7 +44,7 @@ const Homescreen: React.FC = () => {
             return;
         }
 
-        const account = store.getWalletAccount();
+        const account = store.getSmartContractAccount();
         if (!account) {
             router.replace("/intro");
         }

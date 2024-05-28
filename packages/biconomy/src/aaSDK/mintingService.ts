@@ -24,6 +24,6 @@ export async function mintBiconomyWallet(eoa: { address: string; }) {
     });
     
     const response = await biconomySmartAccount.getAccountAddress();
-    store.setWalletAccount({ address: response });
+    store.setSmartContractAccount({ address: response });
     return response;
 }
