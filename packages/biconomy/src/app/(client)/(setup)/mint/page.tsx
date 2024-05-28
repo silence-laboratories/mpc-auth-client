@@ -9,6 +9,7 @@ import { accountType, getEoa } from "@/mpc/storage/account";
 import { getPairingStatus } from "@/mpc/storage/wallet";
 import { mintBiconomyWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
+import { WALLET_STATUS } from "@/constants";
 
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
@@ -19,7 +20,7 @@ function Page() {
     const step = 2;
 
     useEffect(() => {
-        if (getPairingStatus() == "Unpaired") {
+        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }

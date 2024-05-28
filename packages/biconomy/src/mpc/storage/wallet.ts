@@ -1,8 +1,9 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
+import { WALLET_STATUS } from "@/constants";
 import { MpcError, MpcErrorCode } from "../error";
-import { StorageData, pairingStatusType } from "../types";
+import { StorageData } from "../types";
 import { clearAccount } from "./account";
 
 const getWalletId = (): string => {
@@ -33,7 +34,7 @@ const isStorageExist = (): boolean => {
 const clearWallet = () => {
     let walletId = getWalletId();
     localStorage.removeItem(walletId);
-    setPairingStatus("Unpaired");
+    setPairingStatus(WALLET_STATUS.Unpaired);
     clearAccount();
 };
 
@@ -79,12 +80,12 @@ const getSilentShareStorage = (): StorageData => {
     return jsonObject;
 };
 
-function setPairingStatus(status: pairingStatusType) {
+function setPairingStatus(status: WALLET_STATUS) {
     localStorage.setItem("pairingStatus", status);
 }
 
-function getPairingStatus(): pairingStatusType {
-    return (localStorage.getItem("pairingStatus") ?? "Unpaired") as pairingStatusType;
+function getPairingStatus(): WALLET_STATUS {
+    return (localStorage.getItem("pairingStatus") ?? "Unpaired") as WALLET_STATUS;
 }
 
 export {

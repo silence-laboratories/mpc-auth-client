@@ -8,6 +8,7 @@ import { getPairingStatus } from "@/mpc/storage/wallet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
+import { WALLET_STATUS } from "@/constants";
 function Page() {
     const router = useRouter();
     const oldEoa = store.getOldEoa();
@@ -46,7 +47,7 @@ function Page() {
     };
 
     useEffect(() => {
-        if (getPairingStatus() == "Unpaired") {
+        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }

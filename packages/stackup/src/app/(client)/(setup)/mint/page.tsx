@@ -9,6 +9,7 @@ import { getPairingStatus } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 import { mintWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
+import { WALLET_STATUS } from "@/constants";
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
@@ -18,7 +19,7 @@ function Page() {
     const step = 2;
 
     useEffect(() => {
-        if (getPairingStatus() == "Unpaired") {
+        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }

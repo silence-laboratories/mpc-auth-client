@@ -39,7 +39,7 @@ const Homescreen: React.FC = () => {
         useState(false);
 
     useEffect(() => {
-        if (getPairingStatus() == "Unpaired") {
+        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
