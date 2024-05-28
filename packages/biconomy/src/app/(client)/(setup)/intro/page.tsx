@@ -43,8 +43,11 @@ function Page() {
                     marginTop: "24px",
                 }}
             >
-                A beautiful confluence between Multi Party Computation and
-                Account Abstraction to enable a 2FA- like experience
+                A beautiful confluence between{" "}
+                <span className="text-[#745EF6] b2-bold">Multi Party Computation</span>{" "}
+                and{" "}
+                <span className="text-[#745EF6] b2-bold">Account Abstraction</span> to
+                enable a 2FA- like experience
             </div>
             <br></br>
 

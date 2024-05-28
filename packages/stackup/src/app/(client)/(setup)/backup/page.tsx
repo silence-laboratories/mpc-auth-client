@@ -45,10 +45,10 @@ function Page() {
 
             <PasswordBackupScreen
                 onProceed={() => {
-                    router.replace("/mint");
+                    router.replace("/afterBackup");
                 }}
                 onTakeRisk={() => {
-                    router.replace("/mint");
+                    router.replace("/afterBackup");
                 }}
             />
         </div>
