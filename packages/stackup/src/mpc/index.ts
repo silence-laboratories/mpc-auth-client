@@ -9,7 +9,7 @@ import * as Backup from "./actions/backup";
 import { aeadEncrypt, requestEntropy } from "./crypto";
 import { fromHexStringToBytes, getAddressFromDistributedKey } from "./utils";
 import {
-    saveSilentShareStorage,
+    setSilentShareStorage,
     getSilentShareStorage,
 } from "./storage/wallet";
 import { PairingSessionData, SignMetadata, StorageData } from "./types";
@@ -59,7 +59,7 @@ async function runEndPairingSession(
         currentAccountAddress,
         password
     );
-    saveSilentShareStorage({
+    setSilentShareStorage({
         newPairingState: result.newPairingState,
         pairingData: result.newPairingState.pairingData,
     });
@@ -78,7 +78,7 @@ async function refreshPairing() {
     let silentShareStorage: StorageData = getSilentShareStorage();
     let pairingData = silentShareStorage.pairingData;
     let result = await PairingAction.refreshToken(pairingData);
-    saveSilentShareStorage({
+    setSilentShareStorage({
         ...silentShareStorage,
         pairingData: result.newPairingData,
     });
@@ -99,7 +99,7 @@ async function runKeygen() {
     let x1 = fromHexStringToBytes(await requestEntropy());
     let accountId = 1;
     let result = await KeyGenAction.keygen(pairingData, accountId, x1);
-    saveSilentShareStorage({
+    setSilentShareStorage({
         ...silentShareStorage,
         newPairingState: {
             pairingData: null,

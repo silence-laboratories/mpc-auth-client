@@ -16,7 +16,7 @@ import {
 import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
-import { setPairingStatus } from "@/mpc/storage/wallet";
+import { setDeviceOS, setPairingStatus } from "@/mpc/storage/wallet";
 import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
@@ -81,7 +81,13 @@ function Page() {
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
                 const pairingSessionData = await runStartPairingSession();
+                if(pairingSessionData) {
+                    setDeviceOS(pairingSessionData.deviceName);
+                }
+                
+                // QR is scanned
                 setLoading(true);
+
                 if (pairingSessionData.backupData) {
                     setPairingSessionDataState(pairingSessionData);
                     setShowPasswordScreen(true);
@@ -105,12 +111,6 @@ function Page() {
             }
         })();
     };
-
-    useEffect(() => {
-        if(pairingSessionDataState) {
-            localStorage.setItem("deviceName", pairingSessionDataState.deviceName);
-        }
-    }, [pairingSessionDataState])
 
     useEffect(() => {
         generateWallet();
@@ -174,8 +174,15 @@ function Page() {
             <Button
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
+                disabled={loading}
                 onClick={() => {
-                    router.back();
+                    if (!loading) {
+                        if (isRepairing) {
+                            router.replace("/homescreen");
+                        } else {
+                            router.replace("/intro");
+                        }
+                    }
                 }}
             >
                 <svg
