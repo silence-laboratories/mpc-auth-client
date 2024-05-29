@@ -14,10 +14,11 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
+import { getDeviceOS } from "@/mpc/storage/wallet";
 
 function Page() {
     const router = useRouter();
-
+    const deviceOS = getDeviceOS();
     return (
         <div>
             <div className="absolute w-full top-0 right-0">
@@ -74,7 +75,7 @@ function Page() {
             <div className="text-[#B6BAC3] mt-4 mb-3 label-md text-center">
                 2 Ways you can backup your wallet
             </div>
-            <CarouselWrapper deviceOS={localStorage.getItem("deviceName") ?? "android"}></CarouselWrapper>
+            <CarouselWrapper deviceOS={deviceOS}></CarouselWrapper>
             <div className="w-full justify-center items-center flex flex-col mt-14">
                 <Button
                     className="bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active w-1/2"

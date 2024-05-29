@@ -3,7 +3,7 @@
 
 import { WALLET_STATUS } from "@/constants";
 import { MpcError, MpcErrorCode } from "../error";
-import { StorageData } from "../types";
+import { DeviceOS, StorageData } from "../types";
 import { clearAccount } from "./account";
 
 const getWalletId = (): string => {
@@ -43,7 +43,7 @@ const clearWallet = () => {
  *
  * @param data obj to save
  */
-const saveSilentShareStorage = (data: StorageData) => {
+const setSilentShareStorage = (data: StorageData) => {
     if (data == null) {
         throw new MpcError(
             "Storage data cannot be null",
@@ -88,12 +88,26 @@ function getPairingStatus(): WALLET_STATUS {
     return (localStorage.getItem("pairingStatus") ?? "Unpaired") as WALLET_STATUS;
 }
 
+function setDeviceOS(deviceName: string) {
+    const deviceOS = deviceName
+          .split(':')[1]
+          .split(',')[0]
+          .trim() as DeviceOS;
+    localStorage.setItem("deviceOS", deviceOS);
+}
+
+function getDeviceOS(): DeviceOS {
+    return (localStorage.getItem("deviceOS") ?? "ios") as DeviceOS;
+}
+
 export {
     isStorageExist,
     clearWallet,
-    saveSilentShareStorage,
+    setSilentShareStorage,
     getSilentShareStorage,
     setPairingStatus,
     getPairingStatus,
-    getWalletId
+    getWalletId,
+    setDeviceOS,
+    getDeviceOS,
 };
