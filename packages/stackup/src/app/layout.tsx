@@ -6,8 +6,8 @@ import Image from "next/image";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Silence x Biconomy AA Wallet Demo",
-    description: "Silence x Biconomy AA Wallet Demo",
+    title: "Silence x Stackup AA Wallet Demo",
+    description: "Silence x Stackup AA Wallet Demo",
 };
 
 export default function RootLayout({
