@@ -342,11 +342,11 @@ const Homescreen: React.FC = () => {
                                 </svg>
                             </div>
                             <div className="flex flex-col items-center md:items-start">
-                                <div className="text-black-200 text-sm">
+                                <div className="b2-regular text-[#8E95A2]">
                                     My Wallet
                                 </div>
                                 <AddressCopyPopover
-                                    className="text-[black] b1-bold"
+                                    className="b2-regular text-[#0A0D14]"
                                     address={
                                         walletAccount?.address ||
                                         "Address not found"
@@ -354,8 +354,8 @@ const Homescreen: React.FC = () => {
                                 />
 
                                 {
-                                    <div className="text-sm text-black-300 mt-2 font-bold">
-                                        Balance: {walletBalance} ETH
+                                    <div className="text-sm text-[#0A0D14] mt-2 headline2">
+                                        {walletBalance} ETH
                                     </div>
                                 }
                             </div>
@@ -363,11 +363,11 @@ const Homescreen: React.FC = () => {
                             <div className="ml-auto"></div>
 
                             <div className="text-black flex flex-col items-center md:items-end mr-6">
-                                <div className="text-sm text-black-200">
+                                <div className="b2-regular text-[#8E95A2]">
                                     EOA
                                 </div>
                                 <AddressCopyPopover
-                                    className="text-[black] b1-bold"
+                                    className="b2-regular text-[#0A0D14]"
                                     address={
                                         eoa?.address || "Address not found"
                                     }
@@ -719,24 +719,27 @@ const Homescreen: React.FC = () => {
                     }}
                 >
                     <div className="h2-bold mb-8 text-black">Transact</div>
-                    <TextInput
-                        label="Address"
-                        placeholder={"0x..."}
-                        value={recipientAddress}
-                        setValue={handleRecipientAddressChange}
-                        error={recipientAddressError}
-                    />
-                    <div className="flex flex-col sm:flex-row item-center justify-between gap-8">
+                    <div className="flex flex-col sm:flex-row gap-6 flex-wrap">
                         <TextInput
+                            inputClass="b1-bold text-[#25272C]"
                             label="Amount"
                             placeholder={"0.0..."}
                             value={amount}
                             setValue={handleAmountChange}
                             error={amountError}
+                            icon={<div className="text-[#B6BAC3]">ETH</div>}
+                        />
+                        <TextInput
+                            inputClass="b1-regular text-[#0A0D14]"
+                            label="To wallet"
+                            placeholder={"0x..."}
+                            value={recipientAddress}
+                            setValue={handleRecipientAddressChange}
+                            error={recipientAddressError}
                         />
                         <Button
                             onClick={handleSend}
-                            className={`self-center mb-4 w-full ${
+                            className={`self-center mb-4 flex-1 ${
                                 isSendValid
                                     ? "bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active"
                                     : "bg-gray-400 cursor-not-allowed"

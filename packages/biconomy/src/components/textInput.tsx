@@ -9,6 +9,9 @@ interface TextInputProps {
     error: string;
     style?: any;
     props?: any;
+    containerClass?: string;
+    inputClass?: string;
+    icon?: any;
 }
 
 export const TextInput = ({
@@ -17,6 +20,9 @@ export const TextInput = ({
     value,
     setValue,
     error,
+    containerClass,
+    inputClass,
+    icon,
     ...props
 }: TextInputProps) => {
     const handleInputChange = (e: any) => {
@@ -26,15 +32,16 @@ export const TextInput = ({
     const [typing, setTyping] = useState(false);
 
     return (
-        <div>
-            <div className="w-[100%] sm:flex sm:flex-row items-center mb-4 gap-1 inline-flex">
-                <div className="text-text-700 text-body2 sm:mr-4 sm:w-[80px]">
-                    {label}
-                </div>
+        <div
+            className={`${containerClass} sm:flex sm:flex-row items-center mb-4 gap-1 inline-flex`}
+        >
+            <div className="text-[#25272C] b2-regular text-nowrap w-[60px]">
+                {label}
+            </div>
 
-                <div className="relative">
+            <div className="relative">
                 <input
-                    className={`rounded-xl px-3 py-2 xl:w-[340px] bg-white-primary border border-solid border-[#23272E] outline-none focus:border-white-disable
+                    className={`${inputClass} rounded-[4px] w-[100%] sm:w-[12.6vw] px-3 py-2 bg-white-primary border border-solid border-[#D5D9E2] outline-none focus:border-white-disable
                 ${error !== "" ? "!border-red-400" : ""}
                 hover:border-gray-400
                 focus:border-primary-500`}
@@ -45,12 +52,14 @@ export const TextInput = ({
                     type="text"
                     {...props}
                 />
-                    {error && !typing && (
-                        <div className="text-red-400 text-sm absolute top-[25%] right-2">
-                            {error}
-                        </div>
-                    )}
-                </div>
+                {error && !typing && (
+                    <div className="text-red-400 text-sm absolute top-[25%] right-2">
+                        {error}
+                    </div>
+                )}
+                {!error && icon && (
+                    <div className="absolute top-[20%] right-2">{icon}</div>
+                )}
             </div>
         </div>
     );
