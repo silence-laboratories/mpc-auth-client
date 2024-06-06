@@ -125,7 +125,7 @@ const validatePairingAccount = async (
         });
 };
 
-export const startPairingSession = async (currentAccountAddress?:string) => {
+export const startPairingSession = async () => {
     try {
         if (!pairingDataInit) {
             throw new MpcError(
