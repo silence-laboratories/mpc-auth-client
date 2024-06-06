@@ -105,11 +105,15 @@ const validatePairingAccount = async (
     accountAddress?: string,
     currentAccountAddress?: string
 ) => {
-    if (currentAccountAddress && accountAddress == null) {
+    if (currentAccountAddress && !accountAddress) {
         await sendPairingFirebaseDoc(sessionToken, pairingDataInit.pairingId, {
             isPaired: false,
             pairingRemark: PairingRemark.NO_BACKUP_DATA_WHILE_REPAIRING,
         });
+        throw new MpcError(
+            "No backup data while repairing",
+            MpcErrorCode.RejectedPairingRequest
+        );
     } else if (
         currentAccountAddress &&
         accountAddress &&
@@ -176,15 +180,6 @@ export const endPairingSession = async (
                 throw error;
             }
         }
-
-        if (!currentAccountAddress) {
-            await sendPairingFirebaseDoc(sessionToken, pairingDataInit.pairingId, {
-                isPaired: false,
-                pairingRemark: PairingRemark.NO_BACKUP_DATA_WHILE_REPAIRING,
-            });
-            throw new MpcError("Cannot create new account during recovery", MpcErrorCode.RejectedPairingRequest);
-        }
-
 
         await validatePairingAccount(
             sessionToken,

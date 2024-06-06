@@ -59,8 +59,8 @@ function Page() {
         try {
             const runPairingResp = await runEndPairingSession(
                 pairingSessionData,
+                oldEoa?.address,
                 password,
-                oldEoa?.address
             );
             saveEoaAfterPairing({
                 address: runPairingResp.newAccountAddress ?? "",
@@ -92,7 +92,7 @@ function Page() {
                     setPairingSessionDataState(pairingSessionData);
                     setShowPasswordScreen(true);
                 } else {
-                    await runEndPairingSession(pairingSessionData);
+                    await runEndPairingSession(pairingSessionData, oldEoa?.address);
                     const keygenRes = await runKeygen();
                     saveEoaAfterPairing({
                         address:

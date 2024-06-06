@@ -51,8 +51,8 @@ async function runStartPairingSession() {
 
 async function runEndPairingSession(
     pairingSessionData: PairingSessionData,
+    currentAccountAddress?: string,
     password?: string,
-    currentAccountAddress?: string
 ) {
     const result = await PairingAction.endPairingSession(
         pairingSessionData,

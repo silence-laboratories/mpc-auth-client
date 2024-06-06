@@ -8,10 +8,7 @@ import * as SignAction from "./actions/sign";
 import * as Backup from "./actions/backup";
 import { aeadEncrypt, requestEntropy } from "./crypto";
 import { fromHexStringToBytes, getAddressFromDistributedKey } from "./utils";
-import {
-    setSilentShareStorage,
-    getSilentShareStorage,
-} from "./storage/wallet";
+import { setSilentShareStorage, getSilentShareStorage } from "./storage/wallet";
 import { PairingSessionData, SignMetadata, StorageData } from "./types";
 import { MpcError, MpcErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
@@ -51,8 +48,8 @@ async function runStartPairingSession() {
 
 async function runEndPairingSession(
     pairingSessionData: PairingSessionData,
-    password?: string,
-    currentAccountAddress?: string
+    currentAccountAddress?: string,
+    password?: string
 ) {
     const result = await PairingAction.endPairingSession(
         pairingSessionData,
