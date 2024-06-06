@@ -177,6 +177,15 @@ export const endPairingSession = async (
             }
         }
 
+        if (!currentAccountAddress) {
+            await sendPairingFirebaseDoc(sessionToken, pairingDataInit.pairingId, {
+                isPaired: false,
+                pairingRemark: PairingRemark.NO_BACKUP_DATA_WHILE_REPAIRING,
+            });
+            throw new MpcError("Cannot create new account during recovery", MpcErrorCode.RejectedPairingRequest);
+        }
+
+
         await validatePairingAccount(
             sessionToken,
             accountAddress,
