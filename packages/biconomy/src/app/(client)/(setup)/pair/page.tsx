@@ -108,6 +108,10 @@ function Page() {
                 }
             } catch (error) {
                 console.error(error);
+                setLoading(false);
+                if (isRepairing) {
+                    router.replace("/homescreen");
+                }
             }
         })();
     };
