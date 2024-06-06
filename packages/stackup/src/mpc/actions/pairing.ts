@@ -163,6 +163,7 @@ export const endPairingSession = async (
 
         let distributedKey: DistributedKey | undefined;
         let accountAddress: string | undefined;
+        
         if (pairingSessionData.backupData && password) {
             try {
                 const backupDataJson = await decryptAndDeserializeBackupData(
@@ -176,6 +177,14 @@ export const endPairingSession = async (
                 throw error;
             }
         }
+        if (!currentAccountAddress) {
+            await sendPairingFirebaseDoc(sessionToken, pairingDataInit.pairingId, {
+                isPaired: false,
+                pairingRemark: PairingRemark.NO_BACKUP_DATA_WHILE_REPAIRING,
+            });
+            throw new MpcError("Cannot create new account during recovery", MpcErrorCode.RejectedPairingRequest);
+        }
+
 
         await validatePairingAccount(
             sessionToken,

@@ -103,7 +103,7 @@ function Page() {
                                 style={{ listStyleType: "disc" }}
                             >
                                 <li>
-                                    Your MetaMask can hold only one Snap account
+                                    Your Biconomy dApp can hold only one account
                                     at a time.
                                 </li>
                                 <li>
