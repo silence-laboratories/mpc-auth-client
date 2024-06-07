@@ -199,11 +199,18 @@ const Homescreen: React.FC = () => {
             : setRecipientAddressError("Invalid Address");
     };
 
+   
     const handleAmountChange = (amount_: string) => {
         setAmount(amount_);
 
         function isValidAmount(amount: string): boolean {
             if (isNaN(parseFloat(amount))) {
+                return false;
+            }
+            if(parseFloat(amount) <= 0) {
+                return false;
+            }
+            if(parseFloat(amount) > parseFloat(walletBalance)) {
                 return false;
             }
             // amount must be all digits
@@ -214,39 +221,36 @@ const Homescreen: React.FC = () => {
             return true;
         }
 
-        isValidAmount(amount_)
-            ? setAmountError("")
-            : setAmountError("Invalid Amount");
+        isValidAmount(amount_) ? setAmountError("") : setAmountError(parseFloat(amount) > parseFloat(walletBalance) ? "Insufficient funds" : "Invalid Amount");
+
     };
 
     const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
-        if (!isSendValid) {
-            return;
-        }
+        if (!isSendValid) return;
 
         (async () => {
+            setShowTransactionfailBanner(false);
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
-            try{
-            const result = await sendTransaction(recipientAddress, amount);
-            if (!result.transactionHash) {
-                console.log("error", result);
+            try {
+                const result = await sendTransaction(recipientAddress, amount);
+                if (!result.transactionHash) {
+                    console.log("error", result);
+                    setShowTransactionInitiatedBanner(false);
+                    setShowTransactionfailBanner(true);
+                    return;
+                }
+                console.log("result", result.transactionHash);
+                setShowTransactionSignedBanner(true);
+                setShowTransactionInitiatedBanner(false);
+                store.setTxHash(result.transactionHash);
+                await updateBalance();
+            } catch (error) {
                 setShowTransactionInitiatedBanner(false);
                 setShowTransactionfailBanner(true);
-                return;
+                console.error("sendTransaction error", error);
             }
-            console.log("result", result.transactionHash);
-            setShowTransactionSignedBanner(true);
-            setShowTransactionInitiatedBanner(false);
-            store.setTxHash(result?.transactionHash ?? "");
-            await updateBalance();
-        }
-        catch(error){
-            setShowTransactionfailBanner(true);
-            setShowTransactionInitiatedBanner(false);
-            console.error("sendTransaction error", error);
-        }
         })();
     };
 
@@ -577,7 +581,7 @@ const Homescreen: React.FC = () => {
                 </div>
 
                 {showTransactionInitiatedBanner && (
-                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#F2FFFB] border-[#166533] w-full text-[black]">
+                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[black]">
                         <svg
                             className="absolute top-4 right-4 cursor-pointer"
                             onClick={() => {
@@ -630,7 +634,7 @@ const Homescreen: React.FC = () => {
                 )}
 
                 {showTransactionSignedBanner && (
-                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#F2FFFB] border-[#166533] w-full text-[black]">
+                    <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#B1F1C9] border-[#166533] w-full text-[black]">
                         <svg
                             className="absolute top-4 right-4 cursor-pointer"
                             onClick={() => {

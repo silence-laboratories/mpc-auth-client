@@ -205,6 +205,12 @@ const Homescreen: React.FC = () => {
             if (isNaN(parseFloat(amount))) {
                 return false;
             }
+            if(parseFloat(amount) <= 0) {
+                return false;
+            }
+            if(parseFloat(amount) > parseFloat(walletBalance)) {
+                return false;
+            }
             // amount must be all digits
             if (!/^[\d|\.]+$/.test(amount)) {
                 return false;
@@ -213,9 +219,8 @@ const Homescreen: React.FC = () => {
             return true;
         }
 
-        isValidAmount(amount_)
-            ? setAmountError("")
-            : setAmountError("Invalid Amount");
+        isValidAmount(amount_) ? setAmountError("") : setAmountError(parseFloat(amount) > parseFloat(walletBalance) ? "Insufficient funds" : "Invalid Amount");
+
     };
 
     const handleSend = (event: React.MouseEvent): void => {
@@ -223,6 +228,7 @@ const Homescreen: React.FC = () => {
         if (!isSendValid) return;
 
         (async () => {
+            setShowTransactionfailBanner(false);
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
             try {
@@ -236,11 +242,11 @@ const Homescreen: React.FC = () => {
                 console.log("result", result.transactionHash);
                 setShowTransactionSignedBanner(true);
                 setShowTransactionInitiatedBanner(false);
-                store.setTxHash(result?.transactionHash ?? "");
+                store.setTxHash(result.transactionHash);
                 await updateBalance();
             } catch (error) {
-                setShowTransactionfailBanner(true);
                 setShowTransactionInitiatedBanner(false);
+                setShowTransactionfailBanner(true);
                 console.error("sendTransaction error", error);
             }
         })();

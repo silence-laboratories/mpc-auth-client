@@ -27,11 +27,11 @@ export function getSmartContractAccount(): accountType {
 }
 
 export function setTxHash(txHash: string) {
-    localStorage.setItem("txnHash", JSON.stringify(txHash));
+    localStorage.setItem("txnHash",txHash);
 }
 
 export function getTxHash() {
-    return JSON.parse(localStorage.getItem("txHash") || "{}");
+    return localStorage.getItem("txnHash")
 }
 
 export function clearAccount() {
