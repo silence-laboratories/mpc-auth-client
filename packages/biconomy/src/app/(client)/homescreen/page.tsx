@@ -200,30 +200,33 @@ const Homescreen: React.FC = () => {
     };
 
    
-    const handleAmountChange = (amount_: string) => {
-        setAmount(amount_);
-
-        function isValidAmount(amount: string): boolean {
-            if (isNaN(parseFloat(amount))) {
-                return false;
+    const handleAmountChange = (amount: string) => {
+        setAmount(amount);
+    
+        const isValidAmount = (amount: string): { isValid: boolean, errorMsg: string } => {
+            const amountValue = parseFloat(amount);
+    
+            if (isNaN(amountValue)) {
+                return { isValid: false, errorMsg: "Invalid Amount" };
             }
-            if(parseFloat(amount) <= 0) {
-                return false;
+            if (amountValue < 0) {
+                return { isValid: false, errorMsg: "Invalid Amount" };
             }
-            if(parseFloat(amount) > parseFloat(walletBalance)) {
-                return false;
+            if (amountValue > parseFloat(walletBalance)) {
+                return { isValid: false, errorMsg: "Insufficient funds" };
             }
-            // amount must be all digits
-            if (!/^[\d|\.]+$/.test(amount)) {
-                return false;
+            if (!/^\d+(\.\d+)?$/.test(amount)) {
+                return { isValid: false, errorMsg: "Amount must numeric" };
             }
-
-            return true;
-        }
-
-        isValidAmount(amount_) ? setAmountError("") : setAmountError(parseFloat(amount) > parseFloat(walletBalance) ? "Insufficient funds" : "Invalid Amount");
-
+    
+            return { isValid: true, errorMsg: "" };
+        };
+    
+        const { isValid, errorMsg } = isValidAmount(amount);
+    
+        setAmountError(isValid ? "" : errorMsg);
     };
+    
 
     const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
@@ -236,12 +239,10 @@ const Homescreen: React.FC = () => {
             try {
                 const result = await sendTransaction(recipientAddress, amount);
                 if (!result.transactionHash) {
-                    console.log("error", result);
                     setShowTransactionInitiatedBanner(false);
                     setShowTransactionfailBanner(true);
                     return;
                 }
-                console.log("result", result.transactionHash);
                 setShowTransactionSignedBanner(true);
                 setShowTransactionInitiatedBanner(false);
                 store.setTxHash(result.transactionHash);
@@ -249,7 +250,6 @@ const Homescreen: React.FC = () => {
             } catch (error) {
                 setShowTransactionInitiatedBanner(false);
                 setShowTransactionfailBanner(true);
-                console.error("sendTransaction error", error);
             }
         })();
     };
