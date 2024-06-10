@@ -199,15 +199,19 @@ const Homescreen: React.FC = () => {
             : setRecipientAddressError("Invalid Address");
     };
 
-   
     const handleAmountChange = (amount: string) => {
         setAmount(amount);
-    
-        const isValidAmount = (amount: string): { isValid: boolean, errorMsg: string } => {
+
+        const isValidAmount = (
+            amount: string
+        ): { isValid: boolean; errorMsg: string } => {
             const amountValue = parseFloat(amount);
-    
+
             if (isNaN(amountValue)) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
+            }
+            if (amount.length > 15) {
+                return { isValid: false, errorMsg: "Amount exceeds 15 digits" };
             }
             if (amountValue < 0) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
@@ -218,15 +222,14 @@ const Homescreen: React.FC = () => {
             if (!/^\d+(\.\d+)?$/.test(amount)) {
                 return { isValid: false, errorMsg: "Amount must numeric" };
             }
-    
+
             return { isValid: true, errorMsg: "" };
         };
-    
+
         const { isValid, errorMsg } = isValidAmount(amount);
-    
+
         setAmountError(isValid ? "" : errorMsg);
     };
-    
 
     const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
@@ -731,34 +734,49 @@ const Homescreen: React.FC = () => {
                 >
                     <div className="h2-bold mb-8 text-black">Transact</div>
                     <div className="flex flex-col sm:flex-row gap-6 flex-wrap">
-                        <TextInput
-                            inputClass="b1-bold text-[#25272C]"
-                            label="Amount"
-                            placeholder={"0.0..."}
-                            value={amount}
-                            setValue={handleAmountChange}
-                            error={amountError}
-                            icon={<div className="text-[#B6BAC3]">ETH</div>}
-                        />
-                        <TextInput
-                            inputClass="b1-regular text-[#0A0D14]"
-                            label="To wallet"
-                            placeholder={"0x..."}
-                            value={recipientAddress}
-                            setValue={handleRecipientAddressChange}
-                            error={recipientAddressError}
-                        />
-                        <Button
-                            onClick={handleSend}
-                            className={`self-center mb-4 flex-1 ${
-                                isSendValid
-                                    ? "bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active"
-                                    : "bg-gray-400 cursor-not-allowed"
-                            }`}
-                            disabled={!isSendValid}
-                        >
-                            Send
-                        </Button>
+                        <div className="flex flex-col items-end">
+                            <TextInput
+                                inputClass="b1-bold text-[#25272C]"
+                                label="Amount"
+                                placeholder={"0.0..."}
+                                value={amount}
+                                setValue={handleAmountChange}
+                                icon={<div className="text-[#B6BAC3]">ETH</div>}
+                                error={""}
+                            />
+
+                            <div className="text-red-500 -mt-3 text-sm">
+                                {amountError}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-end">
+                            <TextInput
+                                inputClass="b1-regular text-[#0A0D14]"
+                                label="To wallet"
+                                placeholder={"0x..."}
+                                value={recipientAddress}
+                                setValue={handleRecipientAddressChange}
+                                error={""}
+                            />
+                            <div className="text-red-500 -mt-3 text-sm">
+                                {recipientAddressError}
+                            </div>
+                        </div>
+                        <div>
+                            <Button
+                                onClick={handleSend}
+                                className={`self-center mb-4 flex-1 ${
+                                    isSendValid
+                                        ? "bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active"
+                                        : "bg-gray-400 cursor-not-allowed"
+                                }`}
+                                disabled={!isSendValid}
+                            >
+                                Send
+                            </Button>
+                            <div className="text-red-500">{""}</div>
+                        </div>
                     </div>
                 </div>
 
