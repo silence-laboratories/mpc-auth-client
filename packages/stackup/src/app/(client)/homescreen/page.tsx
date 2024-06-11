@@ -200,15 +200,17 @@ const Homescreen: React.FC = () => {
 
     const handleAmountChange = (amount: string) => {
         setAmount(amount);
-    
-        const isValidAmount = (amount: string): { isValid: boolean, errorMsg: string } => {
+
+        const isValidAmount = (
+            amount: string
+        ): { isValid: boolean; errorMsg: string } => {
             const amountValue = parseFloat(amount);
-    
+
             if (isNaN(amountValue)) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
             }
-            if (amount.length > 15) {
-                return { isValid: false, errorMsg: "Amount exceeds 15 digits" };
+            if (amount.split('.')[1]?.length > 15) {
+                return { isValid: false, errorMsg: "Amount exceeds 15 decimal places" };
             }
             if (amountValue < 0) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
@@ -219,15 +221,18 @@ const Homescreen: React.FC = () => {
             if (!/^\d+(\.\d+)?$/.test(amount)) {
                 return { isValid: false, errorMsg: "Amount must numeric" };
             }
-    
+            if (amountValue > Number.MAX_SAFE_INTEGER) {
+                return { isValid: false, errorMsg: `Amount is too big. Maximum allowed is ${Number.MAX_SAFE_INTEGER}` };
+            }
+
             return { isValid: true, errorMsg: "" };
         };
-    
+
         const { isValid, errorMsg } = isValidAmount(amount);
-    
+
         setAmountError(isValid ? "" : errorMsg);
     };
-    
+
 
     const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
@@ -740,7 +745,6 @@ const Homescreen: React.FC = () => {
                                 value={amount}
                                 setValue={handleAmountChange}
                                 icon={<div className="text-[#B6BAC3]">ETH</div>}
-                                error={""}
                             />
 
                             <div className="text-red-500 -mt-3 text-sm">
@@ -755,7 +759,6 @@ const Homescreen: React.FC = () => {
                                 placeholder={"0x..."}
                                 value={recipientAddress}
                                 setValue={handleRecipientAddressChange}
-                                error={""}
                             />
                             <div className="text-red-500 -mt-3 text-sm">
                                 {recipientAddressError}

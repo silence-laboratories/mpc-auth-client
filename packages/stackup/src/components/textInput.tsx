@@ -6,7 +6,6 @@ interface TextInputProps {
     placeholder: string;
     value: string;
     setValue: (value: string) => void;
-    error: string;
     style?: any;
     props?: any;
     containerClass?: string;
@@ -19,7 +18,6 @@ export const TextInput = ({
     placeholder,
     value,
     setValue,
-    error,
     containerClass,
     inputClass,
     icon,
@@ -41,8 +39,7 @@ export const TextInput = ({
 
             <div className="relative">
                 <input
-                    className={`${inputClass} rounded-[4px] w-[100%] sm:w-[12.6vw] px-3 py-2 bg-white-primary border border-solid border-[#D5D9E2] outline-none focus:border-white-disable
-                ${error !== "" ? "!border-red-400" : ""}
+                    className={`${inputClass} rounded-[4px] w-[100%] sm:w-[14vw] px-3 py-2 bg-white-primary border border-solid border-[#D5D9E2] outline-none focus:border-white-disable
                 hover:border-gray-400
                 focus:border-primary-500`}
                     placeholder={placeholder}
@@ -52,12 +49,7 @@ export const TextInput = ({
                     type="text"
                     {...props}
                 />
-                {error && !typing && (
-                    <div className="text-red-400 text-sm absolute top-[25%] right-2">
-                        {error}
-                    </div>
-                )}
-                {!error && icon && (
+                {icon && (
                     <div className="absolute top-[20%] right-2">{icon}</div>
                 )}
             </div>
