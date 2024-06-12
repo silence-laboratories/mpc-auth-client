@@ -278,7 +278,7 @@ const Homescreen: React.FC = () => {
     };
 
     return (
-        <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none  w-[92vw] lg:w-[52.75vw] m-auto bg-white-primary">
+        <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none  w-[100vw] xl:w-[52.75vw] m-auto bg-white-primary">
             <div className="border-none bg-transparent h-max py-0">
                 {showSuccessBanner && (
                     <div className="mb-6 flex-none relative flex flex-col justify-center p-4 border rounded-[8px] bg-[#F2FFFB] border-[#166533] w-full text-[#071C0F]">
@@ -340,7 +340,7 @@ const Homescreen: React.FC = () => {
                     )}
                     {switchChain === "none" && (
                         <div className="flex flex-col space-y-1 md:flex-row md:space-y-0 items-center">
-                            <div className="mr-3 h-[48px] w-[48px] rounded-full aspect-square bg-[#181625] flex justify-center">
+                            <div className="mr-3 px-[12px] py-[12px] rounded-full aspect-square bg-[#181625] flex justify-center">
                                 <svg
                                     className="self-center"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -370,7 +370,7 @@ const Homescreen: React.FC = () => {
                                 />
 
                                 {
-                                    <div className="text-sm text-[#0A0D14] mt-2 headline2">
+                                    <div className="text-sm text-[#0A0D14] mt-2 b1-bold break-words whitespace-pre-wrap w-[30%] sm:w-[100%]">
                                         {walletBalance} ETH
                                     </div>
                                 }
