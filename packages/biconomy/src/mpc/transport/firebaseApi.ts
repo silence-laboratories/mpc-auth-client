@@ -3,8 +3,7 @@
 
 import { MpcError, MpcErrorCode } from '../error';
 
-const baseUrl = 'https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net'
-// const baseUrl = 'https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 interface Response {
 	response: any;
 	error: string;
