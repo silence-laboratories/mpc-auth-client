@@ -1,0 +1,49 @@
+name: build-and-publish--biconomy-and-stackup
+
+on:
+  push:
+    branches: ['main']
+  # we can also trigger manually in case needed
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: mpc-account-abstraction-sdk-builder
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          pushd packages/biconomy && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net npm run build
+          popd 
+          pushd packages/stackup && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net npm run build
+          popd
+
+      - name: Build artifact
+        run: |
+          /usr/bin/7z a ./biconomy-stackup.7z ./packages/*
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: biconomy-stackup
+          path: ./biconomy-stackup.7z
+          
+  deploy-staging:
+    runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
+    needs: build
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: biconomy-stackup
+          path: ./
+      - run: mv ./biconomy-stackup.7z /opt/service/
+      - run: if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
+      - run: if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
+      - run: cd /opt/service && 7z x biconomy-stackup.7z
+      - run: cd /opt/service/biconomy && npm i 
+      - run: cd /opt/service/stackup && npm i 
+      - run: sudo systemctl restart biconomy.service stackup.service
+
+          
