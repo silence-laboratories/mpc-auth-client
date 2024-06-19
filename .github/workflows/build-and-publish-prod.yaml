@@ -2,7 +2,7 @@ name: build-and-publish--biconomy-and-stackup
 
 on:
   push:
-    branches: ['main']
+    branches: ['CI/CD']
   # we can also trigger manually in case needed
   workflow_dispatch:
 
@@ -30,7 +30,7 @@ jobs:
           path: ./biconomy-stackup.7z
           
   deploy-staging:
-    runs-on: mpc-account-abstraction-sdk-stage-deployer-asia
+    runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
     needs: build
     steps:
       - name: Download artifact
