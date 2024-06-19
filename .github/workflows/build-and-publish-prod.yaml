@@ -38,17 +38,15 @@ jobs:
         with:
           name: biconomy-stackup
           path: ./
-      - name: Build artifact
-        run: |
-          mv ./biconomy-stackup.7z /opt/service/
-          cd /opt/service
-          if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
-          if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-          7z x biconomy-stackup.7z
-          pushd biconomy && npm i 
-          popd 
-          pushd stackup && npm i 
-          popd
-          sudo systemctl restart biconomy.service stackup.service
+      - run: mv ./biconomy-stackup.7z /opt/service/
+      - run: cd /opt/service
+      - run: if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
+      - run: if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
+      - run: 7z x biconomy-stackup.7z
+      - run: pushd biconomy && npm i 
+      - run: popd 
+      - run: pushd stackup && npm i 
+      - run: popd
+      - run: sudo systemctl restart biconomy.service stackup.service
 
           
