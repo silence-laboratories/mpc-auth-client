@@ -2,10 +2,13 @@ name: build-and-publish--biconomy-and-stackup
 
 on:
   push:
-    branches: ['main']
+    branches: ['staging']
   # we can also trigger manually in case needed
   workflow_dispatch:
-
+  pull_request:
+    branches: ['staging']
+    types:
+      [closed]
 jobs:
   build:
     runs-on: mpc-account-abstraction-sdk-builder
@@ -14,9 +17,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          pushd packages/biconomy && npm i && npm run build
+          pushd packages/biconomy && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net npm run build
           popd 
-          pushd packages/stackup && npm i && npm run build
+          pushd packages/stackup && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net npm run build
           popd
 
       - name: Build artifact
