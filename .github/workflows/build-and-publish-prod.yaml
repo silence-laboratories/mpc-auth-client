@@ -6,7 +6,7 @@ on:
   # we can also trigger manually in case needed
   workflow_dispatch:
   pull_request:
-    branches: ['stagging']
+    branches: ['main']
     types:
       [closed]
 jobs:
