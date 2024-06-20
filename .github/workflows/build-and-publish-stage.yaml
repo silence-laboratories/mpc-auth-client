@@ -2,11 +2,11 @@ name: build-and-publish--biconomy-and-stackup
 
 on:
   push:
-    branches: ['stagging']
+    branches: ['staging']
   # we can also trigger manually in case needed
   workflow_dispatch:
   pull_request:
-    branches: ['stagging']
+    branches: ['staging']
     types:
       [closed]
 jobs:
