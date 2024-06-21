@@ -11,7 +11,7 @@ import { TextInput } from "@/components/textInput";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { formatEther } from "ethers/lib/utils";
-import { getPairingStatus, setPairingStatus } from "@/mpc/storage/wallet";
+import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -39,7 +39,7 @@ const Homescreen: React.FC = () => {
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
     const chainCheckRef = useRef(false);
-    const status = getPairingStatus();
+    const status = getWalletStatus();
     useEffect(() => {
         if (status == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
@@ -48,13 +48,13 @@ const Homescreen: React.FC = () => {
 
         const account = store.getSmartContractAccount();
         if (!account) {
-            setPairingStatus(WALLET_STATUS.Paired);
+            setWalletStatus(WALLET_STATUS.Paired);
             router.replace("/mint");
         }
 
         const eoa = store.getEoa();
         if (!eoa) {
-            setPairingStatus(WALLET_STATUS.Unpaired);
+            setWalletStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
         }
 

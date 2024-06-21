@@ -5,7 +5,7 @@ import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { clearWallet, getPairingStatus, setPairingStatus } from "@/mpc/storage/wallet";
+import { clearWallet, getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 import { mintWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
@@ -17,7 +17,7 @@ function Page() {
     const [loading, setLoading] = useState<boolean>(false);
     const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
     const router = useRouter();
-    const status = getPairingStatus();
+    const status = getWalletStatus();
     useEffect(() => {
         if (status === WALLET_STATUS.Unpaired) {
             router.replace("/intro");
@@ -32,7 +32,7 @@ function Page() {
         try {
             await mintWallet(eoa);
             setLoading(true);
-            setPairingStatus(WALLET_STATUS.Minted);
+            setWalletStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");
         } catch (error) {
             console.log("Minting failed.", error);
@@ -42,7 +42,7 @@ function Page() {
 
     const handleMoveBack = () => {
         clearWallet();
-        setPairingStatus(WALLET_STATUS.Unpaired);
+        setWalletStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
     }
 

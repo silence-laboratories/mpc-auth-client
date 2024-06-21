@@ -6,7 +6,7 @@ import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
 
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
-import { getPairingStatus, setPairingStatus } from "@/mpc/storage/wallet";
+import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
 import { isPasswordReady } from "@/mpc/storage/account";
 import { layoutClassName } from "@/utils/ui";
@@ -15,10 +15,10 @@ import { RouteLoader } from "@/components/routeLoader";
 function Page() {
     const router = useRouter();
     const moveToNext = () => {
-        setPairingStatus(WALLET_STATUS.BackedUp);
+        setWalletStatus(WALLET_STATUS.BackedUp);
         router.replace("/afterBackup");
     };
-    const status = getPairingStatus();
+    const status = getWalletStatus();
     if (status !== WALLET_STATUS.Paired || isPasswordReady()) {
         return <RouteLoader />;
     }

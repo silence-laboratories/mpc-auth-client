@@ -4,7 +4,7 @@ import React from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getPairingStatus } from "@/mpc/storage/wallet";
+import { getWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
 import { cn, layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
@@ -16,7 +16,7 @@ function Page() {
         router.replace("/pair");
     };
     
-    const status = getPairingStatus();
+    const status = getWalletStatus();
     if (status !== WALLET_STATUS.Unpaired) {
         return <RouteLoader />;
     }

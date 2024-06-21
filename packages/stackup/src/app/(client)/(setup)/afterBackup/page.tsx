@@ -14,7 +14,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getDeviceOS, getPairingStatus } from "@/mpc/storage/wallet";
+import { getDeviceOS, getWalletStatus } from "@/mpc/storage/wallet";
 import { layoutClassName } from "@/utils/ui";
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
@@ -22,7 +22,7 @@ import { RouteLoader } from "@/components/routeLoader";
 function Page() {
     const router = useRouter();
     const deviceOS = getDeviceOS();
-    const status = getPairingStatus();
+    const status = getWalletStatus();
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;
     }

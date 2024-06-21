@@ -17,9 +17,9 @@ import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
 import {
-    getPairingStatus,
+    getWalletStatus,
     setDeviceOS,
-    setPairingStatus,
+    setWalletStatus,
 } from "@/mpc/storage/wallet";
 import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
@@ -49,10 +49,10 @@ function Page() {
 
     const saveEoaAfterPairing = (eoa: accountType) => {
         setEoa(eoa);
-        setPairingStatus(WALLET_STATUS.Paired);
+        setWalletStatus(WALLET_STATUS.Paired);
 
         if (isRepairing && oldEoa !== null && eoa.address !== oldEoa.address) {
-            setPairingStatus(WALLET_STATUS.Mismatched);
+            setWalletStatus(WALLET_STATUS.Mismatched);
             router.replace("/mismatchAccounts");
         } else {
             router.replace("/mint");
@@ -158,7 +158,7 @@ function Page() {
     };
 
     const isQrExpired = !(qr && seconds > 0);
-    const status = getPairingStatus();
+    const status = getWalletStatus();
     const showLoading = isRepairing
         ? status !== WALLET_STATUS.Minted
         : status !== WALLET_STATUS.Unpaired;
