@@ -34,7 +34,7 @@ const isStorageExist = (): boolean => {
 const clearWallet = () => {
     let walletId = getWalletId();
     localStorage.removeItem(walletId);
-    setPairingStatus(WALLET_STATUS.Unpaired);
+    setWalletStatus(WALLET_STATUS.Unpaired);
     clearAccount();
 };
 
@@ -80,11 +80,11 @@ const getSilentShareStorage = (): StorageData => {
     return jsonObject;
 };
 
-function setPairingStatus(status: WALLET_STATUS) {
+function setWalletStatus(status: WALLET_STATUS) {
     localStorage.setItem("pairingStatus", status);
 }
 
-function getPairingStatus(): WALLET_STATUS {
+function getWalletStatus(): WALLET_STATUS {
     return (localStorage.getItem("pairingStatus") ?? "Unpaired") as WALLET_STATUS;
 }
 
@@ -105,8 +105,8 @@ export {
     clearWallet,
     setSilentShareStorage,
     getSilentShareStorage,
-    setPairingStatus,
-    getPairingStatus,
+    setWalletStatus,
+    getWalletStatus,
     getWalletId,
     setDeviceOS,
     getDeviceOS,

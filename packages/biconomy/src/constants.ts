@@ -15,4 +15,7 @@ export const SEPOLIA = {
 export enum WALLET_STATUS {
     Paired = "Paired",
     Unpaired = "Unpaired",
+    BackedUp = "BackedUp",
+    Minted = "Minted",
+    Mismatched = "Mismatched",
 }
