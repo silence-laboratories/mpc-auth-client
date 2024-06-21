@@ -48,7 +48,7 @@ const Homescreen: React.FC = () => {
 
         const account = store.getSmartContractAccount();
         if (!account) {
-            setWalletStatus(WALLET_STATUS.Paired);
+            setWalletStatus(WALLET_STATUS.BackedUp);
             router.replace("/mint");
         }
 
@@ -58,6 +58,7 @@ const Homescreen: React.FC = () => {
             router.replace("/intro");
         }
 
+        setWalletStatus(WALLET_STATUS.Minted);
         setWalletAccount(account);
         setEoa(eoa);
     }, [router, status]);
