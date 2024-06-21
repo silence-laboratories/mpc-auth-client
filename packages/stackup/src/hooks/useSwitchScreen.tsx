@@ -14,8 +14,8 @@ export const useSwitchScreen = () => {
         } else {
             router.replace("/intro");
         }
-        return true;
     };
-
-    return initializeScreen();
+    useEffect(() => {
+        initializeScreen();
+    }, []);
 };

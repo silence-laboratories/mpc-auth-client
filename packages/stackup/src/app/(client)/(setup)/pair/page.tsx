@@ -16,12 +16,18 @@ import {
 import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { PairingSessionData } from "@/mpc/types";
-import { setDeviceOS, setPairingStatus } from "@/mpc/storage/wallet";
+import {
+    getPairingStatus,
+    setDeviceOS,
+    setPairingStatus,
+} from "@/mpc/storage/wallet";
 import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import LoadingScreen from "@/components/loadingScreen";
 import { WALLET_ID, WALLET_STATUS } from "@/constants";
+import { layoutClassName } from "@/utils/ui";
+import { RouteLoader } from "@/components/routeLoader";
 
 function Page() {
     const router = useRouter();
@@ -46,6 +52,7 @@ function Page() {
         setPairingStatus(WALLET_STATUS.Paired);
 
         if (isRepairing && oldEoa !== null && eoa.address !== oldEoa.address) {
+            setPairingStatus(WALLET_STATUS.Mismatched);
             router.replace("/mismatchAccounts");
         } else {
             router.replace("/mint");
@@ -151,6 +158,13 @@ function Page() {
     };
 
     const isQrExpired = !(qr && seconds > 0);
+    const status = getPairingStatus();
+    const showLoading = isRepairing
+        ? status !== WALLET_STATUS.Minted
+        : status !== WALLET_STATUS.Unpaired;
+    if (showLoading) {
+        return <RouteLoader />;
+    }
 
     return showPasswordScreen ? (
         <PasswordEnterScreen
@@ -170,7 +184,7 @@ function Page() {
             }}
         />
     ) : (
-        <div>
+        <div className={layoutClassName}>
             <div className="absolute w-full top-0 right-0">
                 <Progress
                     className="w-[99.5%]"

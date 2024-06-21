@@ -22,6 +22,7 @@ import { sendTransaction } from "@/aaSDK/transactionService";
 import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
+import { RouteLoader } from "@/components/routeLoader";
 
 const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();
@@ -38,9 +39,9 @@ const Homescreen: React.FC = () => {
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
     const chainCheckRef = useRef(false);
-
+    const status = getPairingStatus();
     useEffect(() => {
-        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
+        if (status == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
@@ -59,7 +60,7 @@ const Homescreen: React.FC = () => {
 
         setWalletAccount(account);
         setEoa(eoa);
-    }, []);
+    }, [router, status]);
 
     useEffect(() => {
         if (!walletAccount || !eoa || chainCheckRef.current) return;
@@ -283,6 +284,10 @@ const Homescreen: React.FC = () => {
             router.push("/pair?repair=true");
         } // TODO: handle undefined eoa case
     };
+
+    if (status !== WALLET_STATUS.Minted) {
+        return <RouteLoader />;
+    }
 
     return (
         <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none w-[100vw] xl:w-[52.75vw] m-auto bg-white-primary">

@@ -4,24 +4,29 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import { PasswordBackupScreenProps } from "@/components/password/passwordBackupScreen";
 
-const PasswordBackupScreen = dynamic<PasswordBackupScreenProps>(
-    () =>
-        import("@/components/password/passwordBackupScreen").then(
-            (mod) => mod.PasswordBackupScreen
-        ),
-    {
-        ssr: false,
-    }
-);
+import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
+import { getPairingStatus, setPairingStatus } from "@/mpc/storage/wallet";
+import { WALLET_STATUS } from "@/constants";
+import { isPasswordReady } from "@/mpc/storage/account";
+import { RouteLoader } from "@/components/routeLoader";
+import { layoutClassName } from "@/utils/ui";
+
+
 
 function Page() {
     const router = useRouter();
-
+    
+    const moveToNext = () => {
+        setPairingStatus(WALLET_STATUS.BackedUp);
+        router.replace("/afterBackup");
+    };
+    const status = getPairingStatus();
+    if (status !== WALLET_STATUS.Paired || isPasswordReady()) {
+        return <RouteLoader />;
+    }
     return (
-        <div>
+        <div className={layoutClassName}>
             <div className="absolute w-full top-0 right-0">
                 <Progress
                     className="w-[99.5%]"
@@ -33,9 +38,6 @@ function Page() {
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
                 disabled={true}
-                onClick={() => {
-                    console.log("clicked");
-                }}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -54,12 +56,8 @@ function Page() {
             </Button>
 
             <PasswordBackupScreen
-                onProceed={() => {
-                    router.replace("/afterBackup");
-                }}
-                onTakeRisk={() => {
-                    router.replace("/afterBackup");
-                }}
+                onProceed={moveToNext}
+                onTakeRisk={moveToNext}
             />
         </div>
     );

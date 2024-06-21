@@ -22,6 +22,7 @@ import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen
 import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
+import { RouteLoader } from "@/components/routeLoader";
 
 const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();
@@ -38,9 +39,9 @@ const Homescreen: React.FC = () => {
     const [isPasswordReady, setIsPasswordReady] = useState(false);
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
-
+    const status = getPairingStatus();
     useEffect(() => {
-        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
+        if (status == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
@@ -59,7 +60,7 @@ const Homescreen: React.FC = () => {
 
         setWalletAccount(account);
         setEoa(eoa);
-    }, [router]);
+    }, [router, status]);
 
     useEffect(() => {
         if (!walletAccount || !eoa || chainCheckRef.current) return;
@@ -212,8 +213,11 @@ const Homescreen: React.FC = () => {
             if (isNaN(amountValue)) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
             }
-            if (amount.split('.')[1]?.length > 15) {
-                return { isValid: false, errorMsg: "Amount exceeds 15 decimal places" };
+            if (amount.split(".")[1]?.length > 15) {
+                return {
+                    isValid: false,
+                    errorMsg: "Amount exceeds 15 decimal places",
+                };
             }
             if (amountValue < 0) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
@@ -225,7 +229,10 @@ const Homescreen: React.FC = () => {
                 return { isValid: false, errorMsg: "Amount must numeric" };
             }
             if (amountValue > Number.MAX_SAFE_INTEGER) {
-                return { isValid: false, errorMsg: `Amount is too big. Maximum allowed is ${Number.MAX_SAFE_INTEGER}` };
+                return {
+                    isValid: false,
+                    errorMsg: `Amount is too big. Maximum allowed is ${Number.MAX_SAFE_INTEGER}`,
+                };
             }
 
             return { isValid: true, errorMsg: "" };
@@ -278,6 +285,11 @@ const Homescreen: React.FC = () => {
             router.push("/pair?repair=true");
         } // TODO: handle undefined eoa case
     };
+
+
+    if (status !== WALLET_STATUS.Minted) {
+        return <RouteLoader />;
+    }
 
     return (
         <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none  w-[100vw] xl:w-[52.75vw] m-auto bg-white-primary">

@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
+import { layoutClassName } from "@/utils/ui";
+import { RouteLoader } from "@/components/routeLoader";
 function Page() {
     const router = useRouter();
     const oldEoa = store.getOldEoa();
@@ -53,8 +55,14 @@ function Page() {
         }
     }, [router]);
 
+
+    const status = getPairingStatus();
+    if (status !== WALLET_STATUS.Mismatched) {
+        return <RouteLoader />;
+    }
+
     return (
-        <div>
+        <div className={layoutClassName}>
             {showHeadsUp ? (
                 <>
                     <div className="flex flex-col items-center">
