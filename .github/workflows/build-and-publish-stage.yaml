@@ -49,9 +49,9 @@ jobs:
       - run: cd /opt/service/update/biconomy && npm i 
       - run: cd /opt/service/update/stackup && npm i 
       - run: if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
-      - run: mv /opt/service/update/biconomy && /opt/service/biconomy
+      - run: mv /opt/service/update/biconomy /opt/service/biconomy
       - run: if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-      - run: mv /opt/service/update/stackup && /opt/service/stackup
+      - run: mv /opt/service/update/stackup /opt/service/stackup
       - run: sudo systemctl restart biconomy.service stackup.service
 
           
