@@ -5,7 +5,7 @@ import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { clearWallet, getPairingStatus } from "@/mpc/storage/wallet";
+import { clearWallet, getPairingStatus, setPairingStatus } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 import { mintWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
@@ -32,6 +32,7 @@ function Page() {
         try {
             await mintWallet(eoa);
             setLoading(true);
+            setPairingStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");
         } catch (error) {
             console.log("Minting failed.", error);

@@ -4,12 +4,17 @@ import React from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useSwitchScreen } from "@/hooks/useSwitchScreen";
 
 function Page() {
     const router = useRouter();
+    const doneRouted = useSwitchScreen();
     const nextPageClick = () => {
         router.replace("/pair");
     };
+    if (!doneRouted) {
+        return null;
+    }
 
     return (
         <div>

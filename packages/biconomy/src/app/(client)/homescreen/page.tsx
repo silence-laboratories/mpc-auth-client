@@ -11,7 +11,7 @@ import { TextInput } from "@/components/textInput";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { formatEther } from "ethers/lib/utils";
-import { getPairingStatus } from "@/mpc/storage/wallet";
+import { getPairingStatus, setPairingStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -47,11 +47,13 @@ const Homescreen: React.FC = () => {
 
         const account = store.getSmartContractAccount();
         if (!account) {
-            router.replace("/intro");
+            setPairingStatus(WALLET_STATUS.Paired);
+            router.replace("/mint");
         }
 
         const eoa = store.getEoa();
         if (!eoa) {
+            setPairingStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
         }
 

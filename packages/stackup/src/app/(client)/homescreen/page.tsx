@@ -11,7 +11,7 @@ import { TextInput } from "@/components/textInput";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { formatEther } from "ethers/lib/utils";
-import { getPairingStatus } from "@/mpc/storage/wallet";
+import { getPairingStatus, setPairingStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -47,11 +47,13 @@ const Homescreen: React.FC = () => {
 
         const account = store.getSmartContractAccount();
         if (!account) {
-            router.replace("/intro");
+            setPairingStatus(WALLET_STATUS.Paired);
+            router.replace("/mint");
         }
 
         const eoa = store.getEoa();
         if (!eoa) {
+            setPairingStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
         }
 
@@ -209,8 +211,11 @@ const Homescreen: React.FC = () => {
             if (isNaN(amountValue)) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
             }
-            if (amount.split('.')[1]?.length > 15) {
-                return { isValid: false, errorMsg: "Amount exceeds 15 decimal places" };
+            if (amount.split(".")[1]?.length > 15) {
+                return {
+                    isValid: false,
+                    errorMsg: "Amount exceeds 15 decimal places",
+                };
             }
             if (amountValue < 0) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
@@ -222,7 +227,10 @@ const Homescreen: React.FC = () => {
                 return { isValid: false, errorMsg: "Amount must numeric" };
             }
             if (amountValue > Number.MAX_SAFE_INTEGER) {
-                return { isValid: false, errorMsg: `Amount is too big. Maximum allowed is ${Number.MAX_SAFE_INTEGER}` };
+                return {
+                    isValid: false,
+                    errorMsg: `Amount is too big. Maximum allowed is ${Number.MAX_SAFE_INTEGER}`,
+                };
             }
 
             return { isValid: true, errorMsg: "" };
@@ -232,7 +240,6 @@ const Homescreen: React.FC = () => {
 
         setAmountError(isValid ? "" : errorMsg);
     };
-
 
     const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
@@ -727,8 +734,7 @@ const Homescreen: React.FC = () => {
                     </div>
                 )}
 
-              
-<div
+                <div
                     className="mb-3 flex flex-col justify-center p-4 border rounded-[8px] bg-white-primary"
                     style={{
                         border: "1px solid #23272E",
@@ -780,7 +786,6 @@ const Homescreen: React.FC = () => {
                         </div>
                     </div>
                 </div>
-
 
                 <Dialog
                     open={openPasswordBackupDialog}
