@@ -41,12 +41,15 @@ jobs:
         with:
           name: biconomy-stackup
           path: ./
-      - run: mv ./biconomy-stackup.7z /opt/service/
+      - run: |
+            if [ -d "/opt/service/update" ]; then rm -Rf /opt/service/update; fi 
+            mkdir /opt/service/update/
+            mv ./biconomy-stackup.7z /opt/service/update/
+      - run: cd /opt/service/update/ && 7z x biconomy-stackup.7z
+      - run: cd /opt/service/update/biconomy && npm i 
+      - run: cd /opt/service/update/stackup && npm i 
       - run: if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
       - run: if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-      - run: cd /opt/service && 7z x biconomy-stackup.7z
-      - run: cd /opt/service/biconomy && npm i 
-      - run: cd /opt/service/stackup && npm i 
       - run: sudo systemctl restart biconomy.service stackup.service
 
           
