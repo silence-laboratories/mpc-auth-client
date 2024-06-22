@@ -41,7 +41,9 @@ const Homescreen: React.FC = () => {
         useState(false);
     const status = getWalletStatus();
     useEffect(() => {
-        if (status == WALLET_STATUS.Unpaired) {
+        const eoa = store.getEoa();
+        if (!eoa) {
+            setWalletStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
             return;
         }
@@ -50,12 +52,7 @@ const Homescreen: React.FC = () => {
         if (!account) {
             setWalletStatus(WALLET_STATUS.BackedUp);
             router.replace("/mint");
-        }
-
-        const eoa = store.getEoa();
-        if (!eoa) {
-            setWalletStatus(WALLET_STATUS.Unpaired);
-            router.replace("/intro");
+            return;
         }
 
         setWalletStatus(WALLET_STATUS.Minted);
@@ -286,7 +283,6 @@ const Homescreen: React.FC = () => {
             router.push("/pair?repair=true");
         } // TODO: handle undefined eoa case
     };
-
 
     if (status !== WALLET_STATUS.Minted) {
         return <RouteLoader />;

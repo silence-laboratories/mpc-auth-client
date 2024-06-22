@@ -32,7 +32,7 @@ jobs:
           name: biconomy-stackup
           path: ./biconomy-stackup.7z
           
-  deploy-staging:
+  deploy-prod:
     runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
     needs: build
     steps:
