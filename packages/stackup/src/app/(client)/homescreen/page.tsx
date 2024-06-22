@@ -41,21 +41,18 @@ const Homescreen: React.FC = () => {
     const chainCheckRef = useRef(false);
     const status = getWalletStatus();
     useEffect(() => {
-        if (status == WALLET_STATUS.Unpaired) {
-            router.replace("/intro");
-            return;
-        }
-
         const account = store.getSmartContractAccount();
         if (!account) {
             setWalletStatus(WALLET_STATUS.BackedUp);
             router.replace("/mint");
+            return;
         }
 
         const eoa = store.getEoa();
         if (!eoa) {
             setWalletStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
+            return;
         }
 
         setWalletStatus(WALLET_STATUS.Minted);
