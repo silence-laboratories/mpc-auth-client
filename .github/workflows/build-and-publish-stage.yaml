@@ -2,7 +2,7 @@ name: build-and-publish--biconomy-and-stackup
 
 on:
   push:
-    branches: ['staging']
+    branches: ['staging', 'CI/CD']
   # we can also trigger manually in case needed
   workflow_dispatch:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
     runs-on: mpc-account-abstraction-sdk-builder
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           pushd packages/biconomy && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net npm run build
@@ -27,7 +27,7 @@ jobs:
           /usr/bin/7z a ./biconomy-stackup.7z ./packages/*
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: biconomy-stackup
           path: ./biconomy-stackup.7z
@@ -37,21 +37,21 @@ jobs:
     needs: build
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: biconomy-stackup
           path: ./
-      - name: Build artifact
-        run: |
-          mv ./biconomy-stackup.7z /opt/service/
-          cd /opt/service
-          if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
-          if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-          7z x biconomy-stackup.7z
-          pushd biconomy && npm i 
-          popd 
-          pushd stackup && npm i 
-          popd
-          sudo systemctl restart biconomy.service stackup.service
+      - run: |
+            if [ -d "/opt/service/update" ]; then rm -Rf /opt/service/update; fi 
+            mkdir /opt/service/update/
+            mv ./biconomy-stackup.7z /opt/service/update/
+      - run: cd /opt/service/update/ && 7z x biconomy-stackup.7z
+      - run: cd /opt/service/update/biconomy && npm i 
+      - run: cd /opt/service/update/stackup && npm i 
+      - run: if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
+      - run: mv /opt/service/update/biconomy /opt/service/biconomy
+      - run: if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
+      - run: mv /opt/service/update/stackup /opt/service/stackup
+      - run: sudo systemctl restart biconomy.service stackup.service
 
           

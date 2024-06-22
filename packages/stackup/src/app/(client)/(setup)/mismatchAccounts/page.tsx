@@ -4,11 +4,13 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { getPairingStatus } from "@/mpc/storage/wallet";
+import { getWalletStatus } from "@/mpc/storage/wallet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
+import { layoutClassName } from "@/utils/ui";
+import { RouteLoader } from "@/components/routeLoader";
 function Page() {
     const router = useRouter();
     const oldEoa = store.getOldEoa();
@@ -47,14 +49,19 @@ function Page() {
     };
 
     useEffect(() => {
-        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
+        if (getWalletStatus() == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
     }, [router]);
 
+    const status = getWalletStatus();
+    if (status !== WALLET_STATUS.Mismatched) {
+        return <RouteLoader />;
+    }
+
     return (
-        <div>
+        <div className={layoutClassName}>
             {showHeadsUp ? (
                 <>
                     <div className="flex flex-col items-center">

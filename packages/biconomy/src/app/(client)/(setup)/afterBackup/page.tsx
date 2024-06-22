@@ -14,13 +14,20 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getDeviceOS } from "@/mpc/storage/wallet";
+import { getDeviceOS, getWalletStatus } from "@/mpc/storage/wallet";
+import { WALLET_STATUS } from "@/constants";
+import { RouteLoader } from "@/components/routeLoader";
+import { layoutClassName } from "@/utils/ui";
 
 function Page() {
     const router = useRouter();
     const deviceOS = getDeviceOS();
+    const status = getWalletStatus();
+    if (status !== WALLET_STATUS.BackedUp) {
+        return <RouteLoader />;
+    }
     return (
-        <div>
+        <div className={layoutClassName}>
             <div className="absolute w-full top-0 right-0">
                 <Progress
                     className="w-[99.5%]"
@@ -32,9 +39,6 @@ function Page() {
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
                 disabled={true}
-                onClick={() => {
-                    console.log("clicked");
-                }}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

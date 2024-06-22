@@ -6,10 +6,12 @@ import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
 import LoadingScreen from "@/components/loadingScreen";
 import { accountType, getEoa } from "@/mpc/storage/account";
-import { getPairingStatus } from "@/mpc/storage/wallet";
+import { clearWallet, getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { mintBiconomyWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
+import { layoutClassName } from "@/utils/ui";
+import { RouteLoader } from "@/components/routeLoader";
 
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };
@@ -17,21 +19,22 @@ function Page() {
     const [eoa, setEoa] = useState<accountType>(placeholderAccount);
     const router = useRouter();
 
-    const step = 2;
+    const status = getWalletStatus();
 
     useEffect(() => {
-        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
+        if (status === WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
         setEoa(getEoa());
-    }, [router]);
+    }, [router, status]);
 
     const handleMint = async () => {
         setLoading(true);
         try {
             await mintBiconomyWallet(eoa);
             setLoading(true);
+            setWalletStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");
         } catch (error) {
             console.log("Minting failed.", error);
@@ -39,22 +42,29 @@ function Page() {
         }
     };
 
+    const handleMoveBack = () => {
+        clearWallet();
+        setWalletStatus(WALLET_STATUS.Unpaired);
+        router.replace("/intro");
+    }
+
+    if (status !== WALLET_STATUS.BackedUp) {
+        return <RouteLoader />;
+    }
+
     return (
-        <div>
+        <div className={layoutClassName}>
             <div className="absolute w-full top-0 right-0">
                 <Progress
                     className="w-[99.5%]"
-                    value={step * 33}
+                    value={66}
                     style={{ height: "4px" }}
                 />
             </div>
             <Button
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
-                disabled={false}
-                onClick={() => {
-                    console.log("clicked");
-                }}
+                onClick={handleMoveBack}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

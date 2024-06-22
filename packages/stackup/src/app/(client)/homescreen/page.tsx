@@ -11,7 +11,7 @@ import { TextInput } from "@/components/textInput";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { formatEther } from "ethers/lib/utils";
-import { getPairingStatus } from "@/mpc/storage/wallet";
+import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -22,6 +22,7 @@ import { sendTransaction } from "@/aaSDK/transactionService";
 import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
+import { RouteLoader } from "@/components/routeLoader";
 
 const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();
@@ -38,26 +39,29 @@ const Homescreen: React.FC = () => {
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
     const chainCheckRef = useRef(false);
-
+    const status = getWalletStatus();
     useEffect(() => {
-        if (getPairingStatus() == WALLET_STATUS.Unpaired) {
+        if (status == WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
 
         const account = store.getSmartContractAccount();
         if (!account) {
-            router.replace("/intro");
+            setWalletStatus(WALLET_STATUS.BackedUp);
+            router.replace("/mint");
         }
 
         const eoa = store.getEoa();
         if (!eoa) {
+            setWalletStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
         }
 
+        setWalletStatus(WALLET_STATUS.Minted);
         setWalletAccount(account);
         setEoa(eoa);
-    }, []);
+    }, [router, status]);
 
     useEffect(() => {
         if (!walletAccount || !eoa || chainCheckRef.current) return;
@@ -209,8 +213,11 @@ const Homescreen: React.FC = () => {
             if (isNaN(amountValue)) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
             }
-            if (amount.split('.')[1]?.length > 15) {
-                return { isValid: false, errorMsg: "Amount exceeds 15 decimal places" };
+            if (amount.split(".")[1]?.length > 15) {
+                return {
+                    isValid: false,
+                    errorMsg: "Amount exceeds 15 decimal places",
+                };
             }
             if (amountValue < 0) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
@@ -222,7 +229,10 @@ const Homescreen: React.FC = () => {
                 return { isValid: false, errorMsg: "Amount must numeric" };
             }
             if (amountValue > Number.MAX_SAFE_INTEGER) {
-                return { isValid: false, errorMsg: `Amount is too big. Maximum allowed is ${Number.MAX_SAFE_INTEGER}` };
+                return {
+                    isValid: false,
+                    errorMsg: `Amount is too big. Maximum allowed is ${Number.MAX_SAFE_INTEGER}`,
+                };
             }
 
             return { isValid: true, errorMsg: "" };
@@ -232,7 +242,6 @@ const Homescreen: React.FC = () => {
 
         setAmountError(isValid ? "" : errorMsg);
     };
-
 
     const handleSend = (event: React.MouseEvent): void => {
         event.preventDefault();
@@ -276,6 +285,10 @@ const Homescreen: React.FC = () => {
             router.push("/pair?repair=true");
         } // TODO: handle undefined eoa case
     };
+
+    if (status !== WALLET_STATUS.Minted) {
+        return <RouteLoader />;
+    }
 
     return (
         <div className="animate__animated animate__slideInUp animate__faster relative flex flex-col justify-center py-6 px-10 border rounded-[8px] border-none w-[100vw] xl:w-[52.75vw] m-auto bg-white-primary">
@@ -727,8 +740,7 @@ const Homescreen: React.FC = () => {
                     </div>
                 )}
 
-              
-<div
+                <div
                     className="mb-3 flex flex-col justify-center p-4 border rounded-[8px] bg-white-primary"
                     style={{
                         border: "1px solid #23272E",
@@ -780,7 +792,6 @@ const Homescreen: React.FC = () => {
                         </div>
                     </div>
                 </div>
-
 
                 <Dialog
                     open={openPasswordBackupDialog}
