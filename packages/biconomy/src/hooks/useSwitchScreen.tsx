@@ -11,7 +11,6 @@ export const useSwitchScreen = () => {
     const initializeScreen = () => {
         const status = getWalletStatus();
         const eoa = getEoa();
-        console.log(status, eoa, isRepairing);
         if ((status === WALLET_STATUS.Minted || eoa) && !isRepairing) {
             router.replace("/homescreen");
         } else if ((status === WALLET_STATUS.Minted || eoa) && isRepairing) {
