@@ -55,6 +55,7 @@ function Page() {
             setWalletStatus(WALLET_STATUS.Mismatched);
             router.replace("/mismatchAccounts");
         } else {
+            setWalletStatus(WALLET_STATUS.BackedUp);
             router.replace("/mint");
         }
     };
@@ -167,22 +168,24 @@ function Page() {
     }
 
     return showPasswordScreen ? (
-        <PasswordEnterScreen
-            onProceed={async (password) => {
-                if (pairingSessionDataState) {
-                    await handlePairingWithBackup(
-                        pairingSessionDataState,
-                        password
-                    );
-                }
-            }}
-            onMoveBack={() => {
-                setLoading(false);
-                setPairingSessionDataState(null);
-                setShowPasswordScreen(false);
-                generateWallet();
-            }}
-        />
+        <div className={layoutClassName}>
+            <PasswordEnterScreen
+                onProceed={async (password) => {
+                    if (pairingSessionDataState) {
+                        await handlePairingWithBackup(
+                            pairingSessionDataState,
+                            password
+                        );
+                    }
+                }}
+                onMoveBack={() => {
+                    setLoading(false);
+                    setPairingSessionDataState(null);
+                    setShowPasswordScreen(false);
+                    generateWallet();
+                }}
+            />
+        </div>
     ) : (
         <div className={layoutClassName}>
             <div className="absolute w-full top-0 right-0">
