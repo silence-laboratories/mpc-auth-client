@@ -1,0 +1,41 @@
+{
+  "INIT_CONFIG": {
+    "accountIndex": 0,
+    "chainId": 11155111,
+    "rpcUrl": "https://rpc.sepolia.org",
+    "bundlerUrl": "https://bundler.biconomy.io/api/v2/11155111/nJPK7B3ru.dd7f7861-190d-41bd-af80-6877f74b8f44",
+    "biconomyPaymasterUrl": "https://paymaster.biconomy.io/api/v1/11155111/b-gzYgEBa.ff2db019-6f3c-4da1-9dfd-d85d1796295a",
+    "preferredToken": "",
+    "tokenList": []
+  },
+  "silentSigner": {
+    "_isSigner": true,
+    "address": "0x67EC23284F6F894Cec3766F7774fC6BBF0b9B52e",
+    "public_key": "ae158dbdc5d455455f8ad44abc33d14f1f13b2c944333686bb6eb98fea20d1fc82ea3e97ef59d504007c0c5781ae4b191a1539d48a470b63c55ec0933aff794d",
+    "p1KeyShare": {
+      "x1": "c927af0ac27bab3a33230454ddc92f9c3676921b7719d946ec636b2226e66f55",
+      "public_key": "ae158dbdc5d455455f8ad44abc33d14f1f13b2c944333686bb6eb98fea20d1fc82ea3e97ef59d504007c0c5781ae4b191a1539d48a470b63c55ec0933aff794d",
+      "paillier_private_key": {
+        "p": "AUa1F1sggNltkrYEu5290q8gupEu5PFhxve6g7K1UqXf/5GmcL8zsfjA/+kGiz78cP5a/PYB/craUZ/BH2WDSBpZEWYW+vAIgk1qhfJ6vQA+OshKulE6qGvSU9qrnAWigABCRoJUTvww7bhZF+2MI2bYntmxggF6BXhtaljCgwNT",
+        "q": "tRuCDSzG8Cv7tA/wDf3rMsx1gcQrJbIVBq1Dzs/EenPQuGSx/+eCMVrXOsit7gRP2ea+QaUq1pGEDThA+/T4VZaV2Z2V9btZ3v/IUQjIE4saqmft9LgcTX3t/90LNOCXufNPwMfnz4pLGICbMk3wx5b/FtVG07XO9RI6wbuszgs="
+      },
+      "paillier_public_key": "5yEklarLAAkd2Nb8BlkIlL9YVTTUhIyerGoSiADl+F1T2rhvpXZdWYHYYthswdb5a13T8MTngKYiXeEcu0saqOy2VRsMLcJaYwMe5sm55SUGUao+azxurOWFMQguQrBtDL3RzYPl0lBJQ6SlWOsWeEwQme6ulUKQRqeAmSqC9GT9ST8r2BTUce4VsX4rTZHAcfChY4hTu3iETlO7o3N/jM82rUIOWkeTnwwFRLafQ5Jylbw1+fFJp2wYIuF9b83ue4+tJ5QhJD4c2j5RFLKFvBJIEZD2rQT3RGVrK1Md1CWAxwRT51jJ9LP1FYThNQH7dCxoJVgPL4GAW7FcpRHukQ=="
+    },
+    "keygenResult": {
+      "distributedKey": {
+        "publicKey": "ae158dbdc5d455455f8ad44abc33d14f1f13b2c944333686bb6eb98fea20d1fc82ea3e97ef59d504007c0c5781ae4b191a1539d48a470b63c55ec0933aff794d",
+        "accountId": 1,
+        "keyShareData": {
+          "x1": "c927af0ac27bab3a33230454ddc92f9c3676921b7719d946ec636b2226e66f55",
+          "public_key": "ae158dbdc5d455455f8ad44abc33d14f1f13b2c944333686bb6eb98fea20d1fc82ea3e97ef59d504007c0c5781ae4b191a1539d48a470b63c55ec0933aff794d",
+          "paillier_private_key": {
+            "p": "AUa1F1sggNltkrYEu5290q8gupEu5PFhxve6g7K1UqXf/5GmcL8zsfjA/+kGiz78cP5a/PYB/craUZ/BH2WDSBpZEWYW+vAIgk1qhfJ6vQA+OshKulE6qGvSU9qrnAWigABCRoJUTvww7bhZF+2MI2bYntmxggF6BXhtaljCgwNT",
+            "q": "tRuCDSzG8Cv7tA/wDf3rMsx1gcQrJbIVBq1Dzs/EenPQuGSx/+eCMVrXOsit7gRP2ea+QaUq1pGEDThA+/T4VZaV2Z2V9btZ3v/IUQjIE4saqmft9LgcTX3t/90LNOCXufNPwMfnz4pLGICbMk3wx5b/FtVG07XO9RI6wbuszgs="
+          },
+          "paillier_public_key": "5yEklarLAAkd2Nb8BlkIlL9YVTTUhIyerGoSiADl+F1T2rhvpXZdWYHYYthswdb5a13T8MTngKYiXeEcu0saqOy2VRsMLcJaYwMe5sm55SUGUao+azxurOWFMQguQrBtDL3RzYPl0lBJQ6SlWOsWeEwQme6ulUKQRqeAmSqC9GT9ST8r2BTUce4VsX4rTZHAcfChY4hTu3iETlO7o3N/jM82rUIOWkeTnwwFRLafQ5Jylbw1+fFJp2wYIuF9b83ue4+tJ5QhJD4c2j5RFLKFvBJIEZD2rQT3RGVrK1Md1CWAxwRT51jJ9LP1FYThNQH7dCxoJVgPL4GAW7FcpRHukQ=="
+        }
+      },
+      "elapsedTime": 2713
+    }
+  }
+}
