@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { getWalletStatus } from "@/mpc/storage/wallet";
+import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
@@ -24,6 +24,7 @@ function Page() {
         } else {
             if (isAgree) {
                 try {
+                    setWalletStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
                     store.clearOldAccount();
                 } catch (err) {
@@ -47,14 +48,6 @@ function Page() {
             ? `(${address.slice(0, 5)}...${address.slice(-5)})`
             : ``;
     };
-
-    useEffect(() => {
-        if (getWalletStatus() == WALLET_STATUS.Unpaired) {
-            router.replace("/intro");
-            return;
-        }
-    }, [router]);
-
 
     const status = getWalletStatus();
     if (status !== WALLET_STATUS.Mismatched) {
