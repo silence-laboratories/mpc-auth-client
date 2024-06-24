@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## MPC X AA DApp
  A NextJs app that uses the Stackup SDK. This DApp allows users to pair with the silent Shard app, mint a smart contact account, and create transactions on the blockchain.
 
@@ -38,3 +39,31 @@ To interact with QR codes essential for this setup, you'll need to use the Silen
 Do note that the QR code is time-limited, and will expire post 30 seconds. Post which you can initiate a new QR creation.
 
 
+=======
+## AA Demo Frontend
+This is the frontend of the AA demo project. It is a next app that uses the ERC-4337 stackup sdk.Application allows users to pair with silentShard app and mint their smart contact account and create transactions on blockchain.
+
+## How to run
+1. `npm install`
+2. `npm run dev` to run dev version
+
+or if you're using `Yarn`
+
+1. `yarn`
+2. `yarn dev` to run dev version
+
+Once started, the app is running on http://localhost:3000/
+
+## Screenshots
+Intro 
+![Intro](./public/intropage.png)
+
+Pair 
+![Pair](./public/pair2.png)
+
+Mint
+![mint](./public/mint.png)
+
+Transaction 
+![Homescreen](./public/transaction.png)
+>>>>>>> origin/staging

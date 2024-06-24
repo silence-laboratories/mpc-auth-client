@@ -47,18 +47,6 @@ function Page() {
     const MAX_ENTER_PW_SECONDS = 60; // According to pairing API timeout
     const oldEoa = getOldEoa();
 
-    const saveEoaAfterPairing = (eoa: accountType) => {
-        setEoa(eoa);
-        setWalletStatus(WALLET_STATUS.Paired);
-
-        if (isRepairing && oldEoa !== null && eoa.address !== oldEoa.address) {
-            setWalletStatus(WALLET_STATUS.Mismatched);
-            router.replace("/mismatchAccounts");
-        } else {
-            router.replace("/mint");
-        }
-    };
-
     const handlePairingWithBackup = async (
         pairingSessionData: PairingSessionData,
         password: string
@@ -69,9 +57,22 @@ function Page() {
                 oldEoa?.address,
                 password
             );
-            saveEoaAfterPairing({
+
+            const eoa = {
                 address: runPairingResp.newAccountAddress ?? "",
-            });
+            };
+            setEoa(eoa);
+            if (
+                isRepairing &&
+                oldEoa !== null &&
+                eoa.address !== oldEoa.address
+            ) {
+                setWalletStatus(WALLET_STATUS.Mismatched);
+                router.replace("/mismatchAccounts");
+            } else {
+                setWalletStatus(WALLET_STATUS.BackedUp);
+                router.replace("/mint");
+            }
             setLoading(false);
         } catch (error) {
             // TODO: handle error
@@ -104,7 +105,7 @@ function Page() {
                         oldEoa?.address
                     );
                     const keygenRes = await runKeygen();
-                    saveEoaAfterPairing({
+                    const eoa = {
                         address:
                             "0x" +
                             pubToAddress(
@@ -113,7 +114,9 @@ function Page() {
                                     "hex"
                                 )
                             ).toString("hex"),
-                    });
+                    };
+                    setEoa(eoa);
+                    setWalletStatus(WALLET_STATUS.Paired);
                     router.replace("/backup");
                 }
             } catch (error) {
@@ -167,22 +170,24 @@ function Page() {
     }
 
     return showPasswordScreen ? (
-        <PasswordEnterScreen
-            onProceed={async (password) => {
-                if (pairingSessionDataState) {
-                    await handlePairingWithBackup(
-                        pairingSessionDataState,
-                        password
-                    );
-                }
-            }}
-            onMoveBack={() => {
-                setLoading(false);
-                setPairingSessionDataState(null);
-                setShowPasswordScreen(false);
-                generateWallet();
-            }}
-        />
+        <div className={layoutClassName}>
+            <PasswordEnterScreen
+                onProceed={async (password) => {
+                    if (pairingSessionDataState) {
+                        await handlePairingWithBackup(
+                            pairingSessionDataState,
+                            password
+                        );
+                    }
+                }}
+                onMoveBack={() => {
+                    setLoading(false);
+                    setPairingSessionDataState(null);
+                    setShowPasswordScreen(false);
+                    generateWallet();
+                }}
+            />
+        </div>
     ) : (
         <div className={layoutClassName}>
             <div className="absolute w-full top-0 right-0">

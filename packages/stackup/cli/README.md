@@ -34,10 +34,17 @@ To set up the rpcUrl, create an instance at StackUp:
 Create a `.env` file:
 
 1. In the root of your project, create a new file named `.env`.
+<<<<<<< HEAD
 2. Copy the contents of `.env.example` to `.env`:
 
   ```bash
   cp .env.example .env
+=======
+2. Copy the contents of `.env.example` to `.env.local`:
+
+  ```bash
+  cp .env.example .env.local
+>>>>>>> origin/staging
   ```
 
 3. Fill in your API keys in `.env`:
