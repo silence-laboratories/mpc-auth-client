@@ -1,5 +1,5 @@
 {
-  "name": "biconomy-sdk-cli",
+  "name": "mpc-account-abstraction-sdk",
   "version": "1.0.0",
   "description": "Biconomy SDK SmartAccount",
   "main": "scripts/index.js",

@@ -17,8 +17,8 @@ Navigate to the cli directory within the cloned repository:
 ### Configuration Setup:
 
 **Node Version:** Ensure you are using Node.js version 18.
+**Yarn Version:** Ensure you are using Yarn version 1.22.17 or higher.
 
-- Check `.env.example` file and set environment variables before running the app.
 
 ### Set Up the RPC URL
 
@@ -49,7 +49,7 @@ To set up the `rpcUrl`, create an instance at:
 - This example demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK. Install it, and all other dependencies.
 
   ```bash
-  npm install
+  yarn install
   ```
 ### Step 4: Using the Silent Shard App
 
