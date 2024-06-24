@@ -1,0 +1,53 @@
+{
+  "name": "biconomy-sdk-cli",
+  "version": "1.0.0",
+  "description": "Biconomy SDK SmartAccount",
+  "main": "scripts/index.js",
+  "scripts": {
+    "start": "ts-node scripts/index.ts",
+    "smartAccount": "ts-node scripts/index.ts"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "@biconomy/account": "^4.2.0",
+    "@biconomy/bundler": "^3.0.0",
+    "@biconomy/common": "^3.0.0",
+    "@biconomy/core-types": "^3.0.0",
+    "@biconomy/paymaster": "^3.0.0",
+    "@ethereumjs/common": "^3.1.2",
+    "@ethereumjs/tx": "^4.1.2",
+    "@ethereumjs/util": "^8.0.5",
+    "@inquirer/prompts": "^2.0.0",
+    "@metamask/eth-sig-util": "^7.0.0",
+    "@metamask/utils": "^8.1.0",
+    "@silencelaboratories/ecdsa-tss": "^1.1.2",
+    "axios": "^1.2.3",
+    "buffer": "^6.0.3",
+    "chalk": "^4.1.2",
+    "commander": "^10.0.0",
+    "crypto-js": "^4.1.1",
+    "dotenv": "^16.4.5",
+    "ethers": "^5.7.2",
+    "firebase": "^10.4.0",
+    "inquirer": "^8.0.0",
+    "keccak256": "^1.0.6",
+    "libsodium-wrappers": "^0.7.11",
+    "lodash": "^4.17.21",
+    "prettier": "^2.8.1",
+    "qrcode-terminal": "^0.12.0",
+    "userop": "^0.3.0",
+    "uuid": "^9.0.1",
+    "yargs": "^17.7.1"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.3",
+    "@types/libsodium-wrappers": "^0.7.13",
+    "@types/node": "^20.3.2",
+    "@types/prettier": "^2.7.3",
+    "@types/uuid": "^9.0.7",
+    "@types/yargs": "^17.0.24",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
