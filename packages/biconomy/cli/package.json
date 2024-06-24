@@ -1,6 +1,6 @@
 {
   "name": "biconomy-sdk-cli",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Biconomy SDK SmartAccount",
   "main": "scripts/index.js",
   "scripts": {
