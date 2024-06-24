@@ -112,3 +112,6 @@ firebaseFunctions/
 storage.json
 
 .npmrc
+
+#ignore config.json
+config.json

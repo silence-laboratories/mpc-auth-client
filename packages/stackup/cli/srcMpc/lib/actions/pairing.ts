@@ -5,9 +5,8 @@ import {
 	sendMessage,
 } from '../../firebaseEndpoints';
 import _sodium from 'libsodium-wrappers';
-import { DistributedKey, PairingData, StorageData, Wallet } from '../../types';
+import { DistributedKey, PairingData, StorageData } from '../../types';
 import { SdkError, ErrorCode } from '../../error';
-import { decMessage } from '../entropy';
 import { v4 as uuid } from 'uuid';
 
 export interface PairingDataInit {

@@ -1,8 +1,8 @@
-import { ethers } from "ethers";
 import { Presets } from "userop";
 // @ts-ignore
 import config from "../../config.json";
 import { SilentWallet } from "../../silentWallet";
+import chalk from "chalk";
 
 
 export default async function main() {
@@ -14,5 +14,5 @@ export default async function main() {
   );
   const address = simpleAccount.getSender();
 
-  console.log(`SimpleAccount address: ${address}`);
+  console.log(chalk.blue(`SimpleAccount address: ${address}`));
 }

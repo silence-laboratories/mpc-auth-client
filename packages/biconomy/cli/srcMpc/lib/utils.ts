@@ -1,6 +1,5 @@
 import { SdkError, ErrorCode } from "../error";
 import { JsonTx } from "@ethereumjs/tx";
-import { match } from "assert";
 
 // Json type from @metamask/utils
 export type Json =
@@ -22,8 +21,6 @@ export const fromHexStringToBytes = (hexString: string) => {
     }
 
     return Uint8Array.from(matches.map((byte) => parseInt(byte, 16)));
-	  
-    
   } catch (error) {
     throw error instanceof Error
       ? error

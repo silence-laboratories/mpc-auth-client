@@ -2,10 +2,14 @@ import fs from "fs/promises";
 import path from "path";
 import prettier from "prettier";
 import { SilentWallet } from "../silentWallet";
+import { config } from "dotenv";
+import chalk from "chalk";
+
+config();
 
 const INIT_CONFIG = {
   rpcUrl:
-    "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e",
+    `https://api.stackup.sh/v1/node/${process.env.API_KEY}`,
   paymaster: {
     rpcUrl:
       "https://api.stackup.sh/v1/paymasterhttps://api.stackup.sh/v1/paymaster/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e",
@@ -29,7 +33,7 @@ async function main() {
 }
 
 main()
-  .then(() => console.log(`Config written to ${CONFIG_PATH}`))
+  .then(() => console.log(chalk.yellow(`Config written to ${CONFIG_PATH}`)))
   .catch((error) => {
     console.error(error);
     process.exit(1);

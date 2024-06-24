@@ -71,16 +71,6 @@ export interface DistributedKey {
 	keyShareData: IP1KeyShare;
 }
 
-export type Wallet = {
-	account: KeyringAccount;
-	distributedKey: DistributedKey;
-};
-
-export type KeyringState = {
-	wallets: Record<string, Wallet>;
-	requests: Record<string, KeyringRequest>;
-};
-
 export type StorageData = KeyringState & {
 	pairingData: PairingData;
 	accountId: string | null;
