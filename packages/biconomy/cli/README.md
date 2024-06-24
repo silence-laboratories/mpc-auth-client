@@ -17,6 +17,7 @@ Navigate to the cli directory within the cloned repository:
 ### Configuration Setup:
 
 **Node Version:** Ensure you are using Node.js version 18.
+
 **Yarn Version:** Ensure you are using Yarn version 1.22.17 or higher.
 
 
@@ -40,7 +41,7 @@ To set up the `rpcUrl`, create an instance at:
     - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
 
         ```env
-        NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
+        FIREBASE_BASEURL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
         API_KEY=your_biconomy_api_key_here
         ```
 
