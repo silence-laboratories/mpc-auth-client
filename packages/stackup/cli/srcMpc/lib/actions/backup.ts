@@ -1,6 +1,6 @@
 import { SdkError, ErrorCode } from '../../error';
 import { sendMessage } from '../../firebaseEndpoints';
-import { BackupConversation, DistributedKey, PairingData } from '../../types';
+import { BackupConversation, PairingData } from '../../types';
 
 export const backup = async (
 	pairingData: PairingData,

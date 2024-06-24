@@ -1,18 +1,10 @@
 import { ethers, providers } from "ethers";
 import chalk from "chalk";
 import {
-    DEFAULT_ENTRYPOINT_ADDRESS,
     SupportedSigner,
     createSmartAccountClient,
   } from "@biconomy/account";
-  import { Bundler } from "@biconomy/bundler";
-  import { BiconomyPaymaster } from "@biconomy/paymaster";
-import {
-  IHybridPaymaster,
-  PaymasterFeeQuote,
-  PaymasterMode,
-  SponsorUserOperationDto,
-} from "@biconomy/paymaster";
+
 import config from "../../config.json";
 import { SilentWallet } from "../../silentWallet";
 

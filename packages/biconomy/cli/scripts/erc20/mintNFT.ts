@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import chalk from "chalk";
-import { DEFAULT_ENTRYPOINT_ADDRESS, SupportedSigner, createSmartAccountClient } from "@biconomy/account";
+import {  SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { SilentWallet } from "../../silentWallet";
 import config from "../../config.json";
 export const mintNftPayERC20 = async () => {

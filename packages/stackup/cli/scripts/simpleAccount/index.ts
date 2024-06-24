@@ -2,9 +2,7 @@
 import { Command } from "commander";
 import address from "./address";
 import transfer from "./transfer";
-import erc20Transfer from "./erc20Transfer";
-import erc20Approve from "./erc20Approve";
-import batchErc20Transfer from "./batchErc20Transfer";
+
 
 const program = new Command();
 
@@ -57,13 +55,7 @@ program
   .requiredOption("-tkn, --token <address>", "The token address")
   .requiredOption("-t, --to <address>", "The recipient address")
   .requiredOption("-amt, --amount <decimal>", "Amount of the token to transfer")
-  .action(async (opts) =>
-    erc20Transfer(opts.token, opts.to, opts.amount, {
-      dryRun: Boolean(opts.dryRun),
-      withPM: Boolean(opts.withPaymaster),
-      overrideBundlerRpc: opts.overrideBundlerRpc,
-    })
-  );
+ 
 
 program
   .command("erc20Approve")
@@ -80,13 +72,7 @@ program
   .requiredOption("-tkn, --token <address>", "The token address")
   .requiredOption("-s, --spender <address>", "The spender address")
   .requiredOption("-amt, --amount <decimal>", "Amount of the token to transfer")
-  .action(async (opts) =>
-    erc20Approve(opts.token, opts.spender, opts.amount, {
-      dryRun: Boolean(opts.dryRun),
-      withPM: Boolean(opts.withPaymaster),
-      overrideBundlerRpc: opts.overrideBundlerRpc,
-    })
-  );
+  
 
 program
   .command("batchErc20Transfer")
@@ -106,12 +92,6 @@ program
     "Comma separated list of recipient addresses"
   )
   .requiredOption("-amt, --amount <decimal>", "Amount of the token to transfer")
-  .action(async (opts) =>
-    batchErc20Transfer(opts.token, opts.to.split(","), opts.amount, {
-      dryRun: Boolean(opts.dryRun),
-      withPM: Boolean(opts.withPaymaster),
-      overrideBundlerRpc: opts.overrideBundlerRpc,
-    })
-  );
+  
 
 program.parse();

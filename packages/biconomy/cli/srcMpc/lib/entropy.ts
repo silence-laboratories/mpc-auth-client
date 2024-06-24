@@ -4,7 +4,6 @@ import _sodium from "libsodium-wrappers";
 
 // Helper function to read the private key from config.json
 const getPrivateKey = async () => {
-  
   return "0x1213242112"
 };
 

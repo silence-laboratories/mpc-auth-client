@@ -4,8 +4,7 @@ import { config } from 'dotenv';
 config();
 
 const baseUrl = process.env.FIREBASE_BASEURL;
-console.log(baseUrl);
-// const baseUrl = 'http://127.0.0.1:5001/mobile-wallet-mm-snap/us-central1';
+
 
 interface Response {
 	response: any;

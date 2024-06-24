@@ -1,7 +1,6 @@
 import { deleteStorage, isStorageExist } from "./storage";
 import { SignMetadata, StorageData } from "../types";
 import * as PairingAction from "./actions/pairing";
-import { encMessage, requestEntropy } from "./entropy";
 import { getSilentShareStorage, saveSilentShareStorage } from "./storage";
 import { fromHexStringToBytes } from "./utils";
 import * as KeyGenAction from "./actions/keygen";
@@ -71,7 +70,6 @@ async function runBackup() {
   const encryptedMessage = JSON.stringify(
     silentShareStorage.tempDistributedKey
   );
-  console.log("encMessage", encryptedMessage);
   const address = config.address;
   await backup(silentShareStorage.pairingData, encryptedMessage, address);
 }

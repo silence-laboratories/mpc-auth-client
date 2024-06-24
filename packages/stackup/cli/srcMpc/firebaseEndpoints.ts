@@ -1,9 +1,11 @@
 
-
 import { SdkError, ErrorCode } from './error';
+import { config } from 'dotenv';
 
-const baseUrl = 'https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net';
-// const baseUrl = 'http://127.0.0.1:5001/mobile-wallet-mm-snap/us-central1';
+config();
+
+const baseUrl = process.env.FIREBASE_BASEURL;
+
 
 interface Response {
 	response: any;

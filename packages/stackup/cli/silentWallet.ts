@@ -80,11 +80,6 @@ export class SilentWallet extends Signer {
   ])
 
   const hexMessage = hexlify(messageSome)
-
-
-    // console.log("message",message)
-    // console.log("messageSo",messagesome)
-    // console.log("messageDigest",messageDigest)
     const signSdk = await sdk.runSign(
       "keccak256",
       hexMessage,
@@ -110,7 +105,6 @@ export class SilentWallet extends Signer {
     return signedMsg;
   }
   async signTransaction(transaction: TransactionRequest): Promise<string> {
-    console.log("running signtransaction");
     return resolveProperties(transaction).then(async (tx) => {
       if (tx.from != null) {
         if (getAddress(tx.from) !== this.address) {
@@ -120,7 +114,6 @@ export class SilentWallet extends Signer {
         }
         tx.from = undefined;
       }
-      // console.log("serialized txn", serialize(<UnsignedTransaction>tx));
 
       const signature = await this.signDigest(
         keccak256(serialize(<UnsignedTransaction>tx))
