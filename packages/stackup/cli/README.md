@@ -18,7 +18,7 @@ cd packages/stackup/cli
 ## Configuration Setup
 
 - **Node Version:** Ensure you are using Node.js version 18
-- Check `.env.example` file and set environment variables before running the app
+
 
 ### Set Up the RPC URL
 
@@ -29,23 +29,19 @@ To set up the rpcUrl, create an instance at StackUp:
 3. Once the instance is created, navigate to the "Instances" tab.
 4. Copy the API Key for your instance. You will use this API Key in the next step to set environment variables.
 
-## Step 2: Setting Up Environment Variables
+### Step 2: Setting Up Environment Variables
 
-Create a `.env` file:
+1. Create a `.env` file:
+    - In the root of your project, create a new file named `.env`.
 
-1. In the root of your project, create a new file named `.env`.
-2. Copy the contents of `.env.example` to `.env`:
+2. Fill in your Base urls and API keys in `.env`:
 
-  ```bash
-  cp .env.example .env
-  ```
+    - Replace `your_stackup_api_key_here` with your actual stackup's API key.
 
-3. Fill in your API keys in `.env`:
-   
-  ```env
-  NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
-  API_KEY=your_stackup_api_key_here
-  ```
+        ```env
+        NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
+        API_KEY=your_stsackup_api_key_here
+        ```
 
 ## Step 3: Install Dependencies
 

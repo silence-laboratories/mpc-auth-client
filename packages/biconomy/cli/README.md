@@ -35,20 +35,14 @@ To set up the `rpcUrl`, create an instance at:
 1. Create a `.env` file:
     - In the root of your project, create a new file named `.env`.
 
-2. Copy the contents of `.env.example` to `.env`:
-
-      ```bash
-      cp .env.example .env
-      ```
-
-3. Fill in your API keys in `.env`:
+2. Fill in your Base urls and API keys in `.env`:
 
     - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
 
-      ```env
-      NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
-      API_KEY=your_biconomy_api_key_here
-      ```
+        ```env
+        NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
+        API_KEY=your_biconomy_api_key_here
+        ```
 
 ### Step 3: Install Dependencies
 
