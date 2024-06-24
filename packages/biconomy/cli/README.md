@@ -46,7 +46,7 @@ To set up the `rpcUrl`, create an instance at:
 
       ```env
       NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
-      STACKUP_API_KEY=your_biconomy_api_key_here
+      API_KEY=your_biconomy_api_key_here
       ```
 
 ### Step 3: Install Dependencies
