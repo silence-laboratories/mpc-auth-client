@@ -1,7 +1,8 @@
+## MPC X AA CLI
 
-### Step 1: Download
+### Step 1: Clone the Repository
 
-Clone the mpc-account-abstraction-sdk repository to download the scripts. This example is a basic command-line wallet application.
+Clone the mpc-account-abstraction-sdk repository. This example is a basic command-line wallet application.
 
  ```bash
   git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
@@ -56,16 +57,15 @@ To set up the `rpcUrl`, create an instance at:
   ```bash
   npm install
   ```
-
 ### Step 4: Using the Silent Shard App
 
 As defined earlier, this setup is between your CLI and the Silent Shard Mobile Application. To interact further with this setup, please install the Silent Shard App.
 
-  1. Download the Silent Shard App from:
-    - Apple App Store: Link
-    - Google Play Store: Link
+1. Download the Silent Shard App from:
+   - [Apple App Store](https://apps.apple.com/us/app/silent-shard/id6468993285)
+   - [Google Play Store](https://play.google.com/store/apps/details?id=com.silencelaboratories.silentshard&hl=kr&pli=1)
 
-  2. Press the "Connect new Account" to initiate the QR scanner on the app to pair with the CLI.
+2. Press the "Connect new Account" button to initiate the QR scanner on the app to pair with the CLI.
 
 ### Step 5: Initialising and Distributed Key Generation
 
@@ -83,6 +83,7 @@ A `config.json` file will be created. The file will look like this:
 
 ```json
 {
+{ 
    "accountIndex": 0,
    "chainId": 11155111,
    "rpcUrl": "https://rpc.sepolia.org",
@@ -90,7 +91,38 @@ A `config.json` file will be created. The file will look like this:
    "biconomyPaymasterUrl": "https://paymaster.biconomy.io/api/v1/11155111/add_your_api_key_here",
    "preferredToken": "",
    "tokenList": []
+
+  },
+  "_isSigner": true,
+  "address": "0xYourAddressHere",
+  "public_key": "YourPublicKeyHere",
+  "p1KeyShare": {
+    "x1": "YourX1Here",
+    "public_key": "YourPublicKeyHere",
+    "paillier_private_key": {
+      "p": "YourPaillierPHere",
+      "q": "YourPaillierQHere"
+    },
+    "paillier_public_key": "YourPaillierPublicKeyHere"
+  },
+  "keygenResult": {
+    "distributedKey": {
+      "publicKey": "YourDistributedPublicKeyHere",
+      "accountId": 1,
+      "keyShareData": {
+        "x1": "YourX1Here",
+        "public_key": "YourPublicKeyHere",
+        "paillier_private_key": {
+          "p": "YourPaillierPHere",
+          "q": "YourPaillierQHere"
+        },
+        "paillier_public_key": "YourPaillierPublicKeyHere"
+      }
+    },
+    "elapsedTime": 2442
+  }
 }
+
 ```
 
 ### Anatomy of the config.json file:
@@ -116,7 +148,7 @@ An address will be returned. At this point, the Smart Account has not been deplo
 
 You will now need to deposit the native token of the blockchain you are using into your new Smart Account. Since we are using the sepolia testnet, you will deposit sepolia ETH into the account.
 
-Navigate to a faucet, such as this [link](https://link). Enter the account address from Step 6 and claim the testnet token.
+Navigate to a faucet, such as this [link](https://cloud.google.com/application/web3/faucet/ethereum/sepolia). Enter the account address from Step 6 and claim the testnet token.
 
 ### Step 8: Initiate the Transfer
 

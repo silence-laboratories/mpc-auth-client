@@ -1,9 +1,9 @@
 
-# mpc-account-abstraction-sdk
+## MPC X AA CLI
 
-## Step 1: Download
+### Step 1: Clone the Repository
 
-Clone the mpc-account-abstraction-sdk repository to download the scripts. This example is a basic command-line wallet application.
+Clone the mpc-account-abstraction-sdk repository. This example is a basic command-line wallet application.
 
 ```bash
 git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
@@ -34,17 +34,10 @@ To set up the rpcUrl, create an instance at StackUp:
 Create a `.env` file:
 
 1. In the root of your project, create a new file named `.env`.
-<<<<<<< HEAD
 2. Copy the contents of `.env.example` to `.env`:
 
   ```bash
   cp .env.example .env
-=======
-2. Copy the contents of `.env.example` to `.env.local`:
-
-  ```bash
-  cp .env.example .env.local
->>>>>>> origin/staging
   ```
 
 3. Fill in your API keys in `.env`:
@@ -62,14 +55,15 @@ This example uses the userop.js library to build user operations. You can think 
 npm install
 ```
 
-## Step 4: Using the Silent Shard App
+### Step 4: Using the Silent Shard App
 
-As defined earlier, this setup is between your CLI and the Silent Shard Mobile Application. To interact further with this setup, please install the Silent Shard App
+As defined earlier, this setup is between your CLI and the Silent Shard Mobile Application. To interact further with this setup, please install the Silent Shard App.
 
-- Download the Silent Shard App from
-  - Apple App Store: Link
-  - Google Play Store: Link
-- Press the "Connect new Account" to initiate the QR scanner on the app to pair with the CLI.
+1. Download the Silent Shard App from:
+   - [Apple App Store](https://apps.apple.com/us/app/silent-shard/id6468993285)
+   - [Google Play Store](https://play.google.com/store/apps/details?id=com.silencelaboratories.silentshard&hl=kr&pli=1)
+
+2. Press the "Connect new Account" button to initiate the QR scanner on the app to pair with the CLI.
 
 ## Step 5: Initialising and Distributed Key Generation
 
@@ -143,7 +137,7 @@ A SimpleAccount address will be returned. At this point, the Smart Account has n
 
 You will now need to deposit the native token of the blockchain you are using into your new Smart Account. Since we are using the sepolia testnet, you will deposit sepolia ETH into the account.
 
-Navigate to a faucet, such as [this link](https://faucet.sepolia.dev/). Enter the account address from Step 6 and claim the testnet token.
+Navigate to a faucet, such as [this link](https://cloud.google.com/application/web3/faucet/ethereum/sepolia). Enter the account address from Step 6 and claim the testnet token.
 
 ## Step 8: Initiate the transfer
 
