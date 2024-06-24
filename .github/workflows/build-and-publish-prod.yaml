@@ -17,8 +17,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: |
+          echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> $GITHUB_ENV
           pushd packages/biconomy/nextJs && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net npm run build
-          popd 
+          popd
+          echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> $GITHUB_ENV
           pushd packages/stackup/nextJs && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net npm run build
           popd
 
