@@ -20,10 +20,10 @@ export async function sendTransaction(recipientAddress: string, amount: string) 
             distributedKey?.keyShareData,
             { distributedKey }
         ),
-        "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
+        `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
     const client = await Client.init(
-        "https://api.stackup.sh/v1/node/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e"
+        `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
     try{
     const target = ethers.utils.getAddress(requestData.to);

@@ -21,8 +21,7 @@ export async function sendTransaction(
 
     const biconomySmartAccount = await createSmartAccountClient({
         signer: client as SupportedSigner,
-        bundlerUrl:
-            "https://bundler.biconomy.io/api/v2/11155111/J51Gd5gX3.fca10d8b-6619-4ed3-a580-3ce21fc0d717",
+        bundlerUrl:`https://bundler.biconomy.io/api/v2/11155111/${process.env.API_KEY}`,
     });
 
     const requestData = {
