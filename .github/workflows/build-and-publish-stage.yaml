@@ -17,9 +17,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          pushd packages/biconomy && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net npm run build
+          pushd packages/biconomy/nextJs && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net npm run build
           popd 
-          pushd packages/stackup && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net npm run build
+          pushd packages/stackup/nextJs && npm i && NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net npm run build
           popd
 
       - name: Build artifact
@@ -46,12 +46,12 @@ jobs:
             mkdir /opt/service/update/
             mv ./biconomy-stackup.7z /opt/service/update/
       - run: cd /opt/service/update/ && 7z x biconomy-stackup.7z
-      - run: cd /opt/service/update/biconomy && npm i 
-      - run: cd /opt/service/update/stackup && npm i 
+      - run: cd /opt/service/update/biconomy/nextJs && npm i 
+      - run: cd /opt/service/update/stackup/nextJs && npm i 
       - run: if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
-      - run: mv /opt/service/update/biconomy /opt/service/biconomy
+      - run: mv /opt/service/update/biconomy/nextJs /opt/service/biconomy
       - run: if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-      - run: mv /opt/service/update/stackup /opt/service/stackup
+      - run: mv /opt/service/update/stackup/nextJs /opt/service/stackup
       - run: sudo systemctl restart biconomy.service stackup.service
 
           
