@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { WALLET_STATUS } from "@/constants";
 import { getEoa, isPasswordReady } from "@/mpc/storage/account";
 import { getWalletStatus } from "@/mpc/storage/wallet";

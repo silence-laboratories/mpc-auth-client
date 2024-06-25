@@ -1,5 +1,7 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { IP1KeyShare } from '@silencelaboratories/ecdsa-tss';
-import { KeyringAccount, KeyringRequest } from '@metamask/keyring-api';
 
 export interface Message {
 	message?: string;

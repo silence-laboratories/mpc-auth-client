@@ -1,4 +1,6 @@
-import { deleteStorage, isStorageExist } from "./storage";
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { SignMetadata, StorageData } from "../types";
 import * as PairingAction from "./actions/pairing";
 import { getSilentShareStorage, saveSilentShareStorage } from "./storage";
@@ -10,11 +12,11 @@ import * as SignAction from "./actions/sign";
 import { v4 as uuid } from "uuid";
 import { backup } from "./actions/backup";
 import config from "../../config.json";
-var qrcode = require("qrcode-terminal");
+import qrcodeTerm from "qrcode-terminal";
 
 async function initPairing() {
-  let qrCode = await PairingAction.init("stackup");
-  qrcode.generate(
+  const qrCode = await PairingAction.init("stackup");
+  qrcodeTerm.generate(
     qrCode,
     {
       small: true,
@@ -26,27 +28,26 @@ async function initPairing() {
   return qrCode;
 }
 async function runPairing() {
-  let result = await PairingAction.getToken();
+  const result = await PairingAction.getToken();
   await saveSilentShareStorage(result.silentShareStorage);
   return {
     pairing_status: "paired",
-    newAccountAddress:config.address,
+    newAccountAddress: config.address,
     device_name: result.deviceName,
     elapsed_time: result.elapsedTime,
-   
   };
 }
 async function runKeygen() {
-  let silentShareStorage: StorageData = await getSilentShareStorage();
+  const silentShareStorage: StorageData = await getSilentShareStorage();
   let pairingData = silentShareStorage.pairingData;
   // Refresh token if it is expired
   if (pairingData.tokenExpiration < Date.now() - 60000) {
     pairingData = await refreshPairing();
   }
-  let wallets = silentShareStorage.wallets;
-  let accountId = Object.keys(wallets).length + 1;
-  let x1 = await randBytes(32);
-  let result = await KeyGenAction.keygen(pairingData, accountId, x1);
+  const wallets = silentShareStorage.wallets;
+  const accountId = Object.keys(wallets).length + 1;
+  const x1 = await randBytes(32);
+  const result = await KeyGenAction.keygen(pairingData, accountId, x1);
   saveSilentShareStorage({
     ...silentShareStorage,
     accountId: uuid(),
@@ -66,7 +67,7 @@ async function runKeygen() {
   };
 }
 async function runBackup() {
-  let silentShareStorage: StorageData = await getSilentShareStorage();
+  const silentShareStorage: StorageData = await getSilentShareStorage();
   const encryptedMessage = JSON.stringify(
     silentShareStorage.tempDistributedKey
   );
@@ -74,9 +75,9 @@ async function runBackup() {
   await backup(silentShareStorage.pairingData, encryptedMessage, address);
 }
 async function refreshPairing() {
-  let silentShareStorage: StorageData = await getSilentShareStorage();
-  let pairingData = silentShareStorage.pairingData;
-  let result = await PairingAction.refreshToken(pairingData);
+  const silentShareStorage: StorageData = await getSilentShareStorage();
+  const pairingData = silentShareStorage.pairingData;
+  const result = await PairingAction.refreshToken(pairingData);
   await saveSilentShareStorage({
     ...silentShareStorage,
     pairingData: result.newPairingData,
@@ -97,12 +98,12 @@ async function runSign(
   if (message.startsWith("0x")) {
     message = message.slice(2);
   }
-  let silentShareStorage = await getSilentShareStorage();
+  const silentShareStorage = await getSilentShareStorage();
   let pairingData = silentShareStorage.pairingData;
   if (pairingData.tokenExpiration < Date.now() - 60000) {
     pairingData = await refreshPairing();
   }
-  let messageHash = fromHexStringToBytes(messageHashHex);
+  const messageHash = fromHexStringToBytes(messageHashHex);
   if (messageHash.length !== 32) {
     throw new SdkError(
       "Invalid length of messageHash, should be 32 bytes",
