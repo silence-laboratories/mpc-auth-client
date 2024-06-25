@@ -2,15 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
-import * as store from "@/mpc/storage/account";
+import * as store from "@silencelaboratories/mpc-sdk/storage/account";
 import { useRouter } from "next/navigation";
-import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { getWalletStatus, setWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
 function Page() {
     const router = useRouter();
     const oldEoa = store.getOldEoa();

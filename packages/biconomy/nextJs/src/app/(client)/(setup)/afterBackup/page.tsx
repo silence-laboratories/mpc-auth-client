@@ -14,10 +14,10 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getDeviceOS, getWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
+import { getDeviceOS, getWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
 
 function Page() {
     const router = useRouter();

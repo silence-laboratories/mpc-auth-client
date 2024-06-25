@@ -1,8 +1,8 @@
 import { providers } from "ethers";
 import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@/mpc/storage/wallet";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
-import * as store from "@/mpc/storage/account";
+import * as store from "@silencelaboratories/mpc-sdk/storage/account";
+import { getSilentShareStorage } from "@silencelaboratories/mpc-sdk/storage/wallet";
 
 export async function sendTransaction(
     recipientAddress: string,

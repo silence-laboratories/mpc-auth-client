@@ -1,6 +1,6 @@
 import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@/mpc/storage/wallet";
-import * as store from "@/mpc/storage/account";
+import { getSilentShareStorage } from "@silencelaboratories/mpc-sdk/storage/wallet";
+import * as store from "@silencelaboratories/mpc-sdk/storage/account";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { providers } from "ethers";
 

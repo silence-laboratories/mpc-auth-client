@@ -4,10 +4,10 @@ import React from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
+import { getWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
 
 function Page() {
     const router = useRouter();

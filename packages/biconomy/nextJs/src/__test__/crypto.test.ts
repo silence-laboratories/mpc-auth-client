@@ -1,9 +1,9 @@
 import _sodium from "libsodium-wrappers-sumo";
-import {aeadEncrypt, aeadDecrypt} from "@/mpc/crypto"
-import { TextEncoder, TextDecoder } from 'util';
+import { aeadEncrypt, aeadDecrypt } from "@silencelaboratories/mpc-sdk/crypto";
+import { TextEncoder, TextDecoder } from "util";
 
 Object.assign(global, { TextDecoder, TextEncoder });
-import { uint8ArrayToUtf8String } from "@/mpc/utils";
+import { uint8ArrayToUtf8String } from "@silencelaboratories/mpc-sdk/utils";
 
 describe("Test aeadEncrypt", () => {
     it("should encrypt and decrypt the message", async () => {

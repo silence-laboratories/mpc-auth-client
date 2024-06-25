@@ -5,13 +5,13 @@ import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
 import LoadingScreen from "@/components/loadingScreen";
-import { accountType, getEoa } from "@/mpc/storage/account";
-import { clearWallet, getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { mintBiconomyWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { accountType, getEoa } from "@silencelaboratories/mpc-sdk/storage/account";
+import { clearWallet, getWalletStatus, setWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
 
 function Page() {
     const placeholderAccount = { address: "...", balance: 0 };

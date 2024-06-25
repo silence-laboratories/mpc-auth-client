@@ -2,8 +2,11 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { WALLET_STATUS } from "@/constants";
-import { getEoa, isPasswordReady } from "@/mpc/storage/account";
-import { getWalletStatus } from "@/mpc/storage/wallet";
+import {
+    getEoa,
+    isPasswordReady,
+} from "@silencelaboratories/mpc-sdk/storage/account";
+import { getWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 

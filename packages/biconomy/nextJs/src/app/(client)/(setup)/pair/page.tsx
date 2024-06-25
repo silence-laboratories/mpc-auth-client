@@ -7,27 +7,20 @@ import { Avatar, AvatarFallback } from "@/components/avatar";
 import { Progress } from "@/components/progress";
 import { useRouter, useSearchParams } from "next/navigation";
 import loadingGif from "../../../../../public/loading.gif";
-import {
-    initPairing,
-    runKeygen,
-    runStartPairingSession,
-    runEndPairingSession,
-} from "@/mpc";
+
 import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
-import { PairingSessionData } from "@/mpc/types";
-import {
-    getWalletStatus,
-    setDeviceOS,
-    setWalletStatus,
-} from "@/mpc/storage/wallet";
-import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
+
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import LoadingScreen from "@/components/loadingScreen";
 import { WALLET_ID, WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { PairingSessionData } from "@silencelaboratories/mpc-sdk/types";
+import { getOldEoa, setEoa } from "@silencelaboratories/mpc-sdk/storage/account";
+import { initPairing, runEndPairingSession, runKeygen, runStartPairingSession } from "@silencelaboratories/mpc-sdk";
+import { getWalletStatus, setDeviceOS, setWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
 
 function Page() {
     const router = useRouter();
