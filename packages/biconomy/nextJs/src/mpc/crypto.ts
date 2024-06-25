@@ -18,7 +18,7 @@ export const aeadEncrypt = async (message: string, pwd: string) => {
       salt,
       _sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
       _sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
-      _sodium.crypto_pwhash_ALG_DEFAULT
+      _sodium.crypto_pwhash_ALG_DEFAULT // Argon2i
     );
 
     return `${_sodium.to_hex(salt)}.${_sodium.to_hex(
@@ -42,7 +42,7 @@ export const aeadDecrypt = async (cipherText: string, pwd: string): Promise<Uint
       salt,
       _sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
       _sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
-      _sodium.crypto_pwhash_ALG_DEFAULT
+      _sodium.crypto_pwhash_ALG_DEFAULT // Argon2i
     );
 
     const nonce = _sodium.from_hex(array[1]);
