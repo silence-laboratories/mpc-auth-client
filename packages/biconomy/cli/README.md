@@ -18,8 +18,6 @@ Navigate to the cli directory within the cloned repository:
 
 **Node Version:** Ensure you are using Node.js version 18.
 
-**Yarn Version:** Ensure you are using Yarn version 1.22.17 or higher.
-
 
 ### Set Up the RPC URL
 
@@ -50,7 +48,7 @@ To set up the `rpcUrl`, create an instance at:
 - This example demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK. Install it, and all other dependencies.
 
   ```bash
-  yarn install
+  npm install
   ```
 ### Step 4: Using the Silent Shard App
 
@@ -67,7 +65,7 @@ As defined earlier, this setup is between your CLI and the Silent Shard Mobile A
 Initialize your local configuration by running the following command:
 
   ```bash
-  yarn run smartAccount init --network=sepolia
+  npm run smartAccount-init --network=sepolia
   ```
 
 A QR code will be generated on your CLI which must be scanned by the QR scanner on your mobile app (refer to Step 4). Note that during the account setup in the init step, the mobile app will ask you to set a password and backup option. For this CLI demo version, please skip all these steps.
@@ -134,7 +132,7 @@ A `config.json` file will be created. The file will look like this:
 Create a counterfactual address by running the command:
 
 ```bash
-yarn run smartAccount address
+npm run smartAccount-address               
 ```
 
 An address will be returned. At this point, the Smart Account has not been deployed. ERC-4337 account addresses are deterministic, so you don't need to deploy the contract to know its address.
@@ -150,7 +148,7 @@ Navigate to a faucet, such as this [link](https://cloud.google.com/application/w
 The `smartAccount transfer` command allows you to transfer the native token from the smart contract account to any address. It will create a User Operation, sign it, and send it to the Bundler:
 
 ```bash
-yarn run smartAccount transfer --to=<receiver_address_here> --amount=<amount_here>
+ npm run smartAccount-transfer --to=<receiver_address_here> --amount=<amount_here>
 ```
 
 ### Step 9: Approve the Signature on the Paired Mobile Application
