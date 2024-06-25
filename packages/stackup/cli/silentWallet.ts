@@ -1,6 +1,8 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { ethers } from "ethers";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-import * as utils from './srcMpc/lib/utils';
 
 import * as sdk from "./srcMpc/lib/sdk";
 import { hexlify } from "@ethersproject/bytes";
@@ -22,8 +24,6 @@ import { resolveProperties } from "@ethersproject/properties";
 import { getAddress } from "@ethersproject/address";
 import { serialize, UnsignedTransaction } from "@ethersproject/transactions";
 import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
-import { stringify } from "querystring";
-import { _toUtf8String } from "@ethersproject/strings/lib/utf8";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
 
 export class SilentWallet extends Signer {

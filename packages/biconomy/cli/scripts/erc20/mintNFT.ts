@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { ethers } from "ethers";
 import chalk from "chalk";
 import {  SupportedSigner, createSmartAccountClient } from "@biconomy/account";
