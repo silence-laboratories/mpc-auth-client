@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { Command } from "commander";
 import address from "./address";
 import transfer from "./transfer";

@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { Presets } from "userop";
 // @ts-ignore
 import config from "../../config.json";

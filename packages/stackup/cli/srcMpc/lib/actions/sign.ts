@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import {
 	IP1KeyShare,
 	P1Signature,
@@ -9,7 +12,7 @@ import { PairingData, SignConversation, SignMetadata } from '../../types';
 import _sodium, { base64_variants } from 'libsodium-wrappers';
 import { SdkError, ErrorCode } from '../../error';
 
-let running: boolean = false;
+let running = false;
 
 type SignResult = {
 	signature: string;
@@ -35,10 +38,10 @@ export const sign = async (
 			);
 		}
 		running = true;
-		let startTime = Date.now();
+		const startTime = Date.now();
 		const sessionId = _sodium.to_hex(await randBytes(32)); //utils.random_session_id();
 
-		let p1KeyShareObj = keyShare;
+		const p1KeyShareObj = keyShare;
 		let round = 1;
 		const p1 = new P1Signature(sessionId, messageHash, p1KeyShareObj);
 
@@ -60,11 +63,11 @@ export const sign = async (
 			walletId
 		};
 
-		let sign = null;
+		let signResult = null;
 		let recId = null;
 		let expectResponse = true;
 		await _sodium.ready;
-		while (sign === null || recId === null) {
+		while (signResult === null || recId === null) {
 			let decryptedMessage: string | null = null;
 			if (
 				signConversation.message.message &&
@@ -92,7 +95,7 @@ export const sign = async (
 					);
 				});
 			if (msg.signature && msg.recid !== undefined) {
-				sign = msg.signature;
+				signResult = msg.signature;
 				recId = msg.recid;
 				expectResponse = false;
 			}
@@ -139,7 +142,7 @@ export const sign = async (
 
 		running = false;
 		return {
-			signature: sign,
+			signature: signResult,
 			recId,
 			elapsedTime: Date.now() - startTime,
 		};
