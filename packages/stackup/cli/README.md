@@ -39,7 +39,7 @@ To set up the rpcUrl, create an instance at StackUp:
     - Replace `your_stackup_api_key_here` with your actual stackup's API key.
 
         ```env
-        NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
+        FIREBASE_BASEURL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
         API_KEY=your_stsackup_api_key_here
         ```
 
