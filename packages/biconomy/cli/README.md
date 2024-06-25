@@ -18,7 +18,8 @@ Navigate to the cli directory within the cloned repository:
 
 **Node Version:** Ensure you are using Node.js version 18.
 
-- Check `.env.example` file and set environment variables before running the app.
+**Yarn Version:** Ensure you are using Yarn version 1.22.17 or higher.
+
 
 ### Set Up the RPC URL
 
@@ -40,7 +41,7 @@ To set up the `rpcUrl`, create an instance at:
     - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
 
         ```env
-        NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
+        FIREBASE_BASEURL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
         API_KEY=your_biconomy_api_key_here
         ```
 
@@ -49,7 +50,7 @@ To set up the `rpcUrl`, create an instance at:
 - This example demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK. Install it, and all other dependencies.
 
   ```bash
-  npm install
+  yarn install
   ```
 ### Step 4: Using the Silent Shard App
 
