@@ -6,11 +6,11 @@ import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
 
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
-import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
-import { isPasswordReady } from "@/mpc/storage/account";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
+import { getWalletStatus, setWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
+import { isPasswordReady } from "@silencelaboratories/mpc-sdk/storage/account";
 
 
 

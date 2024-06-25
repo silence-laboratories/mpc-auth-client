@@ -8,8 +8,8 @@ import { Button } from "../ui/button";
 import { checkPassword } from "@/utils/password";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
-import { runBackup } from "@/mpc";
-import { setPasswordReady } from "@/mpc/storage/account";
+import { runBackup } from "@silencelaboratories/mpc-sdk";
+import { setPasswordReady } from "@silencelaboratories/mpc-sdk/storage/account";
 
 export type PasswordBackupScreenProps = {
     onProceed?: () => void;

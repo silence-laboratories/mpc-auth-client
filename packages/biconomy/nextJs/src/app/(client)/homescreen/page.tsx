@@ -8,14 +8,12 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { TextInput } from "@/components/textInput";
-import * as store from "@/mpc/storage/account";
+import * as store from "@silencelaboratories/mpc-sdk/storage/account";
 import { useRouter } from "next/navigation";
 import { formatEther } from "ethers/lib/utils";
-import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
@@ -23,6 +21,11 @@ import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
+import { signOut } from "@silencelaboratories/mpc-sdk";
+import {
+    getWalletStatus,
+    setWalletStatus,
+} from "@silencelaboratories/mpc-sdk/storage/wallet";
 
 const Homescreen: React.FC = () => {
     const oldEoa = store.getOldEoa();

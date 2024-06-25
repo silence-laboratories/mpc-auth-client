@@ -7,7 +7,7 @@ import { Label } from "../ui/label";
 import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { checkPassword } from "@/utils/password";
 import LoadingScreen from "../loadingScreen";
-import { setPasswordReady } from "@/mpc/storage/account";
+import { setPasswordReady } from "@silencelaboratories/mpc-sdk/storage/account";
 
 export type PasswordEnterScreenProps = {
     onProceed: (password: string) => Promise<void>;
