@@ -52,7 +52,7 @@ export const nativeTransferPayERC20 = async (
 
     try {
       const { transactionHash } = await userOpResponse.waitForTxHash();
-      console.log("Transaction Hash:", transactionHash);
+     
       console.log(chalk.green(`userOp Hash: ${userOpResponse.userOpHash}`));
       const transactionDetails = await userOpResponse.wait();
       console.log(
@@ -60,6 +60,8 @@ export const nativeTransferPayERC20 = async (
           `transactionDetails: ${JSON.stringify(transactionDetails, null, "\t")}`
         )
       );
+    console.log(chalk.yellow("Transaction Hash:", transactionHash));
+    console.log(chalk.green(`userOp Hash: ${userOpResponse.userOpHash}`));
     } catch (e) {
       console.log("Error during transaction processing: ", e);
     }
