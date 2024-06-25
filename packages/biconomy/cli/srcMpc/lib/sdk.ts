@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { SignMetadata, StorageData } from "../types";
 import * as PairingAction from "./actions/pairing";
 import { getSilentShareStorage, saveSilentShareStorage } from "./storage";
