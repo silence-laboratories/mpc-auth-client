@@ -32,10 +32,9 @@ async function runPairing() {
   await saveSilentShareStorage(result.silentShareStorage);
   return {
     pairing_status: "paired",
-    newAccountAddress:config.silentSigner.address,
+    newAccountAddress: config.silentSigner.address,
     device_name: result.deviceName,
     elapsed_time: result.elapsedTime,
-   
   };
 }
 async function runKeygen() {

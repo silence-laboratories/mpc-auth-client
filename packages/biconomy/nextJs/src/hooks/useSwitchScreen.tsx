@@ -1,12 +1,8 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
-
+"use client";
+import { getWalletStatus } from "@/app/storage/localStorage";
 import { WALLET_STATUS } from "@/constants";
-import {
-    getEoa,
-    isPasswordReady,
-} from "@silencelaboratories/mpc-sdk/storage/account";
-import { getWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -15,12 +11,11 @@ export const useSwitchScreen = () => {
     const router = useRouter();
     const initializeScreen = () => {
         const status = getWalletStatus();
-        const eoa = getEoa();
-        if (status === WALLET_STATUS.Minted || eoa) {
+        if (status === WALLET_STATUS.Minted) {
             router.replace("/homescreen");
         } else if (status === WALLET_STATUS.BackedUp) {
             router.replace("/mint");
-        } else if (status === WALLET_STATUS.Paired && !isPasswordReady()) {
+        } else if (status === WALLET_STATUS.Paired) {
             router.replace("/backup");
         } else if (status === WALLET_STATUS.Mismatched) {
             router.replace("/mismatchAccounts");

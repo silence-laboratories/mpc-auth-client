@@ -277,6 +277,7 @@ const Homescreen: React.FC = () => {
     const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
         signOut();
+        setWalletStatus(WALLET_STATUS.Unpaired);
         router.push("/intro");
     };
 

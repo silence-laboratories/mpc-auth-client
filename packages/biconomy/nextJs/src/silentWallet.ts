@@ -22,12 +22,12 @@ import { serialize, UnsignedTransaction } from "@ethersproject/transactions";
 import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
 import { _toUtf8String } from "@ethersproject/strings/lib/utf8";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
-import { runSign } from "@silencelaboratories/mpc-sdk";
+import { MpcSdk } from "@silencelaboratories/mpc-sdk";
 
 export class SilentWallet extends Signer {
+    private mpcSdk: MpcSdk;
     public address: string;
     public public_key: string;
-
     private p1KeyShare: IP1KeyShare;
     readonly provider: ethers.providers.Provider;
     keygenResult: any;
@@ -37,7 +37,8 @@ export class SilentWallet extends Signer {
         public_key: string,
         p1KeyShare: any,
         keygenResult: any,
-        provider: Provider
+        provider: Provider,
+        mpcSdk: MpcSdk
     ) {
         super();
 
@@ -46,6 +47,7 @@ export class SilentWallet extends Signer {
         this.p1KeyShare = p1KeyShare;
         this.provider = provider;
         this.keygenResult = keygenResult;
+        this.mpcSdk = mpcSdk;
     }
 
     async getAddress(): Promise<string> {
@@ -63,7 +65,7 @@ export class SilentWallet extends Signer {
         ]);
 
         const hexMessage = hexlify(messageSome);
-        const signSdk = await runSign(
+        const signSdk = await this.mpcSdk.runSign(
             "keccak256",
             hexMessage,
             messageDigest,
@@ -109,7 +111,7 @@ export class SilentWallet extends Signer {
 
     public async signDigest(digest: BytesLike): Promise<Signature> {
         const messageDigest = hexlify(digest);
-        const sign = await runSign(
+        const sign = await this.mpcSdk.runSign(
             "keccak256",
             " ",
             messageDigest,
@@ -136,7 +138,8 @@ export class SilentWallet extends Signer {
             this.public_key,
             this.p1KeyShare,
             provider,
-            this.keygenResult
+            this.keygenResult,
+            this.mpcSdk
         );
     }
     async _signTypedData(

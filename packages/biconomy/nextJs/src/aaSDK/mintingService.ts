@@ -1,14 +1,16 @@
+
+import { WALLET_ID } from "@/constants";
 import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@silencelaboratories/mpc-sdk/storage/wallet";
-import * as store from "@silencelaboratories/mpc-sdk/storage/account";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
+import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { providers } from "ethers";
 
 
 
 export async function mintBiconomyWallet(eoa: { address: string; }) {
-    const keyshards = getSilentShareStorage();
-    const distributedKey = keyshards.newPairingState?.distributedKey;
+    const mpcSdk = new MpcSdk(WALLET_ID, StoragePlatform.Browser);
+    const distributedKey = mpcSdk.getDistributionKey();
     const keyShareData = distributedKey?.keyShareData ?? null;
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
 
@@ -18,6 +20,7 @@ export async function mintBiconomyWallet(eoa: { address: string; }) {
         keyShareData,
         { distributedKey },
         provider,
+        mpcSdk
     );
 
     const biconomySmartAccount = await createSmartAccountClient({
@@ -26,6 +29,6 @@ export async function mintBiconomyWallet(eoa: { address: string; }) {
     });
     
     const response = await biconomySmartAccount.getAccountAddress();
-    store.setSmartContractAccount({ address: response });
+    mpcSdk.accountManager.setSmartContractAccount({ address: response });
     return response;
 }
