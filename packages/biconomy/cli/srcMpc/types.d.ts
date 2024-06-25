@@ -1,5 +1,4 @@
 import { IP1KeyShare } from '@silencelaboratories/ecdsa-tss';
-import { KeyringAccount, KeyringRequest } from '@metamask/keyring-api';
 
 export interface Message {
 	message?: string;
