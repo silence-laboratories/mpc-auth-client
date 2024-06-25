@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { SdkError, ErrorCode } from './error';
 import { config } from 'dotenv';
 
