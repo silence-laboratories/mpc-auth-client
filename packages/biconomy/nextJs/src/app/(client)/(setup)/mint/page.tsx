@@ -10,13 +10,15 @@ import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { accountType, getEoa } from "@silencelaboratories/mpc-sdk/storage/account";
-import { clearWallet, getWalletStatus, setWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
+import { getWalletStatus, setWalletStatus } from "@/app/storage/localStorage";
+import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
+    const mpcSdk = useMpcSdk();
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
-    const [eoa, setEoa] = useState<accountType>(placeholderAccount);
+    const [eoa, setEoa] = useState<AccountData>(placeholderAccount);
     const router = useRouter();
 
     const status = getWalletStatus();
@@ -26,7 +28,7 @@ function Page() {
             router.replace("/intro");
             return;
         }
-        setEoa(getEoa());
+        setEoa(mpcSdk.accountManager.getEoa()!);
     }, [router, status]);
 
     const handleMint = async () => {
@@ -43,7 +45,7 @@ function Page() {
     };
 
     const handleMoveBack = () => {
-        clearWallet();
+        mpcSdk.signOut();
         setWalletStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
     }

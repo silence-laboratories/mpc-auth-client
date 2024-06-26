@@ -7,7 +7,7 @@ import { Label } from "../ui/label";
 import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { checkPassword } from "@/utils/password";
 import LoadingScreen from "../loadingScreen";
-import { setPasswordReady } from "@silencelaboratories/mpc-sdk/storage/account";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 export type PasswordEnterScreenProps = {
     onProceed: (password: string) => Promise<void>;
@@ -18,6 +18,7 @@ export const PasswordEnterScreen: React.FC<PasswordEnterScreenProps> = ({
     onProceed,
     onMoveBack,
 }) => {
+    const mpcSdk = useMpcSdk();
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
     const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +54,7 @@ export const PasswordEnterScreen: React.FC<PasswordEnterScreenProps> = ({
         try {
             await onProceed(currentPassword);
             setIsLoading(false);
-            setPasswordReady();
+            mpcSdk.accountManager.setPasswordReady();
         } catch (error) {
             setIsLoading(false);
             setPasswordErr(PasswordInputErr.IncorrectPassword);

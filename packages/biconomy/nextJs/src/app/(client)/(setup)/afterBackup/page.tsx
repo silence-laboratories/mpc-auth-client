@@ -17,11 +17,14 @@ import {
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
-import { getDeviceOS, getWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
+import { getWalletStatus } from "@/app/storage/localStorage";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
+
 
 function Page() {
     const router = useRouter();
-    const deviceOS = getDeviceOS();
+    const mpcSdk = useMpcSdk();
+    const deviceOS = mpcSdk.getDeviceOS();
     const status = getWalletStatus();
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;
