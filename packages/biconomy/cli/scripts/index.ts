@@ -10,6 +10,13 @@ import { init } from "./init";
 import { getAddress } from "./address";
 import { nativeTransferPayERC20 } from "./erc20/nativeTransfer";
 
+import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
+import { CliStorage } from "./storage";
+
+const WALLET_ID = "biconomy";
+const storage = new CliStorage();
+export const mpcSdk = new MpcSdk(WALLET_ID, StoragePlatform.CLI, storage);
 
 const argv = yargs(hideBin(process.argv))
   .scriptName(chalk.green("smartAccount"))
@@ -61,6 +68,89 @@ const argv = yargs(hideBin(process.argv))
       console.log(
         chalk.magenta(`Transferring ${amount} ether to ${to}...`)
       );
+      if (argv.mode === "TOKEN") {
+        nativeTransferPayERC20(recipientAddress, amount);
+      } else {
+        nativeTransferPayERC20(recipientAddress, amount);
+      }
+    }
+  )
+  // Transfer an ERC20 token
+  .command(
+    "erc20Transfer",
+    chalk.blue("Transfer an ERC20 token"),
+    {
+      to: {
+        describe: chalk.cyan("Recipient address"),
+        demandOption: true,
+        type: "string",
+      },
+      amount: {
+        describe: chalk.cyan("Amount of tokens to transfer"),
+        demandOption: true,
+        type: "number",
+      },
+      token: {
+        describe: chalk.cyan("Token address"),
+        demandOption: true,
+        type: "string",
+      },
+      mode: {
+        describe: chalk.cyan("Paymaster mode"),
+        demandOption: false,
+        type: "string",
+      },
+    },
+    (argv) => {
+      const amount = argv.amount;
+      const tokenAddress = argv.token;
+      const recipientAddress = argv.to;
+      console.log(
+        chalk.magenta(
+          `Transferring ${amount} tokens of ${tokenAddress} to ${recipientAddress}...`
+        )
+      );
+      if (argv.mode === "TOKEN") {
+        erc20TransferPayERC20(recipientAddress, amount, tokenAddress);
+      }
+    }
+  )
+  // Mint nft token to SmartAccount
+  .command(
+    "mint",
+    chalk.blue("Mint nft token"),
+    {
+      mode: {
+        describe: chalk.cyan("Paymaster mode"),
+        demandOption: false,
+        type: "string",
+      },
+    },
+    (argv) => {
+      console.log(chalk.magenta("Minting an NFT token to the SmartAccount..."));
+      if (argv.mode === "TOKEN") {
+        mintNftPayERC20();
+      }
+    }
+  )
+  // Batch mint nft token to SmartAccount
+  .command(
+    "batchMint",
+    chalk.blue("Batch mint nft 2 times"),
+    {
+      mode: {
+        describe: chalk.cyan("Paymaster mode"),
+        demandOption: false,
+        type: "string",
+      },
+    },
+    (argv) => {
+      console.log(
+        chalk.magenta("Batch minting 2 NFT tokens to the SmartAccount...")
+      );
+    }
+  )
+  .help().argv;
       nativeTransferPayERC20(to, Number(amount));
     }
   )

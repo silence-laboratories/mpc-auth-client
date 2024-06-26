@@ -6,6 +6,7 @@ import chalk from "chalk";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { SilentWallet } from "../../silentWallet";
 import config from "../../config.json";
+import { mpcSdk } from "..";
 
 export const erc20Transfer = async (to: string, amount: number) => {
   try {
@@ -21,6 +22,7 @@ export const erc20Transfer = async (to: string, amount: number) => {
       distributedKey?.publicKey ?? "",
       keyShareData,
       { distributedKey },
+      mpcSdk,
       provider
     );
 
@@ -75,6 +77,7 @@ export const erc20TransferPayERC20 = async (to: string, amount: number, token: s
       distributedKey?.publicKey ?? "",
       keyShareData,
       { distributedKey },
+      mpcSdk,
       provider
     );
 
