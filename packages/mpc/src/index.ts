@@ -24,6 +24,7 @@ export class MpcSdk {
   private storage?: IStorage;
   private walletId: string = "";
   accountManager: AccountManager = new AccountManager();
+
   constructor(
     walletId: string,
     storagePlatform = StoragePlatform.Browser,
@@ -95,7 +96,8 @@ export class MpcSdk {
     }
   }
 
-  async initPairing(walletId: string) {
+  async initPairing() {
+    const walletId = this.getWalletId();
     let qrCode = await PairingAction.init(walletId);
     return qrCode;
   }
@@ -200,7 +202,7 @@ export class MpcSdk {
     let { pairingData, silentShareStorage } =
       await this.getPairingDataAndStorage();
     if (password.length === 0) {
-      await Backup.backup(pairingData, "", "");
+      await Backup.backup(pairingData, "", "", this.getWalletId());
       return;
     }
 
@@ -219,7 +221,8 @@ export class MpcSdk {
           encryptedMessage,
           getAddressFromDistributedKey(
             silentShareStorage.newPairingState?.distributedKey
-          )
+          ),
+          this.getWalletId()
         );
       } catch (error) {
         if (error instanceof Error) {

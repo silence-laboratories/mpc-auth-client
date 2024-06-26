@@ -9,9 +9,9 @@ export const backup = async (
 	pairingData: PairingData,
 	encryptedMessage: string,
 	address: string,
+	walletId: string,
 ) => {
 	try {
-		let walletId = localStorage.getItem("walletId");
 		const response = await sendMessage(
 			pairingData.token,
 			'backup',
