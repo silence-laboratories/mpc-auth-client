@@ -34,7 +34,7 @@ function Page() {
     const handleMint = async () => {
         setLoading(true);
         try {
-            await mintBiconomyWallet(eoa);
+            await mintBiconomyWallet(eoa, mpcSdk);
             setLoading(true);
             setPairingStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");

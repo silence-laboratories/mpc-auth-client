@@ -1,7 +1,5 @@
 import { SilentWallet } from "@/silentWallet";
 import { Presets } from "userop";
-import { WALLET_ID } from "@/constants";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { MpcSdk } from "@silencelaboratories/mpc-sdk";
 
 export async function mintWallet(eoa: { address: string; }, mpcSdk: MpcSdk) {

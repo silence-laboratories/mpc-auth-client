@@ -2,14 +2,12 @@ import { providers } from "ethers";
 import { SilentWallet } from "@/silentWallet";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { MpcSdk } from "@silencelaboratories/mpc-sdk";
-import { WALLET_ID } from "@/constants";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 
 export async function sendTransaction(
     recipientAddress: string,
-    amount: string
+    amount: string,
+    mpcSdk: MpcSdk
 ) {
-    const mpcSdk = new MpcSdk(WALLET_ID, StoragePlatform.Browser);
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
     const distributedKey = mpcSdk.getDistributionKey();
     const client = new SilentWallet(
@@ -23,7 +21,7 @@ export async function sendTransaction(
 
     const biconomySmartAccount = await createSmartAccountClient({
         signer: client as SupportedSigner,
-        bundlerUrl:`https://bundler.biconomy.io/api/v2/11155111/${process.env.API_KEY}`,
+        bundlerUrl: `https://bundler.biconomy.io/api/v2/11155111/${process.env.API_KEY}`,
     });
 
     const requestData = {

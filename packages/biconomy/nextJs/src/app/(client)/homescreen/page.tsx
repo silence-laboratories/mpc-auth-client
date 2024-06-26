@@ -251,7 +251,7 @@ const Homescreen: React.FC = () => {
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
             try {
-                const result = await sendTransaction(recipientAddress, amount);
+                const result = await sendTransaction(recipientAddress, amount, mpcSdk);
                 if (!result.transactionHash) {
                     setShowTransactionInitiatedBanner(false);
                     setShowTransactionfailBanner(true);
