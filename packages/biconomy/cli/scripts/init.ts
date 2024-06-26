@@ -9,6 +9,7 @@ import { ChainId } from "@biconomy/core-types";
 import { RPC_PROVIDER_URLS } from "@biconomy/common";
 import { SilentWallet } from "../silentWallet";
 import { config } from 'dotenv';
+import { mpcSdk } from ".";
 
 config();
 
@@ -32,7 +33,7 @@ const CONFIG_PATH = path.resolve(__dirname, "../config.json");
 INIT_CONFIG.accountIndex = 0;
 
 export const init = async (chainId: string) => {
-  const silentSigner = await SilentWallet.generate();
+  const silentSigner = await SilentWallet.generate(mpcSdk);
   console.log(chalk.blue("network is: ", chainId));
   console.log(chalk.green("your address is: ", silentSigner.address))
   if (chainId === "sepolia") {

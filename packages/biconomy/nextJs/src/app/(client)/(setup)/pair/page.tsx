@@ -14,7 +14,7 @@ import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import LoadingScreen from "@/components/loadingScreen";
-import { WALLET_ID, WALLET_STATUS } from "@/constants";
+import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { getWalletStatus, setWalletStatus } from "@/app/storage/localStorage";
@@ -76,7 +76,7 @@ function Page() {
     const generateWallet = async () => {
         (async () => {
             try {
-                const qrCode = await mpcSdk.initPairing(WALLET_ID);
+                const qrCode = await mpcSdk.initPairing();
                 setQr(qrCode);
                 setSeconds(MAX_SECONDS);
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);

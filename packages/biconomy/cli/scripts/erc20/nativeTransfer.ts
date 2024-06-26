@@ -10,6 +10,7 @@ import {
 
 import config from "../../config.json";
 import { SilentWallet } from "../../silentWallet";
+import { mpcSdk } from "..";
 
 export const nativeTransferPayERC20 = async (
     to: string,
@@ -29,6 +30,7 @@ export const nativeTransferPayERC20 = async (
       config.silentSigner.public_key,
       keyShareData,
       { distributedKey },
+      mpcSdk,
       provider
     );
 
