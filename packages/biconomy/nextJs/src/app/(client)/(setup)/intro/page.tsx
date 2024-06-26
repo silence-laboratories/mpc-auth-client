@@ -7,7 +7,7 @@ import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
-import { getWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
+import { getWalletStatus } from "@/app/storage/localStorage";
 
 function Page() {
     const router = useRouter();

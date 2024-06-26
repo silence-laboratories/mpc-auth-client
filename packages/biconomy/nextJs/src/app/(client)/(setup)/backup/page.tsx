@@ -9,20 +9,18 @@ import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
-import { getWalletStatus, setWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
-import { isPasswordReady } from "@silencelaboratories/mpc-sdk/storage/account";
-
-
+import { getWalletStatus, setWalletStatus } from "@/app/storage/localStorage";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
     const router = useRouter();
-    
+    const mpcSdk = useMpcSdk();
     const moveToNext = () => {
         setWalletStatus(WALLET_STATUS.BackedUp);
         router.replace("/afterBackup");
     };
     const status = getWalletStatus();
-    if (status !== WALLET_STATUS.Paired || isPasswordReady()) {
+    if (status !== WALLET_STATUS.Paired || mpcSdk.accountManager.isPasswordReady()) {
         return <RouteLoader />;
     }
     return (

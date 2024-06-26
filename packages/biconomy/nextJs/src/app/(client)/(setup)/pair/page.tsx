@@ -17,12 +17,12 @@ import LoadingScreen from "@/components/loadingScreen";
 import { WALLET_ID, WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { PairingSessionData } from "@silencelaboratories/mpc-sdk/types";
-import { getOldEoa, setEoa } from "@silencelaboratories/mpc-sdk/storage/account";
-import { initPairing, runEndPairingSession, runKeygen, runStartPairingSession } from "@silencelaboratories/mpc-sdk";
-import { getWalletStatus, setDeviceOS, setWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
+import { getWalletStatus, setWalletStatus } from "@/app/storage/localStorage";
+import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
+    const mpcSdk = useMpcSdk();
     const router = useRouter();
     const query = useSearchParams();
     const isRepairing = query.get("repair");
@@ -38,14 +38,14 @@ function Page() {
     const step = 1;
     const MAX_SECONDS = 30;
     const MAX_ENTER_PW_SECONDS = 60; // According to pairing API timeout
-    const oldEoa = getOldEoa();
+    const oldEoa = mpcSdk.accountManager.getOldEoa();
 
     const handlePairingWithBackup = async (
         pairingSessionData: PairingSessionData,
         password: string
     ) => {
         try {
-            const runPairingResp = await runEndPairingSession(
+            const runPairingResp = await mpcSdk.runEndPairingSession(
                 pairingSessionData,
                 oldEoa?.address,
                 password
@@ -54,7 +54,7 @@ function Page() {
             const eoa = {
                 address: runPairingResp.newAccountAddress ?? "",
             };
-            setEoa(eoa);
+            mpcSdk.accountManager.setEoa(eoa);
             if (
                 isRepairing &&
                 oldEoa !== null &&
@@ -76,14 +76,14 @@ function Page() {
     const generateWallet = async () => {
         (async () => {
             try {
-                const qrCode = await initPairing(WALLET_ID);
+                const qrCode = await mpcSdk.initPairing(WALLET_ID);
                 setQr(qrCode);
                 setSeconds(MAX_SECONDS);
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
-                const pairingSessionData = await runStartPairingSession();
+                const pairingSessionData = await mpcSdk.runStartPairingSession();
                 if (pairingSessionData) {
-                    setDeviceOS(pairingSessionData.deviceName);
+                    mpcSdk.setDeviceOS(pairingSessionData.deviceName);
                 }
 
                 // QR is scanned
@@ -93,11 +93,11 @@ function Page() {
                     setPairingSessionDataState(pairingSessionData);
                     setShowPasswordScreen(true);
                 } else {
-                    await runEndPairingSession(
+                    await mpcSdk.runEndPairingSession(
                         pairingSessionData,
                         oldEoa?.address
                     );
-                    const keygenRes = await runKeygen();
+                    const keygenRes = await mpcSdk.runKeygen();
                     const eoa = {
                         address:
                             "0x" +
@@ -108,7 +108,7 @@ function Page() {
                                 )
                             ).toString("hex"),
                     };
-                    setEoa(eoa);
+                    mpcSdk.accountManager.setEoa(eoa);
                     setWalletStatus(WALLET_STATUS.Paired);
                     router.replace("/backup");
                 }

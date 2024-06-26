@@ -10,6 +10,11 @@ export class LocalStorageManager implements IStorage {
     localStorage.setItem("walletId", walletId);
   }
 
+  /**
+   * Get wallet id from local storage
+   * 
+   * @returns walletId
+   */
   getWalletId(): string {
     let walletId = localStorage.getItem("walletId");
     if (walletId === null) {
@@ -19,7 +24,7 @@ export class LocalStorageManager implements IStorage {
   }
 
   /**
-   * Function to check if a storage exist
+   * Check if a storage exist for the wallet
    *
    * @returns true if exists, false otherwise
    */
@@ -79,11 +84,21 @@ export class LocalStorageManager implements IStorage {
     return jsonObject;
   };
 
+  /**
+   * Set device name
+   *
+   * @param deviceName
+   */
   setDeviceOS = (deviceName: string) => {
     const deviceOS = deviceName.split(":")[1].split(",")[0].trim() as DeviceOS;
     localStorage.setItem("deviceOS", deviceOS);
   };
 
+  /**
+   * Get device name
+   *
+   * @returns device name
+   */
   getDeviceOS(): DeviceOS {
     return (localStorage.getItem("deviceOS") ?? "ios") as DeviceOS;
   }

@@ -4,7 +4,7 @@ import Footer from "@/components/footer";
 
 import { usePathname } from "next/navigation";
 import { WALLET_STATUS } from "@/constants";
-import { getWalletStatus } from "@silencelaboratories/mpc-sdk/storage/wallet";
+import { getWalletStatus } from "@/app/storage/localStorage";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();

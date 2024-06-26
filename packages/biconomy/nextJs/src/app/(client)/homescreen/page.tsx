@@ -8,7 +8,6 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { TextInput } from "@/components/textInput";
-import * as store from "@silencelaboratories/mpc-sdk/storage/account";
 import { useRouter } from "next/navigation";
 import { formatEther } from "ethers/lib/utils";
 import { Separator } from "@/components/separator";
@@ -21,18 +20,17 @@ import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
-import { signOut } from "@silencelaboratories/mpc-sdk";
-import {
-    getWalletStatus,
-    setWalletStatus,
-} from "@silencelaboratories/mpc-sdk/storage/wallet";
+import { getWalletStatus, setWalletStatus } from "@/app/storage/localStorage";
+import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 const Homescreen: React.FC = () => {
-    const oldEoa = store.getOldEoa();
+    const mpcSdk = useMpcSdk();
+    const oldEoa = mpcSdk.accountManager.getOldEoa();
     const router = useRouter();
-    const [walletAccount, setWalletAccount] = useState<store.accountType>();
+    const [walletAccount, setWalletAccount] = useState<AccountData>();
     const [walletBalance, setWalletBalance] = useState<string>("0");
-    const [eoa, setEoa] = useState<store.accountType>();
+    const [eoa, setEoa] = useState<AccountData>();
     const [network, setNetwork] = useState("...");
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
         "none"
@@ -44,14 +42,14 @@ const Homescreen: React.FC = () => {
         useState(false);
     const status = getWalletStatus();
     useEffect(() => {
-        const eoa = store.getEoa();
+        const eoa = mpcSdk.accountManager.getEoa();
         if (!eoa) {
             setWalletStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
             return;
         }
 
-        const account = store.getSmartContractAccount();
+        const account = mpcSdk.accountManager.getSmartContractAccount();
         if (!account) {
             setWalletStatus(WALLET_STATUS.BackedUp);
             router.replace("/mint");
@@ -170,7 +168,7 @@ const Homescreen: React.FC = () => {
     const [amountError, setAmountError] = useState<string>("");
 
     useEffect(() => {
-        setIsPasswordReady(store.isPasswordReady());
+        setIsPasswordReady(mpcSdk.accountManager.isPasswordReady());
     }, [openPasswordBackupDialog]);
 
     useEffect(() => {
@@ -261,7 +259,7 @@ const Homescreen: React.FC = () => {
                 }
                 setShowTransactionSignedBanner(true);
                 setShowTransactionInitiatedBanner(false);
-                store.setTxHash(result.transactionHash);
+                mpcSdk.accountManager.setTxHash(result.transactionHash);
                 await updateBalance();
             } catch (error) {
                 setShowTransactionInitiatedBanner(false);
@@ -276,14 +274,14 @@ const Homescreen: React.FC = () => {
 
     const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
-        signOut();
+        mpcSdk.signOut();
         setWalletStatus(WALLET_STATUS.Unpaired);
         router.push("/intro");
     };
 
     const handleRecover = () => {
         if (eoa) {
-            store.setOldEoa(eoa);
+            mpcSdk.accountManager.setOldEoa(eoa);
             router.push("/pair?repair=true");
         } // TODO: handle undefined eoa case
     };
@@ -692,7 +690,7 @@ const Homescreen: React.FC = () => {
                                     <a
                                         href={
                                             "https://sepolia.etherscan.io/tx/" +
-                                            `${store.getTxHash()}`
+                                            `${mpcSdk.accountManager.getTxHash()}`
                                         }
                                     >
                                         {" "}
