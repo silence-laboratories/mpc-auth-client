@@ -54,8 +54,6 @@ export class CliStorage implements IStorage {
     }
   };
 
-  recoveredKey = "null";
-
   /**
    * Retrieve SilentShareStorage
    *

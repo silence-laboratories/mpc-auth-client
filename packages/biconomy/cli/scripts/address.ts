@@ -6,7 +6,7 @@ import config from "../config.json";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { providers } from "ethers";
 import { SilentWallet } from "../silentWallet";
-import { mpcSdk } from ".";
+import { mpcSdk } from "../mpc";
 
 export async function getAddress() {
   // Initialize Biconomy Smart Account SDK
