@@ -9,14 +9,8 @@ import { hideBin } from 'yargs/helpers';
 import { init } from "./init";
 import { getAddress } from "./address";
 import { nativeTransferPayERC20 } from "./erc20/nativeTransfer";
-
-import { MpcSdk } from "@silencelaboratories/mpc-sdk";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
-import { CliStorage } from "./storage";
-
-const WALLET_ID = "biconomy";
-const storage = new CliStorage();
-export const mpcSdk = new MpcSdk(WALLET_ID, StoragePlatform.CLI, storage);
+import { erc20TransferPayERC20 } from "./erc20/erc20Transfer";
+import { mintNftPayERC20 } from "./erc20/mintNFT";
 
 const argv = yargs(hideBin(process.argv))
   .scriptName(chalk.green("smartAccount"))

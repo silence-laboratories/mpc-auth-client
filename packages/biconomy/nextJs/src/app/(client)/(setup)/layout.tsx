@@ -4,11 +4,11 @@ import Footer from "@/components/footer";
 
 import { usePathname } from "next/navigation";
 import { WALLET_STATUS } from "@/constants";
-import { getWalletStatus } from "@/app/storage/localStorage";
+import { getPairingStatus } from "@/storage/localStorage";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
-    const showFooter = pathname === "/intro" && getWalletStatus() === WALLET_STATUS.Unpaired;
+    const showFooter = pathname === "/intro" && getPairingStatus() === WALLET_STATUS.Unpaired;
     return (
         <>
             <div>{children}</div>

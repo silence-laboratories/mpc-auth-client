@@ -4,7 +4,6 @@
 import { ethers } from "ethers";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 
-import * as sdk from "./srcMpc/lib/sdk";
 import { hexlify } from "@ethersproject/bytes";
 import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 import {
@@ -25,11 +24,13 @@ import { getAddress } from "@ethersproject/address";
 import { serialize, UnsignedTransaction } from "@ethersproject/transactions";
 import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
+import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import qrCodeTerm from "qrcode-terminal";
 
 export class SilentWallet extends Signer {
+  private mpcSdk: MpcSdk;
   public address: string;
   public public_key: string;
-
   private p1KeyShare: IP1KeyShare;
   readonly provider?: ethers.providers.Provider;
   keygenResult: any;
@@ -39,6 +40,7 @@ export class SilentWallet extends Signer {
     public_key: string,
     p1KeyShare: any,
     keygenResult: any,
+    mpcSdk: MpcSdk,
     provider?: Provider
   ) {
     super();
@@ -48,13 +50,26 @@ export class SilentWallet extends Signer {
     this.p1KeyShare = p1KeyShare;
     this.provider = provider;
     this.keygenResult = keygenResult;
+    this.mpcSdk = mpcSdk;
   }
 
-  public static async generate(): Promise<SilentWallet> {
-    await sdk.initPairing();
-    await sdk.runPairing();
-    const keygenResult = await sdk.runKeygen();
-    await sdk.runBackup();
+  public static async generate(mpcSdk: MpcSdk): Promise<SilentWallet> {
+    const qrCode = await mpcSdk.initPairing();
+    qrCodeTerm.generate(
+      qrCode,
+      {
+        small: true,
+      },
+      function (qrcode: any) {
+        console.log(qrcode);
+      }
+    );
+
+    const pairingSessionData = await mpcSdk.runStartPairingSession();
+    await mpcSdk.runEndPairingSession(pairingSessionData);
+
+    const keygenResult = await mpcSdk.runKeygen();
+    await mpcSdk.runBackup("demopassword");
     const p1KeyShare: IP1KeyShare = keygenResult.distributedKey.keyShareData;
     if (!p1KeyShare) {
       throw new Error("Failed to generate p1KeyShare");
@@ -62,7 +77,13 @@ export class SilentWallet extends Signer {
 
     const publicKey = p1KeyShare.public_key;
     const address = ethers.utils.computeAddress(`0x04${publicKey}`);
-    return new SilentWallet(address, publicKey, p1KeyShare, keygenResult);
+    return new SilentWallet(
+      address,
+      publicKey,
+      p1KeyShare,
+      keygenResult,
+      mpcSdk
+    );
   }
 
   async getAddress(): Promise<string> {
@@ -76,11 +97,11 @@ export class SilentWallet extends Signer {
     const messageSome = concat([
       toUtf8Bytes(messagePrefix),
       toUtf8Bytes(String(message.length)),
-      message
-  ])
+      message,
+    ]);
 
-  const hexMessage = hexlify(messageSome)
-    const signSdk = await sdk.runSign(
+    const hexMessage = hexlify(messageSome);
+    const signSdk = await this.mpcSdk.runSign(
       "keccak256",
       hexMessage,
       messageDigest,
@@ -104,6 +125,7 @@ export class SilentWallet extends Signer {
 
     return signedMsg;
   }
+
   async signTransaction(transaction: TransactionRequest): Promise<string> {
     return resolveProperties(transaction).then(async (tx) => {
       if (tx.from != null) {
@@ -125,8 +147,8 @@ export class SilentWallet extends Signer {
 
   public async signDigest(digest: BytesLike): Promise<Signature> {
     const messageDigest = hexlify(digest);
-    console.log("messagedddd",messageDigest)
-    const sign = await sdk.runSign(
+    console.log("messagedddd", messageDigest);
+    const sign = await this.mpcSdk.runSign(
       "keccak256",
       " ",
       messageDigest,
@@ -156,6 +178,7 @@ export class SilentWallet extends Signer {
       this.keygenResult
     );
   }
+
   async _signTypedData(
     domain: TypedDataDomain,
     types: Record<string, Array<TypedDataField>>,

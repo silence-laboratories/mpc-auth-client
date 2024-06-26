@@ -9,7 +9,7 @@ import { ChainId } from "@biconomy/core-types";
 import { RPC_PROVIDER_URLS } from "@biconomy/common";
 import { SilentWallet } from "../silentWallet";
 import { config } from 'dotenv';
-import { mpcSdk } from ".";
+import { mpcSdk } from "../mpc";
 
 config();
 

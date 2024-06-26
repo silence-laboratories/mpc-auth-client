@@ -10,7 +10,7 @@ import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { getWalletStatus, setWalletStatus } from "@/app/storage/localStorage";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
@@ -21,7 +21,7 @@ function Page() {
     const [eoa, setEoa] = useState<AccountData>(placeholderAccount);
     const router = useRouter();
 
-    const status = getWalletStatus();
+    const status = getPairingStatus();
 
     useEffect(() => {
         if (status === WALLET_STATUS.Unpaired) {
@@ -34,9 +34,9 @@ function Page() {
     const handleMint = async () => {
         setLoading(true);
         try {
-            await mintBiconomyWallet(eoa);
+            await mintBiconomyWallet(eoa, mpcSdk);
             setLoading(true);
-            setWalletStatus(WALLET_STATUS.Minted);
+            setPairingStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");
         } catch (error) {
             console.log("Minting failed.", error);
@@ -46,7 +46,7 @@ function Page() {
 
     const handleMoveBack = () => {
         mpcSdk.signOut();
-        setWalletStatus(WALLET_STATUS.Unpaired);
+        setPairingStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
     }
 

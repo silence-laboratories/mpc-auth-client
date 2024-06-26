@@ -1,15 +1,12 @@
 
-import { WALLET_ID } from "@/constants";
 import { SilentWallet } from "@/silentWallet";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { MpcSdk } from "@silencelaboratories/mpc-sdk";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { providers } from "ethers";
 
 
 
-export async function mintBiconomyWallet(eoa: { address: string; }) {
-    const mpcSdk = new MpcSdk(WALLET_ID, StoragePlatform.Browser);
+export async function mintBiconomyWallet(eoa: { address: string; }, mpcSdk: MpcSdk) {
     const distributedKey = mpcSdk.getDistributionKey();
     const keyShareData = distributedKey?.keyShareData ?? null;
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");

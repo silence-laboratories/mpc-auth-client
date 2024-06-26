@@ -10,7 +10,7 @@ import {
 
 import config from "../../config.json";
 import { SilentWallet } from "../../silentWallet";
-import { mpcSdk } from "..";
+import { mpcSdk } from "../../mpc";
 
 export const nativeTransferPayERC20 = async (
     to: string,
