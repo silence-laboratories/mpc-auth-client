@@ -6,6 +6,7 @@ import chalk from "chalk";
 import {  SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { SilentWallet } from "../../silentWallet";
 import config from "../../config.json";
+import { mpcSdk } from "..";
 export const mintNftPayERC20 = async () => {
   const provider = new ethers.providers.JsonRpcProvider("https://rpc.sepolia.org");
   const distributedKey = config.silentSigner.keygenResult.distributedKey;
@@ -17,6 +18,7 @@ export const mintNftPayERC20 = async () => {
     distributedKey?.publicKey ?? "",
     keyShareData,
     { distributedKey },
+    mpcSdk,
     provider
   );
 
