@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 
-import * as index from "./mpc/index";
 import { hexlify } from "@ethersproject/bytes";
 import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 import {
@@ -23,8 +22,10 @@ import { serialize, UnsignedTransaction } from "@ethersproject/transactions";
 import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
 import { _toUtf8String } from "@ethersproject/strings/lib/utf8";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
+import { MpcSdk } from "@silencelaboratories/mpc-sdk";
 
 export class SilentWallet extends Signer {
+    private mpcSdk: MpcSdk;
     public address: string;
     public public_key: string;
 
@@ -37,7 +38,9 @@ export class SilentWallet extends Signer {
         public_key: string,
         p1KeyShare: any,
         keygenResult: any,
-        provider?: Provider
+        mpcSdk: MpcSdk,
+        provider?: Provider,
+
     ) {
         super();
 
@@ -46,6 +49,7 @@ export class SilentWallet extends Signer {
         this.p1KeyShare = p1KeyShare;
         this.provider = provider;
         this.keygenResult = keygenResult;
+        this.mpcSdk = mpcSdk;
     }
 
     async getAddress(): Promise<string> {
@@ -63,7 +67,7 @@ export class SilentWallet extends Signer {
         ]);
 
         const hexMessage = hexlify(messageSome);
-        const signSdk = await index.runSign(
+        const signSdk = await this.mpcSdk.runSign(
             "keccak256",
             hexMessage,
             messageDigest,
@@ -109,7 +113,7 @@ export class SilentWallet extends Signer {
 
     public async signDigest(digest: BytesLike): Promise<Signature> {
         const messageDigest = hexlify(digest);
-        const sign = await index.runSign(
+        const sign = await this.mpcSdk.runSign(
             "keccak256",
             " ",
             messageDigest,

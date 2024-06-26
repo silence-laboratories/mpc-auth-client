@@ -14,14 +14,16 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getDeviceOS, getWalletStatus } from "@/mpc/storage/wallet";
 import { layoutClassName } from "@/utils/ui";
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
+import { getWalletStatus } from "@/storage/localStorage";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
+    const mpcSdk = useMpcSdk();
     const router = useRouter();
-    const deviceOS = getDeviceOS();
+    const deviceOS = mpcSdk.getDeviceOS();
     const status = getWalletStatus();
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;

@@ -1,21 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { clearWallet, getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 import { mintWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import { getWalletStatus, setWalletStatus } from "@/storage/localStorage";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
+
 function Page() {
+    const mpcSdk = useMpcSdk();
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
-    const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
+    const [eoa, setEoa] = useState<AccountData>(placeholderAccount);
     const router = useRouter();
     const status = getWalletStatus();
     useEffect(() => {
@@ -24,13 +27,13 @@ function Page() {
             return;
         }
 
-        setEoa(store.getEoa());
+        setEoa(mpcSdk.accountManager.getEoa());
     }, [router, status]);
 
     const handleMint = async () => {
         setLoading(true);
         try {
-            await mintWallet(eoa);
+            await mintWallet(eoa, mpcSdk);
             setLoading(true);
             setWalletStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");
@@ -41,7 +44,7 @@ function Page() {
     };
 
     const handleMoveBack = () => {
-        clearWallet();
+        mpcSdk.signOut();
         setWalletStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
     }

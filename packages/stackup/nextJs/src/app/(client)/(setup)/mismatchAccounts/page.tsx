@@ -2,19 +2,22 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
-import * as store from "@/mpc/storage/account";
+
 import { useRouter } from "next/navigation";
-import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { getWalletStatus, setWalletStatus } from "@/storage/localStorage";
 function Page() {
+    const mpcSdk = useMpcSdk();
     const router = useRouter();
-    const oldEoa = store.getOldEoa();
-    const eoa = store.getEoa();
+    const oldEoa = mpcSdk.accountManager.getOldEoa();
+    const eoa = mpcSdk.accountManager.getEoa();
     const [showHeadsUp, setShowHeadsUp] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
 
@@ -26,7 +29,7 @@ function Page() {
                 try {
                     setWalletStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
-                    store.clearOldAccount();
+                    mpcSdk.accountManager.clearOldAccount();
                 } catch (err) {
                     console.error(err);
                 }
