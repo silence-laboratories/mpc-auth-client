@@ -7,10 +7,10 @@ import {
 	randBytes,
 } from '@silencelaboratories/ecdsa-tss';
 import * as utils from '../utils';
-import { KeygenConversation, PairingData } from '../types';
-import { sendMessage } from '../transport/firebaseApi';
 import _sodium, { base64_variants } from 'libsodium-wrappers-sumo';
 import { MpcError, MpcErrorCode } from '../error';
+import { KeygenConversation, PairingData } from '../types';
+import { sendMessage } from '../transport/firebaseApi';
 
 let running = false;
 

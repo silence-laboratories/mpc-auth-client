@@ -3,7 +3,8 @@
 
 import { MpcError, MpcErrorCode } from '../error';
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+// TODO: Move to external env
+const baseUrl = "https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net";
 interface Response {
 	response: any;
 	error: string;

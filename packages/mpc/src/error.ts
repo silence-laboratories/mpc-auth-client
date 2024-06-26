@@ -31,4 +31,6 @@ export enum MpcErrorCode {
 	UnknownMethod = 18,
 	UnknownError = 19,
 	BackupFailed = 20,
+	InvalidStoragePlatform = 21,
+	StorageNotInitialized = 22,
 }

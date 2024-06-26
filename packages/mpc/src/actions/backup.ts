@@ -2,8 +2,8 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { MpcError, MpcErrorCode } from '../error';
-import { BackupConversation, PairingData } from '../types';
 import { sendMessage } from '../transport/firebaseApi';
+import { BackupConversation, PairingData } from '../types';
 
 export const backup = async (
 	pairingData: PairingData,
