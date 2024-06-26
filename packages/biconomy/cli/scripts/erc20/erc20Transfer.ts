@@ -6,7 +6,7 @@ import chalk from "chalk";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { SilentWallet } from "../../silentWallet";
 import config from "../../config.json";
-import { mpcSdk } from "..";
+import { mpcSdk } from "../../mpc";
 
 export const erc20Transfer = async (to: string, amount: number) => {
   try {

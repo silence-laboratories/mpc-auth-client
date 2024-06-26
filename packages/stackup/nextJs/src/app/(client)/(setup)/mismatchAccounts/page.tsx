@@ -2,19 +2,22 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
-import * as store from "@/mpc/storage/account";
+
 import { useRouter } from "next/navigation";
-import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 function Page() {
+    const mpcSdk = useMpcSdk();
     const router = useRouter();
-    const oldEoa = store.getOldEoa();
-    const eoa = store.getEoa();
+    const oldEoa = mpcSdk.accountManager.getOldEoa();
+    const eoa = mpcSdk.accountManager.getEoa();
     const [showHeadsUp, setShowHeadsUp] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
 
@@ -24,9 +27,9 @@ function Page() {
         } else {
             if (isAgree) {
                 try {
-                    setWalletStatus(WALLET_STATUS.BackedUp);
+                    setPairingStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
-                    store.clearOldAccount();
+                    mpcSdk.accountManager.clearOldAccount();
                 } catch (err) {
                     console.error(err);
                 }
@@ -40,7 +43,7 @@ function Page() {
     };
 
     const handleCancelRestoration = () => {
-        setWalletStatus(WALLET_STATUS.Minted);
+        setPairingStatus(WALLET_STATUS.Minted);
         router.push("/pair?repair=true");
     };
 
@@ -50,7 +53,7 @@ function Page() {
             : ``;
     };
 
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     if (status !== WALLET_STATUS.Mismatched) {
         return <RouteLoader />;
     }

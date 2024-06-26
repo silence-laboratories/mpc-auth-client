@@ -7,7 +7,7 @@ import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
-import { getWalletStatus } from "@/app/storage/localStorage";
+import { getPairingStatus } from "@/storage/localStorage";
 
 function Page() {
     const router = useRouter();
@@ -15,7 +15,7 @@ function Page() {
         router.replace("/pair");
     };
 
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     if (status !== WALLET_STATUS.Unpaired) {
         return <RouteLoader />;
     }

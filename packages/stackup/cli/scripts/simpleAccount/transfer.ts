@@ -8,6 +8,7 @@ import { CLIOpts } from "./types";
 import config from "../../config.json";
 import { SilentWallet } from "../../silentWallet";
 import chalk from "chalk";
+import { mpcSdk } from "../../mpc";
 
 export default async function main(t: string, amt: string, opts: CLIOpts) {
   const paymasterMiddleware = opts.withPM
@@ -15,11 +16,20 @@ export default async function main(t: string, amt: string, opts: CLIOpts) {
         config.paymaster.rpcUrl,
         config.paymaster.context
       )
-      
     : undefined;
-  console.log(chalk.yellow("You need to approve twice on your Silent Shard app to send a transaction"));
+  console.log(
+    chalk.yellow(
+      "You need to approve twice on your Silent Shard app to send a transaction"
+    )
+  );
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    new SilentWallet(config.address,config.public_key,config.p1KeyShare,config.keygenResult),
+    new SilentWallet(
+      config.address,
+      config.public_key,
+      config.p1KeyShare,
+      config.keygenResult,
+      mpcSdk
+    ),
     config.rpcUrl,
     { paymasterMiddleware, overrideBundlerRpc: opts.overrideBundlerRpc }
   );

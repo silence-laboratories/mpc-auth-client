@@ -1,38 +1,41 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
-import { clearWallet, getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import LoadingScreen from "@/components/loadingScreen";
 import { mintWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
+
 function Page() {
+    const mpcSdk = useMpcSdk();
     const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
-    const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
+    const [eoa, setEoa] = useState<AccountData>(placeholderAccount);
     const router = useRouter();
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     useEffect(() => {
         if (status === WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
 
-        setEoa(store.getEoa());
+        setEoa(mpcSdk.accountManager.getEoa());
     }, [router, status]);
 
     const handleMint = async () => {
         setLoading(true);
         try {
-            await mintWallet(eoa);
+            await mintWallet(eoa, mpcSdk);
             setLoading(true);
-            setWalletStatus(WALLET_STATUS.Minted);
+            setPairingStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");
         } catch (error) {
             console.log("Minting failed.", error);
@@ -41,8 +44,8 @@ function Page() {
     };
 
     const handleMoveBack = () => {
-        clearWallet();
-        setWalletStatus(WALLET_STATUS.Unpaired);
+        mpcSdk.signOut();
+        setPairingStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
     }
 

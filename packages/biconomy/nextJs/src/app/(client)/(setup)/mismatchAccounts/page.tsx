@@ -9,7 +9,7 @@ import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { getWalletStatus, setWalletStatus } from "@/app/storage/localStorage";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
@@ -26,7 +26,7 @@ function Page() {
         } else {
             if (isAgree) {
                 try {
-                    setWalletStatus(WALLET_STATUS.BackedUp);
+                    setPairingStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
                     mpcSdk.accountManager.clearOldAccount();
                 } catch (err) {
@@ -42,7 +42,7 @@ function Page() {
     };
 
     const handleCancelRestoration = () => {
-        setWalletStatus(WALLET_STATUS.Minted);
+        setPairingStatus(WALLET_STATUS.Minted);
         router.push("/pair?repair=true");
     };
 
@@ -52,7 +52,7 @@ function Page() {
             : ``;
     };
 
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     if (status !== WALLET_STATUS.Mismatched) {
         return <RouteLoader />;
     }

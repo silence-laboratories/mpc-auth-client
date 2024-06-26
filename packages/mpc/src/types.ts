@@ -74,11 +74,14 @@ export interface DistributedKey {
 }
 
 export interface StorageData {
+  version?: number;
   pairingData: PairingData;
   newPairingState?: {
     pairingData: PairingData | null;
     distributedKey: DistributedKey | null;
   };
+  walletAccount?: AccountData;
+  eoa: string | null;
 }
 export interface PairingSessionData {
   token: string;

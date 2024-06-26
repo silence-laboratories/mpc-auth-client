@@ -4,10 +4,10 @@ import React from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
-import { cn, layoutClassName } from "@/utils/ui";
+import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { getPairingStatus } from "@/storage/localStorage";
 
 function Page() {
     const router = useRouter();
@@ -15,15 +15,13 @@ function Page() {
     const nextPageClick = () => {
         router.replace("/pair");
     };
-    
-    const status = getWalletStatus();
+
+    const status = getPairingStatus();
     if (status !== WALLET_STATUS.Unpaired) {
         return <RouteLoader />;
     }
     return (
-        <div
-            className={layoutClassName}
-        >
+        <div className={layoutClassName}>
             <div
                 className="text-black h2-bold"
                 style={{
