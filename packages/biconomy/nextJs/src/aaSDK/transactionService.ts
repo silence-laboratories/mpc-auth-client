@@ -1,22 +1,24 @@
 import { providers } from "ethers";
 import { SilentWallet } from "@/silentWallet";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
-import * as store from "@silencelaboratories/mpc-sdk/storage/account";
-import { getSilentShareStorage } from "@silencelaboratories/mpc-sdk/storage/wallet";
+import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { WALLET_ID } from "@/constants";
+import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 
 export async function sendTransaction(
     recipientAddress: string,
     amount: string
 ) {
+    const mpcSdk = new MpcSdk(WALLET_ID, StoragePlatform.Browser);
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-    const keyshards = getSilentShareStorage();
-    const distributedKey = keyshards.newPairingState?.distributedKey;
+    const distributedKey = mpcSdk.getDistributionKey();
     const client = new SilentWallet(
-        store.getEoa().address,
+        mpcSdk.accountManager.getEoa().address,
         distributedKey?.publicKey ?? "",
         distributedKey?.keyShareData,
         { distributedKey },
-        provider
+        provider,
+        mpcSdk
     );
 
     const biconomySmartAccount = await createSmartAccountClient({
