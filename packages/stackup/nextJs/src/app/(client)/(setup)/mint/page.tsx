@@ -11,7 +11,7 @@ import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
-import { getWalletStatus, setWalletStatus } from "@/storage/localStorage";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
@@ -20,7 +20,7 @@ function Page() {
     const [loading, setLoading] = useState<boolean>(false);
     const [eoa, setEoa] = useState<AccountData>(placeholderAccount);
     const router = useRouter();
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     useEffect(() => {
         if (status === WALLET_STATUS.Unpaired) {
             router.replace("/intro");
@@ -35,7 +35,7 @@ function Page() {
         try {
             await mintWallet(eoa, mpcSdk);
             setLoading(true);
-            setWalletStatus(WALLET_STATUS.Minted);
+            setPairingStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");
         } catch (error) {
             console.log("Minting failed.", error);
@@ -45,7 +45,7 @@ function Page() {
 
     const handleMoveBack = () => {
         mpcSdk.signOut();
-        setWalletStatus(WALLET_STATUS.Unpaired);
+        setPairingStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
     }
 

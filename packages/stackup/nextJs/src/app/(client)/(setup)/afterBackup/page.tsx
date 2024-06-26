@@ -17,14 +17,14 @@ import {
 import { layoutClassName } from "@/utils/ui";
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
-import { getWalletStatus } from "@/storage/localStorage";
+import { getPairingStatus } from "@/storage/localStorage";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
     const mpcSdk = useMpcSdk();
     const router = useRouter();
     const deviceOS = mpcSdk.getDeviceOS();
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;
     }

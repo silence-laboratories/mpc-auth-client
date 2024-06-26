@@ -2,7 +2,7 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { WALLET_STATUS } from "@/constants";
-import { getWalletStatus } from "@/storage/localStorage";
+import { getPairingStatus } from "@/storage/localStorage";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -10,7 +10,7 @@ import { useEffect } from "react";
 export const useSwitchScreen = () => {
     const router = useRouter();
     const initializeScreen = () => {
-        const status = getWalletStatus();
+        const status = getPairingStatus();
         if (status === WALLET_STATUS.Minted) {
             router.replace("/homescreen");
         } else if (status === WALLET_STATUS.BackedUp) {

@@ -20,7 +20,7 @@ import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
-import { getWalletStatus, setWalletStatus } from "@/app/storage/localStorage";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
@@ -40,23 +40,23 @@ const Homescreen: React.FC = () => {
     const [isPasswordReady, setIsPasswordReady] = useState(false);
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     useEffect(() => {
         const eoa = mpcSdk.accountManager.getEoa();
         if (!eoa) {
-            setWalletStatus(WALLET_STATUS.Unpaired);
+            setPairingStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
             return;
         }
 
         const account = mpcSdk.accountManager.getSmartContractAccount();
         if (!account) {
-            setWalletStatus(WALLET_STATUS.BackedUp);
+            setPairingStatus(WALLET_STATUS.BackedUp);
             router.replace("/mint");
             return;
         }
 
-        setWalletStatus(WALLET_STATUS.Minted);
+        setPairingStatus(WALLET_STATUS.Minted);
         setWalletAccount(account);
         setEoa(eoa);
     }, [router, status]);
@@ -275,7 +275,7 @@ const Homescreen: React.FC = () => {
     const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
         mpcSdk.signOut();
-        setWalletStatus(WALLET_STATUS.Unpaired);
+        setPairingStatus(WALLET_STATUS.Unpaired);
         router.push("/intro");
     };
 

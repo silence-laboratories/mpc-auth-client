@@ -22,7 +22,7 @@ import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
-import { getWalletStatus, setWalletStatus } from "@/storage/localStorage";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 
 const Homescreen: React.FC = () => {
     const mpcSdk = useMpcSdk();
@@ -40,23 +40,23 @@ const Homescreen: React.FC = () => {
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
     const chainCheckRef = useRef(false);
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     useEffect(() => {
         const account = mpcSdk.accountManager.getSmartContractAccount();
         if (!account) {
-            setWalletStatus(WALLET_STATUS.BackedUp);
+            setPairingStatus(WALLET_STATUS.BackedUp);
             router.replace("/mint");
             return;
         }
 
         const eoa = mpcSdk.accountManager.getEoa();
         if (!eoa) {
-            setWalletStatus(WALLET_STATUS.Unpaired);
+            setPairingStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
             return;
         }
 
-        setWalletStatus(WALLET_STATUS.Minted);
+        setPairingStatus(WALLET_STATUS.Minted);
         setWalletAccount(account);
         setEoa(eoa);
     }, [router, status]);

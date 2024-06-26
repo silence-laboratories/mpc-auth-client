@@ -17,7 +17,7 @@ import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
-import { getWalletStatus, setWalletStatus } from "@/storage/localStorage";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 
 function Page() {
     const mpcSdk = useMpcSdk();
@@ -58,10 +58,10 @@ function Page() {
                 oldEoa !== null &&
                 eoa.address !== oldEoa.address
             ) {
-                setWalletStatus(WALLET_STATUS.Mismatched);
+                setPairingStatus(WALLET_STATUS.Mismatched);
                 router.replace("/mismatchAccounts");
             } else {
-                setWalletStatus(WALLET_STATUS.BackedUp);
+                setPairingStatus(WALLET_STATUS.BackedUp);
                 router.replace("/mint");
             }
             setLoading(false);
@@ -107,7 +107,7 @@ function Page() {
                             ).toString("hex"),
                     };
                     mpcSdk.accountManager.setEoa(eoa);
-                    setWalletStatus(WALLET_STATUS.Paired);
+                    setPairingStatus(WALLET_STATUS.Paired);
                     router.replace("/backup");
                 }
             } catch (error) {
@@ -152,7 +152,7 @@ function Page() {
     };
 
     const isQrExpired = !(qr && seconds > 0);
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     const showLoading = isRepairing
         ? status !== WALLET_STATUS.Minted
         : status !== WALLET_STATUS.Unpaired;
