@@ -6,7 +6,7 @@ import * as KeyGenAction from "./actions/keygen";
 import * as SignAction from "./actions/sign";
 import * as Backup from "./actions/backup";
 import { aeadEncrypt, requestEntropy } from "./crypto";
-import { fromHexStringToBytes, getAddressFromDistributedKey } from "./utils";
+import { fromHexStringToBytes, getAddressFromPubkey } from "./utils";
 import { IStorage } from "./storage/types";
 import {
   PairingSessionData,
@@ -115,7 +115,7 @@ export class MpcSdk {
     const distributedKey = result.newPairingState.distributedKey;
 
     const eoa = distributedKey
-      ? getAddressFromDistributedKey(distributedKey)
+      ? getAddressFromPubkey(distributedKey.publicKey)
       : null;
 
     this.storage.setStorageData({
@@ -183,6 +183,7 @@ export class MpcSdk {
           keyShareData: result.keyShareData,
         },
       },
+      eoa: getAddressFromPubkey(result.publicKey)
     });
     return {
       distributedKey: {
@@ -215,8 +216,8 @@ export class MpcSdk {
         await Backup.backup(
           pairingData,
           encryptedMessage,
-          getAddressFromDistributedKey(
-            silentShareStorage.newPairingState?.distributedKey
+          getAddressFromPubkey(
+            silentShareStorage.newPairingState?.distributedKey.publicKey
           ),
           this.getWalletId()
         );
