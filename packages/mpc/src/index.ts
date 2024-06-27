@@ -121,16 +121,21 @@ export class MpcSdk {
       currentAccountAddress,
       password
     );
+    const distributedKey = result.newPairingState.distributedKey;
+
+    const eoa = distributedKey
+      ? getAddressFromDistributedKey(distributedKey)
+      : null;
+
     this.storage.setStorageData({
       newPairingState: result.newPairingState,
       pairingData: result.newPairingState.pairingData,
+      eoa,
     });
-    const distributedKey = result.newPairingState.distributedKey;
+    
     return {
       pairingStatus: "paired",
-      newAccountAddress: distributedKey
-        ? getAddressFromDistributedKey(distributedKey)
-        : null,
+      newAccountAddress: eoa,
       deviceName: result.deviceName,
       elapsedTime: result.elapsedTime,
     };
