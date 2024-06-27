@@ -79,12 +79,6 @@ const Homescreen: React.FC = () => {
             if (isSepolia || didUserSwitch) {
                 setNetwork("Sepolia Test Network");
                 await updateBalance();
-                setWalletAccount({
-                    ...walletAccount,
-                });
-                setEoa({
-                    ...eoa,
-                });
                 chainCheckRef.current = true;
             }
         };
@@ -166,6 +160,7 @@ const Homescreen: React.FC = () => {
     const [recipientAddressError, setRecipientAddressError] =
         useState<string>("");
     const [amountError, setAmountError] = useState<string>("");
+    const [txHash, setTxHash] = useState<string>("");
 
     useEffect(() => {
         setIsPasswordReady(mpcSdk.accountManager.isPasswordReady());
@@ -251,7 +246,11 @@ const Homescreen: React.FC = () => {
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
             try {
-                const result = await sendTransaction(recipientAddress, amount, mpcSdk);
+                const result = await sendTransaction(
+                    recipientAddress,
+                    amount,
+                    mpcSdk
+                );
                 if (!result.transactionHash) {
                     setShowTransactionInitiatedBanner(false);
                     setShowTransactionfailBanner(true);
@@ -259,7 +258,7 @@ const Homescreen: React.FC = () => {
                 }
                 setShowTransactionSignedBanner(true);
                 setShowTransactionInitiatedBanner(false);
-                mpcSdk.accountManager.setTxHash(result.transactionHash);
+                setTxHash(result.transactionHash);
                 await updateBalance();
             } catch (error) {
                 setShowTransactionInitiatedBanner(false);
@@ -690,7 +689,7 @@ const Homescreen: React.FC = () => {
                                     <a
                                         href={
                                             "https://sepolia.etherscan.io/tx/" +
-                                            `${mpcSdk.accountManager.getTxHash()}`
+                                            `${txHash}`
                                         }
                                     >
                                         {" "}
