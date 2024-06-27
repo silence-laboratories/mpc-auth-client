@@ -16,7 +16,7 @@ import {
 } from "./types";
 import { MpcError, MpcErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-import { LocalStorageManager } from "./storage/browser/storage";
+import { LocalStorageManager } from "./storage/localStorage";
 import { AccountManager } from "./domain/account";
 
 export class MpcSdk {
