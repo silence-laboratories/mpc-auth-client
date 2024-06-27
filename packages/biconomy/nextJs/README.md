@@ -11,7 +11,6 @@
 
 2. Fill in your API keys in .env:
     ``` bash
-    NEXT_PUBLIC_BASE_URL= https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
     API_KEY = your_biconomy_api_key_here //update this API key using step 3 below
     ```
 3. Set the rpcUrl:

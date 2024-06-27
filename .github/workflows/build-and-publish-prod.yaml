@@ -17,14 +17,15 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: |
+          pushd packages/mpc
+          export NODE_ENV=production && npm run build
+          popd
           pushd packages/biconomy/nextJs
           echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env 
-          echo "NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net" >> .env
           npm i &&  npm run build
           popd
           pushd packages/stackup/nextJs
           echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env 
-          echo "NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net" >> .env
           npm i &&  npm run build
           popd
 

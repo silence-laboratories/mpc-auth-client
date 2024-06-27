@@ -39,7 +39,6 @@ To set up the `rpcUrl`, create an instance at:
     - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
 
         ```env
-        FIREBASE_BASEURL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
         API_KEY=your_biconomy_api_key_here
         ```
 
