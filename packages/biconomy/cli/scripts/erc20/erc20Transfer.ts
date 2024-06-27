@@ -4,9 +4,9 @@
 import { ethers, providers } from "ethers";
 import chalk from "chalk";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
-import { SilentWallet } from "../../silentWallet";
 import config from "../../config.json";
 import { mpcSdk } from "../../mpc";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
 
 export const erc20Transfer = async (to: string, amount: number) => {
   try {
@@ -17,7 +17,7 @@ export const erc20Transfer = async (to: string, amount: number) => {
     const keyShareData =
       config.silentSigner.keygenResult.distributedKey.keyShareData;
     
-    const client = new SilentWallet(
+    const client = new MpcSigner(
       address,
       distributedKey?.publicKey ?? "",
       keyShareData,
@@ -72,7 +72,7 @@ export const erc20TransferPayERC20 = async (to: string, amount: number, token: s
     const keyShareData =
       config.silentSigner.keygenResult.distributedKey.keyShareData;
 
-    const client = new SilentWallet(
+    const client = new MpcSigner(
       address,
       distributedKey?.publicKey ?? "",
       keyShareData,

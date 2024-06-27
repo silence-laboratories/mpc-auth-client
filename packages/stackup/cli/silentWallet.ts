@@ -25,7 +25,6 @@ import { serialize, UnsignedTransaction } from "@ethersproject/transactions";
 import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
 import { MpcSdk } from "@silencelaboratories/mpc-sdk";
-import qrCodeTerm from "qrcode-terminal";
 
 export class SilentWallet extends Signer {
   private mpcSdk: MpcSdk;
@@ -53,38 +52,6 @@ export class SilentWallet extends Signer {
     this.mpcSdk = mpcSdk;
   }
 
-  public static async generate(mpcSdk: MpcSdk): Promise<SilentWallet> {
-    const qrCode = await mpcSdk.initPairing();
-    qrCodeTerm.generate(
-      qrCode,
-      {
-        small: true,
-      },
-      function (qrcode: any) {
-        console.log(qrcode);
-      }
-    );
-
-    const pairingSessionData = await mpcSdk.runStartPairingSession();
-    await mpcSdk.runEndPairingSession(pairingSessionData);
-
-    const keygenResult = await mpcSdk.runKeygen();
-    await mpcSdk.runBackup("demopassword");
-    const p1KeyShare: IP1KeyShare = keygenResult.distributedKey.keyShareData;
-    if (!p1KeyShare) {
-      throw new Error("Failed to generate p1KeyShare");
-    }
-
-    const publicKey = p1KeyShare.public_key;
-    const address = ethers.utils.computeAddress(`0x04${publicKey}`);
-    return new SilentWallet(
-      address,
-      publicKey,
-      p1KeyShare,
-      keygenResult,
-      mpcSdk
-    );
-  }
 
   async getAddress(): Promise<string> {
     return this.address;

@@ -1,17 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { getPairingStatus } from "@/storage/localStorage";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
+    const mpcSdk = useMpcSdk();
     const router = useRouter();
 
+    useEffect(() => {
+        try {
+            const eoa = mpcSdk.accountManager.getEoa();
+            const account = mpcSdk.accountManager.getSmartContractAccount();
+            if (eoa && !account) {
+                setPairingStatus(WALLET_STATUS.BackedUp);
+                router.replace("/mint");
+                return;
+            } else if (eoa && account) {
+                setPairingStatus(WALLET_STATUS.Minted);
+                router.replace("/homescreen");
+                return;
+            }
+        } catch (error) {
+            return;
+        }
+    }, [router]);
+    
     const nextPageClick = () => {
         router.replace("/pair");
     };
