@@ -12,11 +12,14 @@ export async function sendTransaction(
         to: recipientAddress,
         amount: convertEtherToWei(amount),
     };
-
+    const eoa = mpcSdk.accountManager.getEoa();
+    if(!eoa) {
+        throw new Error("Eoa not found");
+    }
     const distributedKey = mpcSdk.getDistributionKey();
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
         new SilentWallet(
-            mpcSdk.accountManager.getEoa().address,
+            eoa,
             distributedKey?.publicKey as string,
             distributedKey?.keyShareData,
             { distributedKey },
