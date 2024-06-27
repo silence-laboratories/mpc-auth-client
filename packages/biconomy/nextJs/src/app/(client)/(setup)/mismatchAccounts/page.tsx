@@ -9,7 +9,7 @@ import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { clearOldEoa, getOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import { getOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
@@ -28,7 +28,6 @@ function Page() {
                 try {
                     setPairingStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
-                    clearOldEoa();
                 } catch (err) {
                     console.error(err);
                 }

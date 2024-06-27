@@ -13,7 +13,6 @@ import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 import {
-    clearOldEoa,
     getOldEoa,
     getPairingStatus,
     setPairingStatus,
@@ -34,7 +33,6 @@ function Page() {
                 try {
                     setPairingStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
-                    clearOldEoa();
                 } catch (err) {
                     console.error(err);
                 }

@@ -35,6 +35,7 @@ function Page() {
             if (eoa) {
                 await mintWallet(eoa, mpcSdk);
                 setLoading(true);
+                clearOldEoa();
                 setPairingStatus(WALLET_STATUS.Minted);
                 router.replace("/homescreen");
             } else {
