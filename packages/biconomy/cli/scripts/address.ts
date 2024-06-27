@@ -5,8 +5,8 @@ import chalk from "chalk";
 import config from "../config.json";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { providers } from "ethers";
-import { SilentWallet } from "../silentWallet";
 import { mpcSdk } from "../mpc";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
 
 export async function getAddress() {
   // Initialize Biconomy Smart Account SDK
@@ -16,7 +16,7 @@ export async function getAddress() {
     config.silentSigner.keygenResult.distributedKey.keyShareData;
 
   const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-  const client = new SilentWallet(
+  const client = new MpcSigner(
     address,
     distributedKey?.publicKey ?? "",
     keyShareData,

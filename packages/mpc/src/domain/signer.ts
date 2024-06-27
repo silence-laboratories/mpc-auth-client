@@ -144,6 +144,7 @@ export class MpcSigner extends Signer {
             provider,
         );
     }
+    
     async _signTypedData(
         domain: TypedDataDomain,
         types: Record<string, Array<TypedDataField>>,

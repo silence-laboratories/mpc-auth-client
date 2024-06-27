@@ -47,24 +47,39 @@ const Homescreen: React.FC = () => {
         useState(false);
     const chainCheckRef = useRef(false);
     const status = getPairingStatus();
-    useEffect(() => {
-        const account = mpcSdk.accountManager.getSmartContractAccount();
-        if (!account) {
-            setPairingStatus(WALLET_STATUS.BackedUp);
-            router.replace("/mint");
-            return;
-        }
 
-        const eoa = mpcSdk.accountManager.getEoa();
-        if (!eoa) {
+    useEffect(() => {
+        try {
+            setIsPasswordReady(mpcSdk.accountManager.isPasswordReady());
+        } catch (error) {
+            console.error("isPasswordReady error", error);
+        }
+    }, [openPasswordBackupDialog]);
+
+    useEffect(() => {
+        try {
+            const account = mpcSdk.accountManager.getSmartContractAccount();
+            if (!account) {
+                setPairingStatus(WALLET_STATUS.BackedUp);
+                router.replace("/mint");
+                return;
+            }
+
+            const eoa = mpcSdk.accountManager.getEoa();
+            if (!eoa) {
+                setPairingStatus(WALLET_STATUS.Unpaired);
+                router.replace("/intro");
+                return;
+            }
+
+            setPairingStatus(WALLET_STATUS.Minted);
+            setWalletAccount(account);
+            setEoa(eoa);
+        } catch (error) {
             setPairingStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
             return;
         }
-
-        setPairingStatus(WALLET_STATUS.Minted);
-        setWalletAccount(account);
-        setEoa(eoa);
     }, [router, status]);
 
     useEffect(() => {
@@ -167,10 +182,6 @@ const Homescreen: React.FC = () => {
         useState<string>("");
     const [amountError, setAmountError] = useState<string>("");
     const [txHash, setTxHash] = useState<string>("");
-
-    useEffect(() => {
-        setIsPasswordReady(mpcSdk.accountManager.isPasswordReady());
-    }, [openPasswordBackupDialog]);
 
     useEffect(() => {
         setIsSendValid(
