@@ -4,7 +4,7 @@
 import { MpcError, MpcErrorCode } from '../error';
 
 // TODO: Move to external env
-const baseUrl = "https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net";
+const baseUrl = process.env.NODE_ENV === "production" ? "https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net" : "https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net";
 interface Response {
 	response: any;
 	error: string;
