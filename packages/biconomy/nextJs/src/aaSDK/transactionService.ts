@@ -8,10 +8,14 @@ export async function sendTransaction(
     amount: string,
     mpcSdk: MpcSdk
 ) {
+    const eoa = mpcSdk.accountManager.getEoa();
+    if(!eoa) {
+        throw new Error("Eoa not found");
+    }
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
     const distributedKey = mpcSdk.getDistributionKey();
     const client = new SilentWallet(
-        mpcSdk.accountManager.getEoa().address,
+        eoa,
         distributedKey?.publicKey ?? "",
         distributedKey?.keyShareData,
         { distributedKey },

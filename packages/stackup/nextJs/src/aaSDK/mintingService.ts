@@ -2,12 +2,12 @@ import { SilentWallet } from "@/silentWallet";
 import { Presets } from "userop";
 import { MpcSdk } from "@silencelaboratories/mpc-sdk";
 
-export async function mintWallet(eoa: { address: string; }, mpcSdk: MpcSdk) {
+export async function mintWallet(eoa: string, mpcSdk: MpcSdk) {
     const distributedKey = mpcSdk.getDistributionKey();
     const keyShareData = distributedKey?.keyShareData ?? null;
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
         new SilentWallet(
-            eoa.address,
+            eoa,
             distributedKey?.publicKey ?? "",
             keyShareData,
             { distributedKey },

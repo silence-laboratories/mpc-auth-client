@@ -16,9 +16,8 @@ import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
     const mpcSdk = useMpcSdk();
-    const placeholderAccount = { address: "...", balance: 0 };
     const [loading, setLoading] = useState<boolean>(false);
-    const [eoa, setEoa] = useState<AccountData>(placeholderAccount);
+    const [eoa, setEoa] = useState<string | null>(null);
     const router = useRouter();
 
     const status = getPairingStatus();
@@ -34,10 +33,15 @@ function Page() {
     const handleMint = async () => {
         setLoading(true);
         try {
-            await mintBiconomyWallet(eoa, mpcSdk);
-            setLoading(true);
-            setPairingStatus(WALLET_STATUS.Minted);
-            router.replace("/homescreen");
+            if (eoa) {
+                await mintBiconomyWallet(eoa, mpcSdk);
+                setLoading(true);
+                setPairingStatus(WALLET_STATUS.Minted);
+                router.replace("/homescreen");
+            } else {
+                console.log("Eoa not found.");
+                setLoading(false);
+            }
         } catch (error) {
             console.log("Minting failed.", error);
             setLoading(false);
@@ -48,7 +52,7 @@ function Page() {
         mpcSdk.signOut();
         setPairingStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
-    }
+    };
 
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;
@@ -123,7 +127,7 @@ function Page() {
 
                             <div className="flex flex-col">
                                 <AddressCopyPopover
-                                    address={eoa.address}
+                                    address={eoa}
                                     className="text-[black] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                                 />
                             </div>

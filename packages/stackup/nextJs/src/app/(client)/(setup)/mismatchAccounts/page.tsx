@@ -8,16 +8,21 @@ import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
-import { WALLET_STATUS } from "@/constants";
+import { ADDRESS_NOT_FOUND, WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
-import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import {
+    clearOldEoa,
+    getOldEoa,
+    getPairingStatus,
+    setPairingStatus,
+} from "@/storage/localStorage";
 function Page() {
     const mpcSdk = useMpcSdk();
     const router = useRouter();
-    const oldEoa = mpcSdk.accountManager.getOldEoa();
-    const eoa = mpcSdk.accountManager.getEoa();
+    const oldEoa = getOldEoa();
+    const eoa = mpcSdk.accountManager.getEoa() ?? ADDRESS_NOT_FOUND;
     const [showHeadsUp, setShowHeadsUp] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
 
@@ -29,7 +34,7 @@ function Page() {
                 try {
                     setPairingStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
-                    mpcSdk.accountManager.clearOldAccount();
+                    clearOldEoa();
                 } catch (err) {
                     console.error(err);
                 }
@@ -114,11 +119,11 @@ function Page() {
                                 <li>
                                     Restoring new account{" "}
                                     <span className="text-[#DC2626] b2-bold rounded-[3px] p-[2px]">
-                                        {briefAddress(eoa?.address)}
+                                        {briefAddress(eoa)}
                                     </span>{" "}
                                     will replace the existing account
                                     <span className="text-[#DC2626] b2-bold rounded-[3px] p-[2px]">
-                                        {briefAddress(oldEoa?.address)}
+                                        {briefAddress(oldEoa)}
                                     </span>
                                 </li>
                                 <li>
@@ -170,7 +175,7 @@ function Page() {
                                 Currently active account on the browser:
                             </span>
                             <AddressCopyPopover
-                                address={oldEoa?.address}
+                                address={oldEoa}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>
@@ -179,7 +184,7 @@ function Page() {
                                 Account that you are trying to restore:
                             </span>
                             <AddressCopyPopover
-                                address={eoa?.address}
+                                address={eoa}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>
@@ -192,7 +197,7 @@ function Page() {
                                 Return to your mobile and try again by selecting
                                 the backup file for the existing account{" "}
                                 <span className="b2-bold">
-                                    {briefAddress(oldEoa?.address)}
+                                    {briefAddress(oldEoa)}
                                 </span>
                                 , or
                             </li>
@@ -200,7 +205,7 @@ function Page() {
                                 Proceed with restoring the newly selected
                                 account{" "}
                                 <span className="b2-bold">
-                                    {briefAddress(eoa?.address)}
+                                    {briefAddress(eoa)}
                                 </span>
                             </li>
                         </ul>
@@ -243,7 +248,7 @@ function Page() {
                 >
                     Restore account
                     <span className="b2-bold ml-1">
-                        {briefAddress(eoa?.address)}
+                        {briefAddress(eoa)}
                     </span>
                 </Button>
             </div>

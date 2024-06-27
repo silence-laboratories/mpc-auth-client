@@ -19,3 +19,5 @@ export enum WALLET_STATUS {
     Minted = "Minted",
     Mismatched = "Mismatched",
 }
+
+export const ADDRESS_NOT_FOUND = "Address not found";

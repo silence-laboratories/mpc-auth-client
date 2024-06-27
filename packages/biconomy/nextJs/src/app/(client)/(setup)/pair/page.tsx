@@ -17,7 +17,11 @@ import LoadingScreen from "@/components/loadingScreen";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import {
+    getOldEoa,
+    getPairingStatus,
+    setPairingStatus,
+} from "@/storage/localStorage";
 import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
@@ -38,7 +42,7 @@ function Page() {
     const step = 1;
     const MAX_SECONDS = 30;
     const MAX_ENTER_PW_SECONDS = 60; // According to pairing API timeout
-    const oldEoa = mpcSdk.accountManager.getOldEoa();
+    const oldEoa = getOldEoa();
 
     const handlePairingWithBackup = async (
         pairingSessionData: PairingSessionData,
@@ -47,19 +51,11 @@ function Page() {
         try {
             const runPairingResp = await mpcSdk.runEndPairingSession(
                 pairingSessionData,
-                oldEoa?.address,
+                oldEoa,
                 password
             );
-
-            const eoa = {
-                address: runPairingResp.newAccountAddress ?? "",
-            };
-            mpcSdk.accountManager.setEoa(eoa);
-            if (
-                isRepairing &&
-                oldEoa !== null &&
-                eoa.address !== oldEoa.address
-            ) {
+            const eoa = mpcSdk.accountManager.getEoa();
+            if (isRepairing && oldEoa !== null && eoa !== oldEoa) {
                 setPairingStatus(WALLET_STATUS.Mismatched);
                 router.replace("/mismatchAccounts");
             } else {
@@ -81,10 +77,8 @@ function Page() {
                 setSeconds(MAX_SECONDS);
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
-                const pairingSessionData = await mpcSdk.runStartPairingSession();
-                if (pairingSessionData) {
-                    mpcSdk.setDeviceOS(pairingSessionData.deviceName);
-                }
+                const pairingSessionData =
+                    await mpcSdk.runStartPairingSession();
 
                 // QR is scanned
                 setLoading(true);
@@ -95,20 +89,10 @@ function Page() {
                 } else {
                     await mpcSdk.runEndPairingSession(
                         pairingSessionData,
-                        oldEoa?.address
+                        oldEoa
                     );
-                    const keygenRes = await mpcSdk.runKeygen();
-                    const eoa = {
-                        address:
-                            "0x" +
-                            pubToAddress(
-                                Buffer.from(
-                                    keygenRes.distributedKey.publicKey,
-                                    "hex"
-                                )
-                            ).toString("hex"),
-                    };
-                    mpcSdk.accountManager.setEoa(eoa);
+                    await mpcSdk.runKeygen();
+
                     setPairingStatus(WALLET_STATUS.Paired);
                     router.replace("/backup");
                 }
@@ -251,7 +235,7 @@ function Page() {
                                 Currently active account:
                             </div>
                             <AddressCopyPopover
-                                address={oldEoa?.address ?? ""}
+                                address={oldEoa}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>
