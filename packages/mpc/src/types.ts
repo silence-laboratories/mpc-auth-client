@@ -82,6 +82,7 @@ export interface StorageData {
   };
   walletAccount?: AccountData;
   eoa: string | null;
+  passwordReady?: boolean;
 }
 export interface PairingSessionData {
   token: string;

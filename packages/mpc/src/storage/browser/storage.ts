@@ -83,23 +83,4 @@ export class LocalStorageManager implements IStorage {
 
     return jsonObject;
   };
-
-  /**
-   * Set device name
-   *
-   * @param deviceName
-   */
-  setDeviceOS = (deviceName: string) => {
-    const deviceOS = deviceName.split(":")[1].split(",")[0].trim() as DeviceOS;
-    localStorage.setItem("deviceOS", deviceOS);
-  };
-
-  /**
-   * Get device name
-   *
-   * @returns device name
-   */
-  getDeviceOS(): DeviceOS {
-    return (localStorage.getItem("deviceOS") ?? "ios") as DeviceOS;
-  }
 }

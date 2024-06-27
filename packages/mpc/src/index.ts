@@ -17,13 +17,13 @@ import {
 import { MpcError, MpcErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { LocalStorageManager } from "./storage/browser/storage";
-import { AccountManager } from "./storage/browser/account";
+import { AccountManager } from "./domain/account";
 
 export class MpcSdk {
   TOKEN_LIFE_TIME = 60000;
   private storage?: IStorage;
   private walletId: string = "";
-  accountManager: AccountManager = new AccountManager();
+  accountManager: AccountManager;
 
   constructor(
     walletId: string,
@@ -35,29 +35,18 @@ export class MpcSdk {
     } else {
       this.storage = customStorage;
     }
+    if(!this.storage) {
+      throw new MpcError(
+        "Storage not initialized",
+        MpcErrorCode.StorageNotInitialized
+      );
+    }
+    this.accountManager = new AccountManager(this.storage);
     this.walletId = walletId;
   }
 
-  setDeviceOS = (deviceName: string) => {
-    if (this.storage instanceof LocalStorageManager) {
-      this.storage.setDeviceOS(deviceName);
-    } else {
-      throw new MpcError(
-        "Invalid storage platform",
-        MpcErrorCode.InvalidStoragePlatform
-      );
-    }
-  };
-
   getDeviceOS = () => {
-    if (this.storage instanceof LocalStorageManager) {
-      return this.storage.getDeviceOS();
-    } else {
-      throw new MpcError(
-        "Invalid storage platform",
-        MpcErrorCode.InvalidStoragePlatform
-      );
-    }
+    return this.accountManager.getDeviceOS();
   };
 
   getDistributionKey() {
@@ -132,7 +121,7 @@ export class MpcSdk {
       pairingData: result.newPairingState.pairingData,
       eoa,
     });
-    
+
     return {
       pairingStatus: "paired",
       newAccountAddress: eoa,
@@ -281,7 +270,6 @@ export class MpcSdk {
         MpcErrorCode.StorageNotInitialized
       );
     this.storage.clearStorageData();
-    this.accountManager.clearAccount();
   }
 
   private getWalletId(): string {
