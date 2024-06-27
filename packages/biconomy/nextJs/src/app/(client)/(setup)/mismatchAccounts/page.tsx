@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
-import { ADDRESS_NOT_FOUND, WALLET_STATUS } from "@/constants";
+import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { clearOldEoa, getOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
@@ -15,8 +15,8 @@ import { useMpcSdk } from "@/hooks/useMpcSdk";
 function Page() {
     const mpcSdk = useMpcSdk();
     const router = useRouter();
-    const oldEoa = getOldEoa();
-    const eoa = mpcSdk.accountManager.getEoa() ?? ADDRESS_NOT_FOUND;
+    const oldEoa = getOldEoa() ?? "";
+    const eoa = mpcSdk.accountManager.getEoa() ?? "";
     const [showHeadsUp, setShowHeadsUp] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
 

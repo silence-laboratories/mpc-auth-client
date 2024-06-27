@@ -17,10 +17,10 @@ import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
 import Image from "next/image";
-import { ADDRESS_NOT_FOUND, SEPOLIA, WALLET_STATUS } from "@/constants";
+import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
-import { getOldEoa, getPairingStatus, setOldEoa, setPairingStatus } from "@/storage/localStorage";
+import { clearOldEoa, getOldEoa, getPairingStatus, setOldEoa, setPairingStatus } from "@/storage/localStorage";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
@@ -274,6 +274,7 @@ const Homescreen: React.FC = () => {
     const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
         mpcSdk.signOut();
+        clearOldEoa();
         setPairingStatus(WALLET_STATUS.Unpaired);
         router.push("/intro");
     };
@@ -376,8 +377,7 @@ const Homescreen: React.FC = () => {
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
                                     address={
-                                        walletAccount?.address ||
-                                        ADDRESS_NOT_FOUND
+                                        walletAccount?.address ?? ""
                                     }
                                 />
 
@@ -397,7 +397,7 @@ const Homescreen: React.FC = () => {
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
                                     address={
-                                        eoa ?? ADDRESS_NOT_FOUND
+                                        eoa ?? ""
                                     }
                                 />
 
