@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from "./error";
+import { MpcError, MpcErrorCode } from "../error";
 import _sodium from "libsodium-wrappers-sumo";
 
 export const requestEntropy = async (salt?: Uint8Array) => {
