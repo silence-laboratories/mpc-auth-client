@@ -18,11 +18,13 @@ import { MpcError, MpcErrorCode } from "./error";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { LocalStorageManager } from "./storage/localStorage";
 import { AccountManager } from "./domain/account";
+import * as signer from "./domain/signer";
 
 export class MpcSdk {
   TOKEN_LIFE_TIME = 60000;
   private storage?: IStorage;
   private walletId: string = "";
+
   accountManager: AccountManager;
 
   constructor(
@@ -35,7 +37,7 @@ export class MpcSdk {
     } else {
       this.storage = customStorage;
     }
-    if(!this.storage) {
+    if (!this.storage) {
       throw new MpcError(
         "Storage not initialized",
         MpcErrorCode.StorageNotInitialized
@@ -280,3 +282,5 @@ export class MpcSdk {
     }
   }
 }
+
+export { signer };
