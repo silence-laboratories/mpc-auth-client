@@ -11,7 +11,7 @@ import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
-import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import { clearOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
 function Page() {
@@ -35,6 +35,7 @@ function Page() {
             if (eoa) {
                 await mintWallet(eoa, mpcSdk);
                 setLoading(true);
+                clearOldEoa();
                 setPairingStatus(WALLET_STATUS.Minted);
                 router.replace("/homescreen");
             } else {
@@ -49,6 +50,7 @@ function Page() {
 
     const handleMoveBack = () => {
         mpcSdk.signOut();
+        clearOldEoa();
         setPairingStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
     };

@@ -78,7 +78,7 @@ const decryptAndDeserializeBackupData = async (
         const distributedKey = JSON.parse(
             utils.uint8ArrayToUtf8String(decreptedMessage)
         );
-        let accountAddress = utils.getAddressFromDistributedKey(distributedKey);
+        let accountAddress = utils.getAddressFromPubkey(distributedKey.publicKey);
         return {
             distributedKey,
             accountAddress,

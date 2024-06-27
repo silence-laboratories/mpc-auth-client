@@ -1,7 +1,7 @@
 
-import { SilentWallet } from "@/silentWallet";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 import { providers } from "ethers";
 
 
@@ -11,13 +11,13 @@ export async function mintBiconomyWallet(eoa: string, mpcSdk: MpcSdk) {
     const keyShareData = distributedKey?.keyShareData ?? null;
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
 
-    const client = new SilentWallet(
+    const client = new MpcSigner(
         eoa,
         distributedKey?.publicKey ?? "",
         keyShareData,
         { distributedKey },
-        provider,
-        mpcSdk
+        mpcSdk,
+        provider
     );
 
     const biconomySmartAccount = await createSmartAccountClient({

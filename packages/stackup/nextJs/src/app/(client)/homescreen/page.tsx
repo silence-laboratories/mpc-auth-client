@@ -17,12 +17,18 @@ import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import Image from "next/image";
-import { ADDRESS_NOT_FOUND, SEPOLIA, WALLET_STATUS } from "@/constants";
+import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
-import { getOldEoa, getPairingStatus, setOldEoa, setPairingStatus } from "@/storage/localStorage";
+import {
+    clearOldEoa,
+    getOldEoa,
+    getPairingStatus,
+    setOldEoa,
+    setPairingStatus,
+} from "@/storage/localStorage";
 
 const Homescreen: React.FC = () => {
     const mpcSdk = useMpcSdk();
@@ -273,6 +279,8 @@ const Homescreen: React.FC = () => {
     const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
         mpcSdk.signOut();
+        clearOldEoa();
+        setPairingStatus(WALLET_STATUS.Unpaired);
         router.push("/intro");
     };
 
@@ -373,10 +381,7 @@ const Homescreen: React.FC = () => {
                                 </div>
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
-                                    address={
-                                        walletAccount?.address ||
-                                        ADDRESS_NOT_FOUND
-                                    }
+                                    address={walletAccount?.address || ""}
                                 />
 
                                 {
@@ -394,9 +399,7 @@ const Homescreen: React.FC = () => {
                                 </div>
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
-                                    address={
-                                        eoa ?? ADDRESS_NOT_FOUND
-                                    }
+                                    address={eoa ?? ""}
                                 />
 
                                 <div className="mt-4 rounded-full bg-[#E8EDF3] text-sm py-2 px-3 flex flex-row text-nowrap">

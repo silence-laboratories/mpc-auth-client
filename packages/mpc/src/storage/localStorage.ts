@@ -14,7 +14,7 @@ export class LocalStorageManager implements IStorage {
 
   /**
    * Get wallet id from local storage
-   * 
+   *
    * @returns walletId
    */
   getWalletId(): string {
@@ -50,7 +50,7 @@ export class LocalStorageManager implements IStorage {
    * @param data obj to save
    */
   setStorageData = (data: StorageData) => {
-    if (data == null) {
+    if (data === null) {
       throw new MpcError(
         "Storage data cannot be null",
         MpcErrorCode.InvalidStorageData
@@ -67,12 +67,12 @@ export class LocalStorageManager implements IStorage {
    * @returns SilentShareStorage object
    */
   getStorageData = (): StorageData => {
-    let walletId = this.getWalletId();
     const _isStorageExist = this.isStorageExist();
     if (!_isStorageExist) {
       throw new MpcError("Wallet is not paired", MpcErrorCode.NotPaired);
     }
 
+    let walletId = this.getWalletId();
     let state = localStorage.getItem(walletId);
 
     if (!state) {
@@ -92,22 +92,30 @@ export class LocalStorageManager implements IStorage {
       return;
     }
 
-    if(this.version < 1) {
-      const walletAccountV0 = JSON.parse(localStorage.getItem("walletAccount") || "null");
-      const eoaV0 = JSON.parse(localStorage.getItem("eoa") || "null") as AccountData;
-      const passwordReadyV0 = JSON.parse(localStorage.getItem("passwordReady") || "false");
+    if (this.version < 1) {
+      const walletAccountV0 = JSON.parse(
+        localStorage.getItem("walletAccount") || "null"
+      );
+      const eoaV0 = JSON.parse(
+        localStorage.getItem("eoa") || "null"
+      ) as AccountData;
+      const passwordReadyV0 = JSON.parse(
+        localStorage.getItem("passwordReady") || "false"
+      );
       const storageData = this.getStorageData();
       storageData.eoa = eoaV0.address;
       storageData.walletAccount = walletAccountV0;
       storageData.passwordReady = passwordReadyV0;
       this.setStorageData(storageData);
+      localStorage.removeItem("walletAccount");
+      localStorage.removeItem("eoa");
+      localStorage.removeItem("passwordReady");
     }
-  }
+  };
 
   private get version(): number {
     const storageData = this.getStorageData();
     const version = storageData.version;
     return version || 0;
   }
-
 }

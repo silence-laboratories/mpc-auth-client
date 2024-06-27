@@ -10,7 +10,7 @@ import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import { clearOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
@@ -36,6 +36,7 @@ function Page() {
             if (eoa) {
                 await mintBiconomyWallet(eoa, mpcSdk);
                 setLoading(true);
+                clearOldEoa();
                 setPairingStatus(WALLET_STATUS.Minted);
                 router.replace("/homescreen");
             } else {
@@ -50,6 +51,7 @@ function Page() {
 
     const handleMoveBack = () => {
         mpcSdk.signOut();
+        clearOldEoa();
         setPairingStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");
     };

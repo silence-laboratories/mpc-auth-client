@@ -1,6 +1,8 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { ethers } from "ethers";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-
 import { hexlify } from "@ethersproject/bytes";
 import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 import {
@@ -22,13 +24,12 @@ import { serialize, UnsignedTransaction } from "@ethersproject/transactions";
 import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
 import { _toUtf8String } from "@ethersproject/strings/lib/utf8";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
-import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { MpcSdk } from "..";
 
-export class SilentWallet extends Signer {
+export class MpcSigner extends Signer {
     private mpcSdk: MpcSdk;
     public address: string;
     public public_key: string;
-
     private p1KeyShare: IP1KeyShare;
     readonly provider?: ethers.providers.Provider;
     keygenResult: any;
@@ -40,7 +41,6 @@ export class SilentWallet extends Signer {
         keygenResult: any,
         mpcSdk: MpcSdk,
         provider?: Provider,
-
     ) {
         super();
 
@@ -134,13 +134,14 @@ export class SilentWallet extends Signer {
         });
     }
 
-    connect(provider: Provider): SilentWallet {
-        return new SilentWallet(
+    connect(provider: Provider): MpcSigner {
+        return new MpcSigner(
             this.address,
             this.public_key,
             this.p1KeyShare,
+            this.keygenResult,
+            this.mpcSdk,
             provider,
-            this.keygenResult
         );
     }
     async _signTypedData(
