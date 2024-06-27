@@ -6,13 +6,13 @@ import { providers } from "ethers";
 
 
 
-export async function mintBiconomyWallet(eoa: { address: string; }, mpcSdk: MpcSdk) {
+export async function mintBiconomyWallet(eoa: string, mpcSdk: MpcSdk) {
     const distributedKey = mpcSdk.getDistributionKey();
     const keyShareData = distributedKey?.keyShareData ?? null;
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
 
     const client = new SilentWallet(
-        eoa.address,
+        eoa,
         distributedKey?.publicKey ?? "",
         keyShareData,
         { distributedKey },
