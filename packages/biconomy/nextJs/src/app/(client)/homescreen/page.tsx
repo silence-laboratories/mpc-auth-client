@@ -20,7 +20,13 @@ import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
-import { clearOldEoa, getOldEoa, getPairingStatus, setOldEoa, setPairingStatus } from "@/storage/localStorage";
+import {
+    clearOldEoa,
+    getOldEoa,
+    getPairingStatus,
+    setOldEoa,
+    setPairingStatus,
+} from "@/storage/localStorage";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 
@@ -41,24 +47,39 @@ const Homescreen: React.FC = () => {
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
     const status = getPairingStatus();
+
     useEffect(() => {
-        const eoa = mpcSdk.accountManager.getEoa();
-        if (!eoa) {
+        try {
+            setIsPasswordReady(mpcSdk.accountManager.isPasswordReady());
+        } catch (error) {
+            console.error("isPasswordReady error", error);
+        }
+    }, [openPasswordBackupDialog]);
+
+    useEffect(() => {
+        try {
+            const eoa = mpcSdk.accountManager.getEoa();
+            if (!eoa) {
+                setPairingStatus(WALLET_STATUS.Unpaired);
+                router.replace("/intro");
+                return;
+            }
+
+            const account = mpcSdk.accountManager.getSmartContractAccount();
+            if (!account) {
+                setPairingStatus(WALLET_STATUS.BackedUp);
+                router.replace("/mint");
+                return;
+            }
+
+            setPairingStatus(WALLET_STATUS.Minted);
+            setWalletAccount(account);
+            setEoa(eoa);
+        } catch (error) {
             setPairingStatus(WALLET_STATUS.Unpaired);
             router.replace("/intro");
             return;
         }
-
-        const account = mpcSdk.accountManager.getSmartContractAccount();
-        if (!account) {
-            setPairingStatus(WALLET_STATUS.BackedUp);
-            router.replace("/mint");
-            return;
-        }
-
-        setPairingStatus(WALLET_STATUS.Minted);
-        setWalletAccount(account);
-        setEoa(eoa);
     }, [router, status]);
 
     useEffect(() => {
@@ -161,10 +182,6 @@ const Homescreen: React.FC = () => {
         useState<string>("");
     const [amountError, setAmountError] = useState<string>("");
     const [txHash, setTxHash] = useState<string>("");
-
-    useEffect(() => {
-        setIsPasswordReady(mpcSdk.accountManager.isPasswordReady());
-    }, [openPasswordBackupDialog]);
 
     useEffect(() => {
         setIsSendValid(
@@ -376,9 +393,7 @@ const Homescreen: React.FC = () => {
                                 </div>
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
-                                    address={
-                                        walletAccount?.address ?? ""
-                                    }
+                                    address={walletAccount?.address ?? ""}
                                 />
 
                                 {
@@ -396,9 +411,7 @@ const Homescreen: React.FC = () => {
                                 </div>
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
-                                    address={
-                                        eoa ?? ""
-                                    }
+                                    address={eoa ?? ""}
                                 />
 
                                 <div className="mt-4 rounded-full bg-[#E8EDF3] text-sm py-2 px-3 flex flex-row text-nowrap">
