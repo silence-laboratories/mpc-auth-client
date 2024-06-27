@@ -48,7 +48,7 @@ function Page() {
         try {
             await mpcSdk.runEndPairingSession(
                 pairingSessionData,
-                oldEoa,
+                oldEoa ?? undefined,
                 password
             );
             const eoa = mpcSdk.accountManager.getEoa();
@@ -79,14 +79,13 @@ function Page() {
 
                 // QR is scanned
                 setLoading(true);
-
                 if (pairingSessionData.backupData) {
                     setPairingSessionDataState(pairingSessionData);
                     setShowPasswordScreen(true);
                 } else {
                     await mpcSdk.runEndPairingSession(
                         pairingSessionData,
-                        oldEoa
+                        oldEoa ?? undefined
                     );
                     await mpcSdk.runKeygen();
 
@@ -232,7 +231,7 @@ function Page() {
                                 Currently active account:
                             </div>
                             <AddressCopyPopover
-                                address={oldEoa}
+                                address={oldEoa ?? ""}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>

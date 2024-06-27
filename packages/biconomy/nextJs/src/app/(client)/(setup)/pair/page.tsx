@@ -8,7 +8,6 @@ import { Progress } from "@/components/progress";
 import { useRouter, useSearchParams } from "next/navigation";
 import loadingGif from "../../../../../public/loading.gif";
 
-import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
@@ -49,9 +48,9 @@ function Page() {
         password: string
     ) => {
         try {
-            const runPairingResp = await mpcSdk.runEndPairingSession(
+            await mpcSdk.runEndPairingSession(
                 pairingSessionData,
-                oldEoa,
+                oldEoa ?? undefined,
                 password
             );
             const eoa = mpcSdk.accountManager.getEoa();
@@ -89,7 +88,7 @@ function Page() {
                 } else {
                     await mpcSdk.runEndPairingSession(
                         pairingSessionData,
-                        oldEoa
+                        oldEoa ?? undefined,
                     );
                     await mpcSdk.runKeygen();
 
@@ -235,7 +234,7 @@ function Page() {
                                 Currently active account:
                             </div>
                             <AddressCopyPopover
-                                address={oldEoa}
+                                address={oldEoa ?? ""}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>

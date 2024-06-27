@@ -1,7 +1,7 @@
 import { providers } from "ethers";
-import { SilentWallet } from "@/silentWallet";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
 export async function sendTransaction(
     recipientAddress: string,
@@ -9,18 +9,18 @@ export async function sendTransaction(
     mpcSdk: MpcSdk
 ) {
     const eoa = mpcSdk.accountManager.getEoa();
-    if(!eoa) {
+    if (!eoa) {
         throw new Error("Eoa not found");
     }
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
     const distributedKey = mpcSdk.getDistributionKey();
-    const client = new SilentWallet(
+    const client = new MpcSigner(
         eoa,
         distributedKey?.publicKey ?? "",
         distributedKey?.keyShareData,
         { distributedKey },
-        provider,
-        mpcSdk
+        mpcSdk,
+        provider
     );
 
     const biconomySmartAccount = await createSmartAccountClient({

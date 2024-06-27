@@ -1,7 +1,7 @@
-import { SilentWallet } from "@/silentWallet";
 import { Client, Presets } from "userop";
 import { ethers } from "ethers";
 import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
 export async function sendTransaction(
     recipientAddress: string,
@@ -18,7 +18,7 @@ export async function sendTransaction(
     }
     const distributedKey = mpcSdk.getDistributionKey();
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
-        new SilentWallet(
+        new MpcSigner(
             eoa,
             distributedKey?.publicKey as string,
             distributedKey?.keyShareData,

@@ -88,10 +88,10 @@ export function isEvmChain(caip2ChainId: string): boolean {
 	return caip2ChainId.startsWith('eip155:');
 }
 
-export function getAddressFromDistributedKey(distributedKey: DistributedKey) {
+export function getAddressFromPubkey(publicKey: string) {
 	return (
 		'0x' +
-		pubToAddress(Buffer.from(distributedKey.publicKey, 'hex')).toString(
+		pubToAddress(Buffer.from(publicKey, 'hex')).toString(
 			'hex',
 		)
 	);
