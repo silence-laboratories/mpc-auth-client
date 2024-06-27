@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import _sodium from "libsodium-wrappers-sumo";
 import { TextEncoder, TextDecoder } from "util";
 

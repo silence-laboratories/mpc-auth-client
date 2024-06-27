@@ -1,13 +1,15 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from "../../error";
-import { DeviceOS, StorageData } from "../../types";
-import { IStorage } from "../types";
+import { MpcError, MpcErrorCode } from "../error";
+import { AccountData, StorageData } from "../types";
+import { IStorage } from "./types";
 
 export class LocalStorageManager implements IStorage {
+  private VERSION = 1;
   constructor(walletId: string) {
     localStorage.setItem("walletId", walletId);
+    this.migrate();
   }
 
   /**
@@ -55,6 +57,7 @@ export class LocalStorageManager implements IStorage {
       );
     }
     let walletId = this.getWalletId();
+    data.version = this.VERSION;
     localStorage.setItem(walletId, JSON.stringify(data));
   };
 
@@ -83,4 +86,28 @@ export class LocalStorageManager implements IStorage {
 
     return jsonObject;
   };
+
+  migrate = () => {
+    if (!this.isStorageExist()) {
+      return;
+    }
+
+    if(this.version < 1) {
+      const walletAccountV0 = JSON.parse(localStorage.getItem("walletAccount") || "null");
+      const eoaV0 = JSON.parse(localStorage.getItem("eoa") || "null") as AccountData;
+      const passwordReadyV0 = JSON.parse(localStorage.getItem("passwordReady") || "false");
+      const storageData = this.getStorageData();
+      storageData.eoa = eoaV0.address;
+      storageData.walletAccount = walletAccountV0;
+      storageData.passwordReady = passwordReadyV0;
+      this.setStorageData(storageData);
+    }
+  }
+
+  private get version(): number {
+    const storageData = this.getStorageData();
+    const version = storageData.version;
+    return version || 0;
+  }
+
 }

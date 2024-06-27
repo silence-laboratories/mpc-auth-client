@@ -17,20 +17,20 @@ import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import Image from "next/image";
-import { SEPOLIA, WALLET_STATUS } from "@/constants";
+import { ADDRESS_NOT_FOUND, SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
-import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import { getOldEoa, getPairingStatus, setOldEoa, setPairingStatus } from "@/storage/localStorage";
 
 const Homescreen: React.FC = () => {
     const mpcSdk = useMpcSdk();
-    const oldEoa = mpcSdk.accountManager.getOldEoa();
+    const oldEoa = getOldEoa();
     const router = useRouter();
     const [walletAccount, setWalletAccount] = useState<AccountData>();
     const [walletBalance, setWalletBalance] = useState<string>("0");
-    const [eoa, setEoa] = useState<AccountData>();
+    const [eoa, setEoa] = useState<string>();
     const [network, setNetwork] = useState("...");
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
         "none"
@@ -138,7 +138,7 @@ const Homescreen: React.FC = () => {
             const balance_wallet = await provider.getBalance(
                 walletAccount.address
             );
-            let balance_eoa = await provider.getBalance(eoa.address);
+            let balance_eoa = await provider.getBalance(eoa);
             setWalletBalance(formatEther(balance_wallet));
             return { balance_wallet, balance_eoa };
         } catch (error) {
@@ -278,7 +278,7 @@ const Homescreen: React.FC = () => {
 
     const handleRecover = () => {
         if (eoa) {
-            mpcSdk.accountManager.setOldEoa(eoa);
+            setOldEoa(eoa);
             router.push("/pair?repair=true");
         } // TODO: handle undefined eoa case
     };
@@ -375,7 +375,7 @@ const Homescreen: React.FC = () => {
                                     className="b2-regular text-[#0A0D14]"
                                     address={
                                         walletAccount?.address ||
-                                        "Address not found"
+                                        ADDRESS_NOT_FOUND
                                     }
                                 />
 
@@ -395,7 +395,7 @@ const Homescreen: React.FC = () => {
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
                                     address={
-                                        eoa?.address || "Address not found"
+                                        eoa ?? ADDRESS_NOT_FOUND
                                     }
                                 />
 

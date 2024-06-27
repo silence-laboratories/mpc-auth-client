@@ -7,17 +7,20 @@ import { Avatar, AvatarFallback } from "@/components/avatar";
 import { Progress } from "@/components/progress";
 import { useRouter, useSearchParams } from "next/navigation";
 import loadingGif from "../../../../../public/loading.gif";
-import { pubToAddress } from "@ethereumjs/util";
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import LoadingScreen from "@/components/loadingScreen";
-import { WALLET_ID, WALLET_STATUS } from "@/constants";
+import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
-import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import {
+    getOldEoa,
+    getPairingStatus,
+    setPairingStatus,
+} from "@/storage/localStorage";
 
 function Page() {
     const mpcSdk = useMpcSdk();
@@ -36,28 +39,20 @@ function Page() {
     const step = 1;
     const MAX_SECONDS = 30;
     const MAX_ENTER_PW_SECONDS = 60; // According to pairing API timeout
-    const oldEoa = mpcSdk.accountManager.getOldEoa();
+    const oldEoa = getOldEoa();
 
     const handlePairingWithBackup = async (
         pairingSessionData: PairingSessionData,
         password: string
     ) => {
         try {
-            const runPairingResp = await mpcSdk.runEndPairingSession(
+            await mpcSdk.runEndPairingSession(
                 pairingSessionData,
-                oldEoa?.address,
+                oldEoa,
                 password
             );
-
-            const eoa = {
-                address: runPairingResp.newAccountAddress ?? "",
-            };
-            mpcSdk.accountManager.setEoa(eoa);
-            if (
-                isRepairing &&
-                oldEoa !== null &&
-                eoa.address !== oldEoa.address
-            ) {
+            const eoa = mpcSdk.accountManager.getEoa();
+            if (isRepairing && oldEoa !== null && eoa !== oldEoa) {
                 setPairingStatus(WALLET_STATUS.Mismatched);
                 router.replace("/mismatchAccounts");
             } else {
@@ -79,10 +74,8 @@ function Page() {
                 setSeconds(MAX_SECONDS);
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
-                const pairingSessionData = await mpcSdk.runStartPairingSession();
-                if (pairingSessionData) {
-                    mpcSdk.setDeviceOS(pairingSessionData.deviceName);
-                }
+                const pairingSessionData =
+                    await mpcSdk.runStartPairingSession();
 
                 // QR is scanned
                 setLoading(true);
@@ -93,20 +86,10 @@ function Page() {
                 } else {
                     await mpcSdk.runEndPairingSession(
                         pairingSessionData,
-                        oldEoa?.address
+                        oldEoa
                     );
-                    const keygenRes = await mpcSdk.runKeygen();
-                    const eoa = {
-                        address:
-                            "0x" +
-                            pubToAddress(
-                                Buffer.from(
-                                    keygenRes.distributedKey.publicKey,
-                                    "hex"
-                                )
-                            ).toString("hex"),
-                    };
-                    mpcSdk.accountManager.setEoa(eoa);
+                    await mpcSdk.runKeygen();
+
                     setPairingStatus(WALLET_STATUS.Paired);
                     router.replace("/backup");
                 }
@@ -249,7 +232,7 @@ function Page() {
                                 Currently active account:
                             </div>
                             <AddressCopyPopover
-                                address={oldEoa?.address ?? ""}
+                                address={oldEoa}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>
