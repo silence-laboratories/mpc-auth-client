@@ -4,13 +4,13 @@
 import { Presets } from "userop";
 // @ts-ignore
 import config from "../../config.json";
-import { SilentWallet } from "../../silentWallet";
 import chalk from "chalk";
 import { mpcSdk } from "../../mpc";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
 
 export default async function main() {
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    new SilentWallet(
+    new MpcSigner(
       config.address,
       config.public_key,
       config.p1KeyShare,

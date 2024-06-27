@@ -4,10 +4,9 @@
 import fs from "fs/promises";
 import path from "path";
 import prettier from "prettier";
-import { SilentWallet } from "../silentWallet";
 import { config } from "dotenv";
 import chalk from "chalk";
-import { mpcSdk } from "../mpc";
+import { generate } from "../mpc";
 
 config();
 
@@ -23,7 +22,7 @@ const CONFIG_PATH = path.resolve(__dirname, "../config.json");
 
 
 async function main() {
-  const silentSigner = await SilentWallet.generate(mpcSdk);
+  const silentSigner = await generate();
 
   return fs.writeFile(
     CONFIG_PATH,

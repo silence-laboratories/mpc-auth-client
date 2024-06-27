@@ -9,8 +9,8 @@ import {
   } from "@biconomy/account";
 
 import config from "../../config.json";
-import { SilentWallet } from "../../silentWallet";
 import { mpcSdk } from "../../mpc";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
 
 export const nativeTransferPayERC20 = async (
     to: string,
@@ -25,7 +25,7 @@ export const nativeTransferPayERC20 = async (
     const keyShareData =
       config.silentSigner.keygenResult.distributedKey.keyShareData;
     
-    const client = new SilentWallet(
+    const client = new MpcSigner(
       address,
       config.silentSigner.public_key,
       keyShareData,
