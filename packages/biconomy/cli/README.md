@@ -18,6 +18,10 @@ Navigate to the cli directory within the cloned repository:
 
 **Node Version:** Ensure you are using Node.js version 18.
 
+### Build MPC Authenticator library
+
+- Follow instruction in [packages/mpc README](../../mpc/README.md)
+
 
 ### Set Up the RPC URL
 
