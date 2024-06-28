@@ -20,6 +20,7 @@ jobs:
         run: |
           npm i
           pushd packages/mpc
+          npm run test
           npm run build
           popd
           pushd packages/biconomy/nextJs

@@ -5,7 +5,7 @@ import _sodium from "libsodium-wrappers-sumo";
 import { TextEncoder, TextDecoder } from "util";
 
 Object.assign(global, { TextDecoder, TextEncoder });
-import { aeadDecrypt, aeadEncrypt } from ".";
+import { aeadDecrypt, aeadEncrypt } from "../crypto";
 import { uint8ArrayToUtf8String } from "../utils";
 
 describe("Test aeadEncrypt", () => {
