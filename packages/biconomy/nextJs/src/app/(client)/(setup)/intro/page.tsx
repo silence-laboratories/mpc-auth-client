@@ -8,15 +8,15 @@ import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
 import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 function Page() {
-    const mpcSdk = useMpcSdk();
+    const mpcAuth = useMpcAuth();
     const router = useRouter();
 
     try {
-        const eoa = mpcSdk.accountManager.getEoa();
-        const account = mpcSdk.accountManager.getSmartContractAccount();
+        const eoa = mpcAuth.accountManager.getEoa();
+        const account = mpcAuth.accountManager.getSmartContractAccount();
         if (eoa && !account) {
             setPairingStatus(WALLET_STATUS.BackedUp);
             router.replace("/mint");

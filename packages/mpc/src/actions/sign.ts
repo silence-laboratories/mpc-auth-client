@@ -10,7 +10,7 @@ import * as utils from "../utils";
 import { PairingData, SignConversation, SignMetadata } from "../types";
 import _sodium, { base64_variants } from "libsodium-wrappers-sumo";
 import { MpcError, MpcErrorCode } from "../error";
-import { HttpClient } from "../transport/firebaseApi";
+import { HttpClient } from "../transport/httpClient";
 
 let running: boolean = false;
 

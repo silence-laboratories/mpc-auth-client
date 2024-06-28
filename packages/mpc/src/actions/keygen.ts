@@ -10,7 +10,7 @@ import * as utils from "../utils";
 import _sodium, { base64_variants } from "libsodium-wrappers-sumo";
 import { MpcError, MpcErrorCode } from "../error";
 import { KeygenConversation, PairingData } from "../types";
-import { HttpClient } from "../transport/firebaseApi";
+import { HttpClient } from "../transport/httpClient";
 
 let running = false;
 

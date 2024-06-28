@@ -24,10 +24,10 @@ import { serialize, UnsignedTransaction } from "@ethersproject/transactions";
 import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
 import { _toUtf8String } from "@ethersproject/strings/lib/utf8";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
-import { MpcSdk } from "..";
+import { MpcAuthenticator } from "./authenticator";
 
 export class MpcSigner extends Signer {
-    private mpcSdk: MpcSdk;
+    private mpcSdk: MpcAuthenticator;
     public address: string;
     public public_key: string;
     private p1KeyShare: IP1KeyShare;
@@ -39,7 +39,7 @@ export class MpcSigner extends Signer {
         public_key: string,
         p1KeyShare: any,
         keygenResult: any,
-        mpcSdk: MpcSdk,
+        mpcSdk: MpcAuthenticator,
         provider?: Provider,
     ) {
         super();

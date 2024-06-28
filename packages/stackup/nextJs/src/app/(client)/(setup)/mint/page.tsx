@@ -12,10 +12,10 @@ import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { clearOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 function Page() {
-    const mpcSdk = useMpcSdk();
+    const mpcAuth = useMpcAuth();
     const [loading, setLoading] = useState<boolean>(false);
     const [eoa, setEoa] = useState<string | null>(null);
     const router = useRouter();
@@ -26,14 +26,14 @@ function Page() {
             return;
         }
 
-        setEoa(mpcSdk.accountManager.getEoa());
+        setEoa(mpcAuth.accountManager.getEoa());
     }, [router, status]);
 
     const handleMint = async () => {
         setLoading(true);
         try {
             if (eoa) {
-                await mintWallet(eoa, mpcSdk);
+                await mintWallet(eoa, mpcAuth);
                 setLoading(true);
                 clearOldEoa();
                 setPairingStatus(WALLET_STATUS.Minted);
@@ -49,7 +49,7 @@ function Page() {
     };
 
     const handleMoveBack = () => {
-        mpcSdk.signOut();
+        mpcAuth.signOut();
         clearOldEoa();
         setPairingStatus(WALLET_STATUS.Unpaired);
         router.replace("/intro");

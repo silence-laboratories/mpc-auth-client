@@ -6,7 +6,7 @@ import _sodium from "libsodium-wrappers-sumo";
 import { DistributedKey, PairingData, PairingSessionData } from "../types";
 import { MpcError, MpcErrorCode } from "../error";
 import { aeadDecrypt } from "../crypto";
-import { HttpClient } from "../transport/firebaseApi";
+import { HttpClient } from "../transport/httpClient";
 
 export enum PairingRemark {
   WALLET_MISMATCH = "WALLET_MISMATCH",

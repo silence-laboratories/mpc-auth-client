@@ -1,29 +1,29 @@
 import { Client, Presets } from "userop";
 import { ethers } from "ethers";
-import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
 export async function sendTransaction(
     recipientAddress: string,
     amount: string,
-    mpcSdk: MpcSdk
+    mpcAuth: MpcAuthenticator
 ) {
     const requestData = {
         to: recipientAddress,
         amount: convertEtherToWei(amount),
     };
-    const eoa = mpcSdk.accountManager.getEoa();
+    const eoa = mpcAuth.accountManager.getEoa();
     if(!eoa) {
         throw new Error("Eoa not found");
     }
-    const distributedKey = mpcSdk.getDistributionKey();
+    const distributedKey = mpcAuth.getDistributionKey();
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
         new MpcSigner(
             eoa,
             distributedKey?.publicKey as string,
             distributedKey?.keyShareData,
             { distributedKey },
-            mpcSdk
+            mpcAuth
         ),
         `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );

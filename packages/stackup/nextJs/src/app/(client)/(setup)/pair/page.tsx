@@ -15,7 +15,7 @@ import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 import {
     clearOldEoa,
     getOldEoa,
@@ -24,7 +24,7 @@ import {
 } from "@/storage/localStorage";
 
 function Page() {
-    const mpcSdk = useMpcSdk();
+    const mpcAuth = useMpcAuth();
     const router = useRouter();
     const query = useSearchParams();
     const isRepairing = query.get("repair");
@@ -47,12 +47,12 @@ function Page() {
         password: string
     ) => {
         try {
-            await mpcSdk.runEndPairingSession(
+            await mpcAuth.runEndPairingSession(
                 pairingSessionData,
                 oldEoa ?? undefined,
                 password
             );
-            const eoa = mpcSdk.accountManager.getEoa();
+            const eoa = mpcAuth.accountManager.getEoa();
             if (isRepairing && oldEoa !== null && eoa !== oldEoa) {
                 setPairingStatus(WALLET_STATUS.Mismatched);
                 router.replace("/mismatchAccounts");
@@ -70,13 +70,13 @@ function Page() {
     const generateWallet = async () => {
         (async () => {
             try {
-                const qrCode = await mpcSdk.initPairing();
+                const qrCode = await mpcAuth.initPairing();
                 setQr(qrCode);
                 setSeconds(MAX_SECONDS);
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
                 const pairingSessionData =
-                    await mpcSdk.runStartPairingSession();
+                    await mpcAuth.runStartPairingSession();
 
                 // QR is scanned
                 setLoading(true);
@@ -84,11 +84,11 @@ function Page() {
                     setPairingSessionDataState(pairingSessionData);
                     setShowPasswordScreen(true);
                 } else {
-                    await mpcSdk.runEndPairingSession(
+                    await mpcAuth.runEndPairingSession(
                         pairingSessionData,
                         oldEoa ?? undefined
                     );
-                    await mpcSdk.runKeygen();
+                    await mpcAuth.runKeygen();
 
                     setPairingStatus(WALLET_STATUS.Paired);
                     router.replace("/backup");
