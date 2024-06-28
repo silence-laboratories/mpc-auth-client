@@ -4,4 +4,4 @@
 import { MpcAuthenticator } from "./domain/authenticator";
 import { MpcSigner } from "./domain/signer";
 
-export { MpcAuthenticator as MpcSdk, MpcSigner };
+export { MpcAuthenticator, MpcSigner };

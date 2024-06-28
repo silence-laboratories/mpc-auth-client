@@ -18,16 +18,40 @@ import { SignAction } from "../actions/sign";
 import { BackupAction } from "../actions/backup";
 import { HttpClient } from "../transport/httpClient";
 
+/**
+ * Represents an authenticator for managing MPC (Multi-Party Computation) operations such as pairing, key generation, signing, and backup.
+ * This class encapsulates the logic for interacting with the underlying storage, managing accounts, and communicating with a remote server for MPC operations.
+ */
 export class MpcAuthenticator {
+  /**
+   * The lifetime of a token in milliseconds.
+   * @private
+   */
   private TOKEN_LIFE_TIME = 60000;
+  /**
+   * The storage interface for persisting data.
+   * @private
+   */
   private storage?: IStorage;
+  /**
+   * The wallet identifier.
+   * @private
+   */
   private walletId: string = "";
+  /**
+   * The HTTP client for making requests to the server.
+   * @private
+   */
   private httpClient: HttpClient;
   private pairingAction: PairingAction;
   private keygenAction: KeygenAction;
   private signAction: SignAction;
   private backupAction: BackupAction;
 
+  /**
+   * The manager for account-related operations.
+   * @public
+   */
   accountManager: AccountManager;
 
   constructor(configs: Options) {
@@ -62,10 +86,21 @@ export class MpcAuthenticator {
     this.backupAction = new BackupAction(this.httpClient);
   }
 
+  /**
+   * Retrieves the operating system of party 2 device.
+   * @returns The operating system of party 2 device.
+   * @public
+   */
   getDeviceOS = () => {
     return this.accountManager.getDeviceOS();
   };
 
+  /**
+   * Retrieves the distribution key from storage.
+   * @returns The distribution key if available.
+   * @throws {MpcError} If the storage is not initialized.
+   * @public
+   */
   getDistributionKey() {
     if (!this.storage)
       throw new MpcError(
@@ -76,6 +111,12 @@ export class MpcAuthenticator {
     return silentShareStorage.newPairingState?.distributedKey;
   }
 
+  /**
+   * Checks if the device is paired.
+   * @returns An object indicating if the device is paired and additional pairing information.
+   * @throws {MpcError} If the storage is not initialized.
+   * @public
+   */
   async isPaired() {
     if (!this.storage)
       throw new MpcError(
@@ -102,16 +143,35 @@ export class MpcAuthenticator {
     }
   }
 
+  /**
+   * Initializes the pairing process and returns a QR code for pairing.
+   * @returns A QR code for pairing.
+   * @public
+   */
   async initPairing() {
     const walletId = this.getWalletId();
     let qrCode = await this.pairingAction.init(walletId);
     return qrCode;
   }
 
+  /**
+   * Starts the pairing session.
+   * @returns The result of starting the pairing session.
+   * @public
+   */
   async runStartPairingSession() {
     return await this.pairingAction.startPairingSession();
   }
 
+  /**
+   * Ends the pairing session with the provided session data.
+   * @param {PairingSessionData} pairingSessionData - The data from the pairing session.
+   * @param {string} [currentAccountAddress] - The current account address, to serve re-pairing operation.
+   * @param {string} [password] - The password, if available, to serve re-pairing operation.
+   * @returns The result of ending the pairing session.
+   * @throws {MpcError} If the storage is not initialized.
+   * @public
+   */
   async runEndPairingSession(
     pairingSessionData: PairingSessionData,
     currentAccountAddress?: string,
@@ -147,6 +207,12 @@ export class MpcAuthenticator {
     };
   }
 
+  /**
+   * Refreshes the pairing information and session token.
+   * @returns The new pairing data.
+   * @throws {MpcError} If the storage is not initialized.
+   * @public
+   */
   async refreshPairing() {
     if (!this.storage)
       throw new MpcError(
@@ -163,20 +229,12 @@ export class MpcAuthenticator {
     return result.newPairingData;
   }
 
-  async getPairingDataAndStorage() {
-    if (!this.storage)
-      throw new MpcError(
-        "Storage not initialized",
-        MpcErrorCode.StorageNotInitialized
-      );
-    let silentShareStorage: StorageData = this.storage.getStorageData();
-    let pairingData = silentShareStorage.pairingData;
-    if (pairingData.tokenExpiration < Date.now() - this.TOKEN_LIFE_TIME) {
-      pairingData = await this.refreshPairing();
-    }
-    return { pairingData, silentShareStorage };
-  }
-
+  /**
+   * Runs the key generation process.
+   * @returns The result of the key generation process.
+   * @throws {MpcError} If the storage is not initialized.
+   * @public
+   */
   async runKeygen() {
     if (!this.storage)
       throw new MpcError(
@@ -210,6 +268,11 @@ export class MpcAuthenticator {
     };
   }
 
+  /**
+   * Runs the backup process with the provided password.
+   * @param {string} password - The password for encrypting the backup.
+   * @public
+   */
   async runBackup(password: string) {
     let { pairingData, silentShareStorage } =
       await this.getPairingDataAndStorage();
@@ -244,6 +307,17 @@ export class MpcAuthenticator {
     }
   }
 
+  /**
+   * Runs the signing process with the provided parameters.
+   * @param {string} hashAlg - The hash algorithm to use.
+   * @param {string} message - The message to sign.
+   * @param {string} messageHashHex - The hexadecimal representation of the message hash.
+   * @param {SignMetadata} signMetadata - Metadata for the signing process.
+   * @param {number} accountId - The account ID.
+   * @param {IP1KeyShare} keyShare - The key share for signing.
+   * @returns The result of the signing process.
+   * @public
+   */
   async runSign(
     hashAlg: string,
     message: string,
@@ -281,6 +355,11 @@ export class MpcAuthenticator {
     });
   }
 
+  /**
+   * Signs out by clearing the storage data.
+   * @throws {MpcError} If the storage is not initialized.
+   * @public
+   */
   async signOut() {
     if (!this.storage)
       throw new MpcError(
@@ -288,6 +367,20 @@ export class MpcAuthenticator {
         MpcErrorCode.StorageNotInitialized
       );
     this.storage.clearStorageData();
+  }
+
+  private async getPairingDataAndStorage() {
+    if (!this.storage)
+      throw new MpcError(
+        "Storage not initialized",
+        MpcErrorCode.StorageNotInitialized
+      );
+    let silentShareStorage: StorageData = this.storage.getStorageData();
+    let pairingData = silentShareStorage.pairingData;
+    if (pairingData.tokenExpiration < Date.now() - this.TOKEN_LIFE_TIME) {
+      pairingData = await this.refreshPairing();
+    }
+    return { pairingData, silentShareStorage };
   }
 
   private getWalletId(): string {
