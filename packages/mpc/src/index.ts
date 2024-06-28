@@ -1,14 +1,11 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import * as PairingAction from "./actions/pairing";
-import * as KeyGenAction from "./actions/keygen";
-import * as SignAction from "./actions/sign";
-import * as Backup from "./actions/backup";
 import { aeadEncrypt, requestEntropy } from "./crypto";
 import { fromHexStringToBytes, getAddressFromPubkey } from "./utils";
 import { IStorage } from "./storage/types";
 import {
+  Options,
   PairingSessionData,
   SignMetadata,
   StorageData,
@@ -19,19 +16,32 @@ import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { LocalStorageManager } from "./storage/localStorage";
 import { AccountManager } from "./domain/account";
 import * as signer from "./domain/signer";
+import { PairingAction } from "./actions/pairing";
+import { KeygenAction } from "./actions/keygen";
+import { SignAction } from "./actions/sign";
+import { BackupAction } from "./actions/backup";
+import { HttpClient } from "./transport/firebaseApi";
 
 export class MpcSdk {
-  TOKEN_LIFE_TIME = 60000;
+  private TOKEN_LIFE_TIME = 60000;
   private storage?: IStorage;
   private walletId: string = "";
+  private httpClient: HttpClient;
+  private pairingAction: PairingAction;
+  private keygenAction: KeygenAction;
+  private signAction: SignAction;
+  private backupAction: BackupAction;
 
   accountManager: AccountManager;
 
-  constructor(
-    walletId: string,
-    storagePlatform = StoragePlatform.Browser,
-    customStorage?: IStorage
-  ) {
+  constructor(configs: Options) {
+    const {
+      storagePlatform = StoragePlatform.Browser,
+      customStorage,
+      walletId,
+      isDev,
+    } = configs;
+
     if (storagePlatform === StoragePlatform.Browser) {
       this.storage = new LocalStorageManager(walletId);
     } else {
@@ -43,8 +53,17 @@ export class MpcSdk {
         MpcErrorCode.StorageNotInitialized
       );
     }
-    this.accountManager = new AccountManager(this.storage);
     this.walletId = walletId;
+    this.accountManager = new AccountManager(this.storage);
+    this.httpClient = new HttpClient(
+      isDev
+        ? "https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net"
+        : "https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net"
+    );
+    this.pairingAction = new PairingAction(this.httpClient);
+    this.keygenAction = new KeygenAction(this.httpClient);
+    this.signAction = new SignAction(this.httpClient);
+    this.backupAction = new BackupAction(this.httpClient);
   }
 
   getDeviceOS = () => {
@@ -89,12 +108,12 @@ export class MpcSdk {
 
   async initPairing() {
     const walletId = this.getWalletId();
-    let qrCode = await PairingAction.init(walletId);
+    let qrCode = await this.pairingAction.init(walletId);
     return qrCode;
   }
 
   async runStartPairingSession() {
-    return await PairingAction.startPairingSession();
+    return await this.pairingAction.startPairingSession();
   }
 
   async runEndPairingSession(
@@ -107,7 +126,7 @@ export class MpcSdk {
         "Storage not initialized",
         MpcErrorCode.StorageNotInitialized
       );
-    const result = await PairingAction.endPairingSession(
+    const result = await this.pairingAction.endPairingSession(
       pairingSessionData,
       currentAccountAddress,
       password
@@ -140,7 +159,7 @@ export class MpcSdk {
       );
     let silentShareStorage: StorageData = this.storage.getStorageData();
     let pairingData = silentShareStorage.pairingData;
-    let result = await PairingAction.refreshToken(pairingData);
+    let result = await this.pairingAction.refreshToken(pairingData);
     this.storage.setStorageData({
       ...silentShareStorage,
       pairingData: result.newPairingData,
@@ -172,7 +191,7 @@ export class MpcSdk {
       await this.getPairingDataAndStorage();
     let x1 = fromHexStringToBytes(await requestEntropy());
     let accountId = 1;
-    let result = await KeyGenAction.keygen(pairingData, accountId, x1);
+    let result = await this.keygenAction.keygen(pairingData, accountId, x1);
     this.storage.setStorageData({
       ...silentShareStorage,
       newPairingState: {
@@ -183,7 +202,7 @@ export class MpcSdk {
           keyShareData: result.keyShareData,
         },
       },
-      eoa: getAddressFromPubkey(result.publicKey)
+      eoa: getAddressFromPubkey(result.publicKey),
     });
     return {
       distributedKey: {
@@ -199,7 +218,7 @@ export class MpcSdk {
     let { pairingData, silentShareStorage } =
       await this.getPairingDataAndStorage();
     if (password.length === 0) {
-      await Backup.backup(pairingData, "", "", this.getWalletId());
+      await this.backupAction.backup(pairingData, "", "", this.getWalletId());
       return;
     }
 
@@ -213,7 +232,7 @@ export class MpcSdk {
           JSON.stringify(silentShareStorage.newPairingState?.distributedKey),
           password
         );
-        await Backup.backup(
+        await this.backupAction.backup(
           pairingData,
           encryptedMessage,
           getAddressFromPubkey(
@@ -254,7 +273,7 @@ export class MpcSdk {
 
     const walletId = this.getWalletId();
 
-    return await SignAction.sign({
+    return await this.signAction.sign({
       pairingData,
       keyShare,
       hashAlg,

@@ -2,7 +2,14 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
+import { IStorage } from "./storage/types";
 
+export type Options = {
+  walletId: string;
+  storagePlatform: StoragePlatform;
+  customStorage?: IStorage;
+  isDev: boolean;
+};
 export interface Message {
   message?: string;
   nonce?: string;
