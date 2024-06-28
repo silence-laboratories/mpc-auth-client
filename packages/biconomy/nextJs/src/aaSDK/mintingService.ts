@@ -1,13 +1,12 @@
 
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
-import { MpcSdk } from "@silencelaboratories/mpc-sdk";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
+import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
 import { providers } from "ethers";
 
 
 
-export async function mintBiconomyWallet(eoa: string, mpcSdk: MpcSdk) {
-    const distributedKey = mpcSdk.getDistributionKey();
+export async function mintBiconomyWallet(eoa: string, mpcAuth: MpcAuthenticator) {
+    const distributedKey = mpcAuth.getDistributionKey();
     const keyShareData = distributedKey?.keyShareData ?? null;
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
 
@@ -16,7 +15,7 @@ export async function mintBiconomyWallet(eoa: string, mpcSdk: MpcSdk) {
         distributedKey?.publicKey ?? "",
         keyShareData,
         { distributedKey },
-        mpcSdk,
+        mpcAuth,
         provider
     );
 
@@ -26,6 +25,6 @@ export async function mintBiconomyWallet(eoa: string, mpcSdk: MpcSdk) {
     });
     
     const response = await biconomySmartAccount.getAccountAddress();
-    mpcSdk.accountManager.setSmartContractAccount({ address: response });
+    mpcAuth.accountManager.setSmartContractAccount({ address: response });
     return response;
 }

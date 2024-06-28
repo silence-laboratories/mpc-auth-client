@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 import { checkPassword } from "@/utils/password";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 
 export type PasswordBackupScreenProps = {
@@ -22,7 +22,7 @@ export function PasswordBackupScreen({
     onTakeRisk,
     showSkipButton = true,
 }: PasswordBackupScreenProps) {
-    const mpcSdk = useMpcSdk();
+    const mpcAuth = useMpcAuth();
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
@@ -96,9 +96,9 @@ export function PasswordBackupScreen({
             return;
         }
         try {
-            await mpcSdk.runBackup(currentPassword);
+            await mpcAuth.runBackup(currentPassword);
             onProceed?.();
-            mpcSdk.accountManager.setPasswordReady();
+            mpcAuth.accountManager.setPasswordReady();
         } catch (error) {
             // TODO: Handle error
             console.error(error);
@@ -110,7 +110,7 @@ export function PasswordBackupScreen({
     };
 
     const handleTakeRisk = () => {
-        mpcSdk.runBackup("");
+        mpcAuth.runBackup("");
         onTakeRisk?.();
     };
 

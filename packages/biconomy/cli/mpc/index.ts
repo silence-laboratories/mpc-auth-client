@@ -1,4 +1,4 @@
-import { MpcSdk } from "@silencelaboratories/mpc-sdk/lib/cjs/index";
+import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk/lib/cjs/index";
 import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
 import { CliStorage } from "./storage";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
@@ -9,7 +9,7 @@ import { ethers } from "ethers";
 const WALLET_ID = "biconomy";
 const storage = new CliStorage();
 console.log(process.env.NODE_ENV === "development");
-export const mpcSdk = new MpcSdk({
+export const mpcAuth = new MpcAuthenticator({
   walletId: WALLET_ID, 
   storagePlatform: StoragePlatform.CLI, 
   customStorage: storage,
@@ -17,7 +17,7 @@ export const mpcSdk = new MpcSdk({
 });
 
 export async function generate(): Promise<MpcSigner> {
-    const qrCode = await mpcSdk.initPairing();
+    const qrCode = await mpcAuth.initPairing();
     qrCodeTerm.generate(
       qrCode,
       {
@@ -28,17 +28,17 @@ export async function generate(): Promise<MpcSigner> {
       }
     );
 
-    const pairingSessionData = await mpcSdk.runStartPairingSession();
-    await mpcSdk.runEndPairingSession(
+    const pairingSessionData = await mpcAuth.runStartPairingSession();
+    await mpcAuth.runEndPairingSession(
       pairingSessionData,
   );
 
-    let keygenResult = await mpcSdk.runKeygen();
+    let keygenResult = await mpcAuth.runKeygen();
     const p1KeyShare: IP1KeyShare = keygenResult.distributedKey.keyShareData;
     if (!p1KeyShare) {
       throw new Error("Failed to generate p1KeyShare");
     }
-    await mpcSdk.runBackup("demopassword");
+    await mpcAuth.runBackup("demopassword");
     const publicKey = p1KeyShare.public_key;
     const address = ethers.utils.computeAddress(`0x04${publicKey}`);
     return new MpcSigner(
@@ -46,6 +46,6 @@ export async function generate(): Promise<MpcSigner> {
       publicKey,
       p1KeyShare,
       keygenResult,
-      mpcSdk
+      mpcAuth
     );
   }

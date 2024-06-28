@@ -18,13 +18,13 @@ import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
 import { getPairingStatus } from "@/storage/localStorage";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 
 function Page() {
     const router = useRouter();
-    const mpcSdk = useMpcSdk();
-    const deviceOS = mpcSdk.getDeviceOS();
+    const mpcAuth = useMpcAuth();
+    const deviceOS = mpcAuth.getDeviceOS();
     const status = getPairingStatus();
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;

@@ -1,25 +1,24 @@
 import { providers } from "ethers";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
-import { MpcSdk } from "@silencelaboratories/mpc-sdk";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
+import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export async function sendTransaction(
     recipientAddress: string,
     amount: string,
-    mpcSdk: MpcSdk
+    mpcAuth: MpcAuthenticator
 ) {
-    const eoa = mpcSdk.accountManager.getEoa();
+    const eoa = mpcAuth.accountManager.getEoa();
     if (!eoa) {
         throw new Error("Eoa not found");
     }
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-    const distributedKey = mpcSdk.getDistributionKey();
+    const distributedKey = mpcAuth.getDistributionKey();
     const client = new MpcSigner(
         eoa,
         distributedKey?.publicKey ?? "",
         distributedKey?.keyShareData,
         { distributedKey },
-        mpcSdk,
+        mpcAuth,
         provider
     );
 

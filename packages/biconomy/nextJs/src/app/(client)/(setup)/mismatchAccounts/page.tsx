@@ -10,13 +10,13 @@ import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { getOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 function Page() {
-    const mpcSdk = useMpcSdk();
+    const mpcAuth = useMpcAuth();
     const router = useRouter();
     const oldEoa = getOldEoa() ?? "";
-    const eoa = mpcSdk.accountManager.getEoa() ?? "";
+    const eoa = mpcAuth.accountManager.getEoa() ?? "";
     const [showHeadsUp, setShowHeadsUp] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
 

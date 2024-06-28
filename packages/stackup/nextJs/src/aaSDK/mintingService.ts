@@ -1,9 +1,9 @@
 import { Presets } from "userop";
-import { MpcSdk } from "@silencelaboratories/mpc-sdk";
+import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
-export async function mintWallet(eoa: string, mpcSdk: MpcSdk) {
-    const distributedKey = mpcSdk.getDistributionKey();
+export async function mintWallet(eoa: string, mpcAuth: MpcAuthenticator) {
+    const distributedKey = mpcAuth.getDistributionKey();
     const keyShareData = distributedKey?.keyShareData ?? null;
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
         new MpcSigner(
@@ -11,11 +11,11 @@ export async function mintWallet(eoa: string, mpcSdk: MpcSdk) {
             distributedKey?.publicKey ?? "",
             keyShareData,
             { distributedKey },
-            mpcSdk
+            mpcAuth
         ),
         `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
     const response = simpleAccount.getSender();
-    mpcSdk.accountManager.setSmartContractAccount({ address: response });
+    mpcAuth.accountManager.setSmartContractAccount({ address: response });
     return response;
 }

@@ -28,10 +28,10 @@ import {
     setPairingStatus,
 } from "@/storage/localStorage";
 import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 const Homescreen: React.FC = () => {
-    const mpcSdk = useMpcSdk();
+    const mpcAuth = useMpcAuth();
     const oldEoa = getOldEoa();
     const router = useRouter();
     const [walletAccount, setWalletAccount] = useState<AccountData>();
@@ -50,7 +50,7 @@ const Homescreen: React.FC = () => {
 
     useEffect(() => {
         try {
-            setIsPasswordReady(mpcSdk.accountManager.isPasswordReady());
+            setIsPasswordReady(mpcAuth.accountManager.isPasswordReady());
         } catch (error) {
             console.error("isPasswordReady error", error);
         }
@@ -58,14 +58,14 @@ const Homescreen: React.FC = () => {
 
     useEffect(() => {
         try {
-            const eoa = mpcSdk.accountManager.getEoa();
+            const eoa = mpcAuth.accountManager.getEoa();
             if (!eoa) {
                 setPairingStatus(WALLET_STATUS.Unpaired);
                 router.replace("/intro");
                 return;
             }
 
-            const account = mpcSdk.accountManager.getSmartContractAccount();
+            const account = mpcAuth.accountManager.getSmartContractAccount();
             if (!account) {
                 setPairingStatus(WALLET_STATUS.BackedUp);
                 router.replace("/mint");
@@ -266,7 +266,7 @@ const Homescreen: React.FC = () => {
                 const result = await sendTransaction(
                     recipientAddress,
                     amount,
-                    mpcSdk
+                    mpcAuth
                 );
                 if (!result.transactionHash) {
                     setShowTransactionInitiatedBanner(false);
@@ -290,7 +290,7 @@ const Homescreen: React.FC = () => {
 
     const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
-        mpcSdk.signOut();
+        mpcAuth.signOut();
         clearOldEoa();
         setPairingStatus(WALLET_STATUS.Unpaired);
         router.push("/intro");

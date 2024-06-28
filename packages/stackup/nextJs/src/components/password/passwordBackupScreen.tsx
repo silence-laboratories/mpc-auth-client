@@ -8,14 +8,14 @@ import { checkPassword } from "@/utils/password";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
 import { useRouter } from "next/navigation";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 export const PasswordBackupScreen: React.FunctionComponent<{
     onProceed?: () => void;
     onTakeRisk?: () => void;
     showSkipButton?: boolean;
 }> = ({ onProceed, onTakeRisk, showSkipButton = true }) => {
-    const mpcSdk = useMpcSdk();
+    const mpcAuth = useMpcAuth();
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
@@ -89,9 +89,9 @@ export const PasswordBackupScreen: React.FunctionComponent<{
             return;
         }
         try {
-            await mpcSdk.runBackup(currentPassword);
+            await mpcAuth.runBackup(currentPassword);
             onProceed?.();
-            mpcSdk.accountManager.setPasswordReady();
+            mpcAuth.accountManager.setPasswordReady();
         } catch (error) {
             // TODO: Handle error
             console.error(error);
@@ -103,7 +103,7 @@ export const PasswordBackupScreen: React.FunctionComponent<{
     };
 
     const handleTakeRisk = () => {
-        mpcSdk.runBackup("");
+        mpcAuth.runBackup("");
         onTakeRisk?.();
     };
 

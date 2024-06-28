@@ -4,11 +4,11 @@
 import fs from "fs/promises";
 import path from "path";
 import prettier from "prettier";
-import { config } from "dotenv";
 import chalk from "chalk";
+import { config } from "dotenv";
+config();
 import { generate } from "../mpc";
 
-config();
 
 const INIT_CONFIG = {
   rpcUrl: `https://api.stackup.sh/v1/node/${process.env.API_KEY}`,

@@ -7,7 +7,7 @@ import { Label } from "../ui/label";
 import { PasswordInput, PasswordInputErr } from "./passwordInput";
 import { checkPassword } from "@/utils/password";
 import LoadingScreen from "../loadingScreen";
-import { useMpcSdk } from "@/hooks/useMpcSdk";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 export type PasswordEnterScreenProps = {
     onProceed: (password: string) => Promise<void>;
@@ -18,7 +18,7 @@ export const PasswordEnterScreen: React.FC<PasswordEnterScreenProps> = ({
     onProceed,
     onMoveBack,
 }) => {
-    const mpcSdk = useMpcSdk();
+    const mpcAuth = useMpcAuth();
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
     const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +54,7 @@ export const PasswordEnterScreen: React.FC<PasswordEnterScreenProps> = ({
         try {
             await onProceed(currentPassword);
             setIsLoading(false);
-            mpcSdk.accountManager.setPasswordReady();
+            mpcAuth.accountManager.setPasswordReady();
         } catch (error) {
             setIsLoading(false);
             setPasswordErr(PasswordInputErr.IncorrectPassword);

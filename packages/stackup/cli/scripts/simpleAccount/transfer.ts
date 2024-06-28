@@ -7,7 +7,7 @@ import { CLIOpts } from "./types";
 // @ts-ignore
 import config from "../../config.json";
 import chalk from "chalk";
-import { mpcSdk } from "../../mpc";
+import { mpcAuth } from "../../mpc";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
 
 export default async function main(t: string, amt: string, opts: CLIOpts) {
@@ -28,7 +28,7 @@ export default async function main(t: string, amt: string, opts: CLIOpts) {
       config.public_key,
       config.p1KeyShare,
       config.keygenResult,
-      mpcSdk
+      mpcAuth
     ),
     config.rpcUrl,
     { paymasterMiddleware, overrideBundlerRpc: opts.overrideBundlerRpc }

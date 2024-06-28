@@ -2,7 +2,7 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { MpcError, MpcErrorCode } from '../error';
-import { HttpClient } from '../transport/firebaseApi';
+import { HttpClient } from '../transport/httpClient';
 import { BackupConversation, PairingData } from '../types';
 
 export class BackupAction {
