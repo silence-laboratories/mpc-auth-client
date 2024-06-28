@@ -14,23 +14,22 @@ function Page() {
     const mpcSdk = useMpcSdk();
     const router = useRouter();
 
-    useEffect(() => {
-        try {
-            const eoa = mpcSdk.accountManager.getEoa();
-            const account = mpcSdk.accountManager.getSmartContractAccount();
-            if (eoa && !account) {
-                setPairingStatus(WALLET_STATUS.BackedUp);
-                router.replace("/mint");
-                return;
-            } else if (eoa && account) {
-                setPairingStatus(WALLET_STATUS.Minted);
-                router.replace("/homescreen");
-                return;
-            }
-        } catch (error) {
+    try {
+        const eoa = mpcSdk.accountManager.getEoa();
+        const account = mpcSdk.accountManager.getSmartContractAccount();
+        if (eoa && !account) {
+            setPairingStatus(WALLET_STATUS.BackedUp);
+            router.replace("/mint");
+            return;
+        } else if (eoa && account) {
+            setPairingStatus(WALLET_STATUS.Minted);
+            router.replace("/homescreen");
             return;
         }
-    }, [router]);
+    } catch (error) {
+        console.log("Error in getting account", error);
+    }
+
     
     const nextPageClick = () => {
         router.replace("/pair");

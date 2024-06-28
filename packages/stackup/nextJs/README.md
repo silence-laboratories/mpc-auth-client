@@ -11,7 +11,8 @@
 
 2. Fill in your API keys in .env:
     ``` bash
-    API_KEY = your_stackup_api_key_here //update this API key using step 3 below
+    API_KEY = your_stackup_api_key_here #update this API key using step 3 below
+    NODE_ENV=development #only require for development
     ```
 3. Set the rpcUrl:
 - To set the rpcUrl, you can create an instance at app.stackup.sh. Follow these steps:

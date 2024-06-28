@@ -17,6 +17,7 @@ import { RouteLoader } from "@/components/routeLoader";
 import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcSdk } from "@/hooks/useMpcSdk";
 import {
+    clearOldEoa,
     getOldEoa,
     getPairingStatus,
     setPairingStatus,
@@ -102,6 +103,24 @@ function Page() {
         })();
     };
 
+    const onBackFromPairing = () => {
+        if (!loading) {
+            if (isRepairing) {
+                clearOldEoa();
+                router.replace("/homescreen");
+            } else {
+                router.replace("/intro");
+            }
+        }
+    };
+
+    const onBackFromEnterPassword = () => {
+        setLoading(false);
+        setPairingSessionDataState(null);
+        setShowPasswordScreen(false);
+        generateWallet();
+    };
+
     useEffect(() => {
         generateWallet();
     }, []);
@@ -153,12 +172,7 @@ function Page() {
                         );
                     }
                 }}
-                onMoveBack={() => {
-                    setLoading(false);
-                    setPairingSessionDataState(null);
-                    setShowPasswordScreen(false);
-                    generateWallet();
-                }}
+                onMoveBack={onBackFromEnterPassword}
             />
         </div>
     ) : (
@@ -174,15 +188,7 @@ function Page() {
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
                 disabled={loading}
-                onClick={() => {
-                    if (!loading) {
-                        if (isRepairing) {
-                            router.replace("/homescreen");
-                        } else {
-                            router.replace("/intro");
-                        }
-                    }
-                }}
+                onClick={onBackFromPairing}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

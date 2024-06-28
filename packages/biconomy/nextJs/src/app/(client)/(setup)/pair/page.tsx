@@ -17,6 +17,7 @@ import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import {
+    clearOldEoa,
     getOldEoa,
     getPairingStatus,
     setPairingStatus,
@@ -136,6 +137,24 @@ function Page() {
         generateWallet();
     };
 
+    const onBackFromPairing = () => {
+        if (!loading) {
+            if (isRepairing) {
+                clearOldEoa();
+                router.replace("/homescreen");
+            } else {
+                router.replace("/intro");
+            }
+        }
+    }
+
+    const onBackFromEnterPassword = () => {
+        setLoading(false);
+        setPairingSessionDataState(null);
+        setShowPasswordScreen(false);
+        generateWallet();
+    }
+
     const isQrExpired = !(qr && seconds > 0);
     const status = getPairingStatus();
     const showLoading = isRepairing
@@ -156,12 +175,7 @@ function Page() {
                         );
                     }
                 }}
-                onMoveBack={() => {
-                    setLoading(false);
-                    setPairingSessionDataState(null);
-                    setShowPasswordScreen(false);
-                    generateWallet();
-                }}
+                onMoveBack={onBackFromEnterPassword}
             />
         </div>
     ) : (
@@ -177,15 +191,7 @@ function Page() {
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
                 disabled={loading}
-                onClick={() => {
-                    if (!loading) {
-                        if (isRepairing) {
-                            router.replace("/homescreen");
-                        } else {
-                            router.replace("/intro");
-                        }
-                    }
-                }}
+                onClick={onBackFromPairing}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
