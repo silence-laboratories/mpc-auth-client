@@ -3,7 +3,6 @@
 
 import { MpcError, MpcErrorCode } from './error';
 import _sodium from 'libsodium-wrappers-sumo';
-import { DistributedKey } from './types';
 import { pubToAddress } from '@ethereumjs/util';
 
 export const fromHexStringToBytes = (hexString: string) => {
