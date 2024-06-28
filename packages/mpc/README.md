@@ -1,5 +1,15 @@
 # MPC Authenticator JS library
 
+## How to build this library for other repositories usage:
+
+```bash
+git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk.git
+cd /mpc-account-abstraction-sdk
+npm i
+cd /packages/mpc
+npm run build
+```
+
 ## Components:
 
 The library provides the following 2 main components:
