@@ -11,7 +11,8 @@
 
 2. Fill in your API keys in .env:
     ``` bash
-    API_KEY = your_biconomy_api_key_here //update this API key using step 3 below
+    API_KEY = your_biconomy_api_key_here #update this API key using step 3 below
+    NODE_ENV=development #only require for development
     ```
 3. Set the rpcUrl:
 - To set up the rpcUrl, create an instance at :

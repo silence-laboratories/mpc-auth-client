@@ -8,7 +8,7 @@ export type Options = {
   walletId: string;
   storagePlatform: StoragePlatform;
   customStorage?: IStorage;
-  isDev: boolean;
+  isDev?: boolean;
 };
 export interface Message {
   message?: string;

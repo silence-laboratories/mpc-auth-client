@@ -8,9 +8,9 @@ import chalk from "chalk";
 import { ChainId } from "@biconomy/core-types";
 import { RPC_PROVIDER_URLS } from "@biconomy/common";
 import { config } from 'dotenv';
+config(); // NEED to load .env file before using MPC sdk
 import { generate } from "../mpc";
 
-config();
 
 const API_KEY = process.env.API_KEY;
 if (!API_KEY) {
