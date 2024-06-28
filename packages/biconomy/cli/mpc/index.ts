@@ -8,7 +8,13 @@ import { ethers } from "ethers";
 
 const WALLET_ID = "biconomy";
 const storage = new CliStorage();
-export const mpcSdk = new MpcSdk(WALLET_ID, StoragePlatform.CLI, storage);
+console.log(process.env.NODE_ENV === "development");
+export const mpcSdk = new MpcSdk({
+  walletId: WALLET_ID, 
+  storagePlatform: StoragePlatform.CLI, 
+  customStorage: storage,
+  isDev: process.env.NODE_ENV === "development",
+});
 
 export async function generate(): Promise<MpcSigner> {
     const qrCode = await mpcSdk.initPairing();

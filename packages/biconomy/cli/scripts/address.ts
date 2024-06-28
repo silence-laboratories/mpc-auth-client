@@ -1,8 +1,8 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import chalk from "chalk";
 import config from "../config.json";
+import chalk from "chalk";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { providers } from "ethers";
 import { mpcSdk } from "../mpc";
