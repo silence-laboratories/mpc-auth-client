@@ -5,8 +5,8 @@ import { ethers, providers } from "ethers";
 import chalk from "chalk";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import config from "../../config.json";
-import { mpcSdk } from "../../mpc";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
+import { mpcAuth } from "../../mpc";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export const erc20Transfer = async (to: string, amount: number) => {
   try {
@@ -22,7 +22,7 @@ export const erc20Transfer = async (to: string, amount: number) => {
       distributedKey?.publicKey ?? "",
       keyShareData,
       { distributedKey },
-      mpcSdk,
+      mpcAuth,
       provider
     );
 
@@ -77,7 +77,7 @@ export const erc20TransferPayERC20 = async (to: string, amount: number, token: s
       distributedKey?.publicKey ?? "",
       keyShareData,
       { distributedKey },
-      mpcSdk,
+      mpcAuth,
       provider
     );
 

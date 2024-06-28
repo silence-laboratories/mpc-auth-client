@@ -9,8 +9,8 @@ import {
   } from "@biconomy/account";
 
 import config from "../../config.json";
-import { mpcSdk } from "../../mpc";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
+import { mpcAuth } from "../../mpc";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export const nativeTransferPayERC20 = async (
     to: string,
@@ -30,7 +30,7 @@ export const nativeTransferPayERC20 = async (
       config.silentSigner.public_key,
       keyShareData,
       { distributedKey },
-      mpcSdk,
+      mpcAuth,
       provider
     );
 
