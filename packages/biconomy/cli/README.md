@@ -37,9 +37,11 @@ To set up the `rpcUrl`, create an instance at:
 2. Fill in your Base urls and API keys in `.env`:
 
     - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
+    - To run in development environment, add `NODE_ENV=development`.
 
         ```env
         API_KEY=your_biconomy_api_key_here
+        NODE_ENV=development
         ```
 
 ### Step 3: Install Dependencies
