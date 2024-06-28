@@ -2,248 +2,282 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import * as utils from "../utils";
-import {
-    getTokenEndpoint,
-    refreshTokenEndpoint,
-    sendMessage,
-} from "../transport/firebaseApi";
 import _sodium from "libsodium-wrappers-sumo";
 import { DistributedKey, PairingData, PairingSessionData } from "../types";
 import { MpcError, MpcErrorCode } from "../error";
 import { aeadDecrypt } from "../crypto";
+import { HttpClient } from "../transport/firebaseApi";
 
 export enum PairingRemark {
-    WALLET_MISMATCH = "WALLET_MISMATCH",
-    NO_BACKUP_DATA_WHILE_REPAIRING = "NO_BACKUP_DATA_WHILE_REPAIRING",
-    INVALID_BACKUP_DATA = "INVALID_BACKUP_DATA",
+  WALLET_MISMATCH = "WALLET_MISMATCH",
+  NO_BACKUP_DATA_WHILE_REPAIRING = "NO_BACKUP_DATA_WHILE_REPAIRING",
+  INVALID_BACKUP_DATA = "INVALID_BACKUP_DATA",
 }
 
 export interface PairingDataInit {
-    pairingId: string;
-    encPair: _sodium.KeyPair;
-    signPair: _sodium.KeyPair;
+  pairingId: string;
+  encPair: _sodium.KeyPair;
+  signPair: _sodium.KeyPair;
 }
 
-let pairingDataInit: PairingDataInit;
+export class PairingAction {
+  private pairingDataInit?: PairingDataInit;
+  httpClient: HttpClient;
 
-export const init = async (walletId: string) => {
+  constructor(httpClient: HttpClient) {
+    this.httpClient = httpClient;
+  }
+
+  init = async (walletId: string) => {
     try {
-        let pairingId = await utils.randomPairingId();
+      let pairingId = await utils.randomPairingId();
 
-        await _sodium.ready;
-        const encPair = _sodium.crypto_box_keypair();
-        const signPair = _sodium.crypto_sign_keypair();
+      await _sodium.ready;
+      const encPair = _sodium.crypto_box_keypair();
+      const signPair = _sodium.crypto_sign_keypair();
 
-        pairingDataInit = {
-            pairingId,
-            encPair,
-            signPair,
-        };
+      this.pairingDataInit = {
+        pairingId,
+        encPair,
+        signPair,
+      };
 
-        let qrCode = JSON.stringify({
-            walletId,
-            pairingId,
-            webEncPublicKey: _sodium.to_hex(encPair.publicKey),
-            signPublicKey: _sodium.to_hex(signPair.publicKey),
-        });
+      let qrCode = JSON.stringify({
+        walletId,
+        pairingId,
+        webEncPublicKey: _sodium.to_hex(encPair.publicKey),
+        signPublicKey: _sodium.to_hex(signPair.publicKey),
+      });
 
-        return qrCode;
+      return qrCode;
     } catch (error) {
-        if (error instanceof Error) {
-            throw new MpcError(error.message, MpcErrorCode.UnknownError);
-        } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
+      if (error instanceof Error) {
+        throw new MpcError(error.message, MpcErrorCode.UnknownError);
+      } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
-};
+  };
 
-const sendPairingFirebaseDoc = async (
-    token: string,
-    pairingId: string,
-    pairingObject:
-        | { isPaired: boolean }
-        | {
-              isPaired: boolean;
-              pairingRemark: string;
-          }
-) => {
-    await sendMessage(token, "pairing", pairingObject, false, pairingId);
-};
-
-const decryptAndDeserializeBackupData = async (
-    token: string,
-    backupData: string,
-    password: string
-): Promise<{ distributedKey: DistributedKey; accountAddress: string }> => {
+  startPairingSession = async () => {
     try {
-        const decreptedMessage = await aeadDecrypt(backupData, password);
-        const distributedKey = JSON.parse(
-            utils.uint8ArrayToUtf8String(decreptedMessage)
-        );
-        let accountAddress = utils.getAddressFromPubkey(distributedKey.publicKey);
-        return {
-            distributedKey,
-            accountAddress,
-        };
-    } catch (error) {
-        await sendPairingFirebaseDoc(token, pairingDataInit.pairingId, {
-            isPaired: false,
-            pairingRemark: PairingRemark.INVALID_BACKUP_DATA,
-        });
-        if (error instanceof MpcError) {
-            throw error;
-        } else if (error instanceof Error) {
-            throw new MpcError(error.message, MpcErrorCode.InvalidBackupData);
-        } else
-            throw new MpcError(
-                "wrong secret key for the given ciphertext",
-                MpcErrorCode.InvalidBackupData
-            );
-    }
-};
-
-const validatePairingAccount = async (
-    sessionToken: string,
-    accountAddress?: string,
-    currentAccountAddress?: string
-) => {
-    if (currentAccountAddress && !accountAddress) {
-        await sendPairingFirebaseDoc(sessionToken, pairingDataInit.pairingId, {
-            isPaired: false,
-            pairingRemark: PairingRemark.NO_BACKUP_DATA_WHILE_REPAIRING,
-        });
+      if (!this.pairingDataInit) {
         throw new MpcError(
-            "No backup data while repairing",
-            MpcErrorCode.RejectedPairingRequest
+          "Pairing data not initialized",
+          MpcErrorCode.PairingNotInitialized
         );
-    } else if (
-        currentAccountAddress &&
-        accountAddress &&
-        currentAccountAddress !== accountAddress
-    ) {
-        await sendPairingFirebaseDoc(sessionToken, pairingDataInit.pairingId, {
-            isPaired: true,
-            pairingRemark: PairingRemark.WALLET_MISMATCH,
-        });
-    } else
-        await sendPairingFirebaseDoc(sessionToken, pairingDataInit.pairingId, {
-            isPaired: true,
-        });
-};
+      }
 
-export const startPairingSession = async () => {
-    try {
-        if (!pairingDataInit) {
-            throw new MpcError(
-                "Pairing data not initialized",
-                MpcErrorCode.PairingNotInitialized
-            );
-        }
+      const pairingId = this.pairingDataInit.pairingId;
+      const signature = _sodium.crypto_sign_detached(
+        pairingId,
+        this.pairingDataInit.signPair.privateKey
+      );
 
-        const pairingId = pairingDataInit.pairingId;
-        const signature = _sodium.crypto_sign_detached(
-            pairingId,
-            pairingDataInit.signPair.privateKey
-        );
-
-        const pairingSessionData = await getTokenEndpoint(
-            pairingId,
-            _sodium.to_hex(signature)
-        );
-        return pairingSessionData;
+      const pairingSessionData = await this.httpClient.getTokenEndpoint(
+        pairingId,
+        _sodium.to_hex(signature)
+      );
+      return pairingSessionData;
     } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
+      if (error instanceof Error) {
+        throw error;
+      } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
-};
+  };
 
-export const endPairingSession = async (
+  endPairingSession = async (
     pairingSessionData: PairingSessionData,
     currentAccountAddress?: string,
     password?: string
-) => {
+  ) => {
+    if (!this.pairingDataInit) {
+      throw new MpcError(
+        "Pairing data not initialized",
+        MpcErrorCode.PairingNotInitialized
+      );
+    }
     try {
-        const startTime = Date.now();
-        const sessionToken = pairingSessionData.token;
+      const startTime = Date.now();
+      const sessionToken = pairingSessionData.token;
 
-        let distributedKey: DistributedKey | undefined;
-        let accountAddress: string | undefined;
-        
-        if (pairingSessionData.backupData && password) {
-            try {
-                const backupDataJson = await decryptAndDeserializeBackupData(
-                    sessionToken,
-                    pairingSessionData.backupData,
-                    password
-                );
-                distributedKey = backupDataJson.distributedKey;
-                accountAddress = backupDataJson.accountAddress;
-            } catch (error) {
-                throw error;
-            }
-        }
+      let distributedKey: DistributedKey | undefined;
+      let accountAddress: string | undefined;
 
-        await validatePairingAccount(
+      if (pairingSessionData.backupData && password) {
+        try {
+          const backupDataJson = await this.decryptAndDeserializeBackupData(
             sessionToken,
-            accountAddress,
-            currentAccountAddress
-        );
+            pairingSessionData.backupData,
+            password
+          );
+          distributedKey = backupDataJson.distributedKey;
+          accountAddress = backupDataJson.accountAddress;
+        } catch (error) {
+          throw error;
+        }
+      }
 
-        const pairingData: PairingData = {
-            pairingId: pairingDataInit.pairingId,
-            webEncPublicKey: _sodium.to_hex(pairingDataInit.encPair.publicKey),
-            webEncPrivateKey: _sodium.to_hex(
-                pairingDataInit.encPair.privateKey
-            ),
-            webSignPublicKey: _sodium.to_hex(
-                pairingDataInit.signPair.publicKey
-            ),
-            webSignPrivateKey: _sodium.to_hex(
-                pairingDataInit.signPair.privateKey
-            ),
-            appPublicKey: pairingSessionData.appPublicKey,
-            token: sessionToken,
-            tokenExpiration: pairingSessionData.tokenExpiration,
-            deviceName: pairingSessionData.deviceName,
-        };
-        return {
-            newPairingState: {
-                pairingData,
-                distributedKey: distributedKey ?? null,
-            },
-            elapsedTime: Date.now() - startTime,
-            deviceName: pairingSessionData.deviceName,
-        };
+      await this.validateRePairing(
+        sessionToken,
+        accountAddress,
+        currentAccountAddress
+      );
+
+      const pairingData: PairingData = {
+        pairingId: this.pairingDataInit.pairingId,
+        webEncPublicKey: _sodium.to_hex(this.pairingDataInit.encPair.publicKey),
+        webEncPrivateKey: _sodium.to_hex(
+          this.pairingDataInit.encPair.privateKey
+        ),
+        webSignPublicKey: _sodium.to_hex(
+          this.pairingDataInit.signPair.publicKey
+        ),
+        webSignPrivateKey: _sodium.to_hex(
+          this.pairingDataInit.signPair.privateKey
+        ),
+        appPublicKey: pairingSessionData.appPublicKey,
+        token: sessionToken,
+        tokenExpiration: pairingSessionData.tokenExpiration,
+        deviceName: pairingSessionData.deviceName,
+      };
+      return {
+        newPairingState: {
+          pairingData,
+          distributedKey: distributedKey ?? null,
+        },
+        elapsedTime: Date.now() - startTime,
+        deviceName: pairingSessionData.deviceName,
+      };
     } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
+      if (error instanceof Error) {
+        throw error;
+      } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
-};
+  };
 
-export const refreshToken = async (pairingData: PairingData) => {
+  refreshToken = async (pairingData: PairingData) => {
     try {
-        let startTime = Date.now();
-        let signature: Uint8Array;
-        signature = _sodium.crypto_sign_detached(
-            pairingData.token,
-            _sodium.from_hex(pairingData.webSignPrivateKey)
-        );
+      let startTime = Date.now();
+      let signature: Uint8Array;
+      signature = _sodium.crypto_sign_detached(
+        pairingData.token,
+        _sodium.from_hex(pairingData.webSignPrivateKey)
+      );
 
-        const data = await refreshTokenEndpoint(
-            pairingData.token,
-            _sodium.to_hex(signature)
-        );
-        const newPairingData: PairingData = {
-            ...pairingData,
-            ...data,
-        };
-        return {
-            newPairingData: newPairingData,
-            elapsedTime: Date.now() - startTime,
-        };
+      const data = await this.httpClient.refreshTokenEndpoint(
+        pairingData.token,
+        _sodium.to_hex(signature)
+      );
+      const newPairingData: PairingData = {
+        ...pairingData,
+        ...data,
+      };
+      return {
+        newPairingData: newPairingData,
+        elapsedTime: Date.now() - startTime,
+      };
     } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        } else throw new MpcError(`unkown-error`, MpcErrorCode.UnknownError);
+      if (error instanceof Error) {
+        throw error;
+      } else throw new MpcError(`unkown-error`, MpcErrorCode.UnknownError);
     }
-};
+  };
+
+  private decryptAndDeserializeBackupData = async (
+    token: string,
+    backupData: string,
+    password: string
+  ): Promise<{ distributedKey: DistributedKey; accountAddress: string }> => {
+    if (!this.pairingDataInit) {
+      throw new MpcError(
+        "Pairing data not initialized",
+        MpcErrorCode.PairingNotInitialized
+      );
+    }
+    try {
+      const decreptedMessage = await aeadDecrypt(backupData, password);
+      const distributedKey = JSON.parse(
+        utils.uint8ArrayToUtf8String(decreptedMessage)
+      );
+      let accountAddress = utils.getAddressFromPubkey(distributedKey.publicKey);
+      return {
+        distributedKey,
+        accountAddress,
+      };
+    } catch (error) {
+      await this.httpClient.sendMessage(
+        token,
+        "pairing",
+        {
+          isPaired: false,
+          pairingRemark: PairingRemark.INVALID_BACKUP_DATA,
+        },
+        false,
+        this.pairingDataInit.pairingId
+      );
+
+      if (error instanceof MpcError) {
+        throw error;
+      } else if (error instanceof Error) {
+        throw new MpcError(error.message, MpcErrorCode.InvalidBackupData);
+      } else
+        throw new MpcError(
+          "wrong secret key for the given ciphertext",
+          MpcErrorCode.InvalidBackupData
+        );
+    }
+  };
+
+  private validateRePairing = async (
+    sessionToken: string,
+    accountAddress?: string,
+    currentAccountAddress?: string
+  ) => {
+    if (!this.pairingDataInit) {
+      throw new MpcError(
+        "Pairing data not initialized",
+        MpcErrorCode.PairingNotInitialized
+      );
+    }
+    if (currentAccountAddress && !accountAddress) {
+      await this.httpClient.sendMessage(
+        sessionToken,
+        "pairing",
+        {
+          isPaired: false,
+          pairingRemark: PairingRemark.NO_BACKUP_DATA_WHILE_REPAIRING,
+        },
+        false,
+        this.pairingDataInit.pairingId
+      );
+
+      throw new MpcError(
+        "No backup data while repairing",
+        MpcErrorCode.RejectedPairingRequest
+      );
+    } else if (
+      currentAccountAddress &&
+      accountAddress &&
+      currentAccountAddress !== accountAddress
+    ) {
+      await this.httpClient.sendMessage(
+        sessionToken,
+        "pairing",
+        {
+          isPaired: true,
+          pairingRemark: PairingRemark.WALLET_MISMATCH,
+        },
+        false,
+        this.pairingDataInit.pairingId
+      );
+    } else
+      await this.httpClient.sendMessage(
+        sessionToken,
+        "pairing",
+        {
+          isPaired: true,
+        },
+        false,
+        this.pairingDataInit.pairingId
+      );
+  };
+}
