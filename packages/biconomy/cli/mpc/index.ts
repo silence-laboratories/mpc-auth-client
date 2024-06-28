@@ -1,14 +1,12 @@
-import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk/lib/cjs/index";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
 import { CliStorage } from "./storage";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
 import qrCodeTerm from "qrcode-terminal";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { ethers } from "ethers";
+import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
+import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 
 const WALLET_ID = "biconomy";
 const storage = new CliStorage();
-console.log(process.env.NODE_ENV === "development");
 export const mpcAuth = new MpcAuthenticator({
   walletId: WALLET_ID, 
   storagePlatform: StoragePlatform.CLI, 

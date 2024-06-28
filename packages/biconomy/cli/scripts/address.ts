@@ -5,8 +5,8 @@ import config from "../config.json";
 import chalk from "chalk";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { providers } from "ethers";
-import { mpcSdk } from "../mpc";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
+import { mpcAuth } from "../mpc";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export async function getAddress() {
   // Initialize Biconomy Smart Account SDK
@@ -21,7 +21,7 @@ export async function getAddress() {
     distributedKey?.publicKey ?? "",
     keyShareData,
     { distributedKey },
-    mpcSdk,
+    mpcAuth,
     provider
   );
 
