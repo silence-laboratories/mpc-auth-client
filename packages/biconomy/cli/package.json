@@ -2,12 +2,11 @@
   "name": "biconomy-sdk-cli",
   "version": "1.0.0",
   "description": "Biconomy SDK SmartAccount",
-  "main": "scripts/index.js",
   "scripts": {
-    "start": "tsx scripts/index.ts",
-    "smartAccount-init": "tsx scripts/index.ts init --network=$npm_config_network",
-    "smartAccount-address": "tsx scripts/index.ts address",
-    "smartAccount-transfer": "tsx scripts/index.ts transfer --to=$npm_config_to --amount=$npm_config_amount"
+    "start": "ts-node scripts/index.ts",
+    "smartAccount-init": "ts-node scripts/index.ts init --network=$npm_config_network",
+    "smartAccount-address": "ts-node scripts/index.ts address",
+    "smartAccount-transfer": "ts-node scripts/index.ts transfer --to=$npm_config_to --amount=$npm_config_amount"
   },
   "keywords": [],
   "license": "ISC",
@@ -35,7 +34,7 @@
     "@types/qrcode-terminal": "^0.12.2",
     "@types/uuid": "^9.0.7",
     "@types/yargs": "^17.0.24",
-    "tsx": "^4.15.8",
+    "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   }
 }

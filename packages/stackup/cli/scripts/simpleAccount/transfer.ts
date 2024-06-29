@@ -8,7 +8,7 @@ import { CLIOpts } from "./types";
 import config from "../../config.json";
 import chalk from "chalk";
 import { mpcAuth } from "../../mpc";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export default async function main(t: string, amt: string, opts: CLIOpts) {
   const paymasterMiddleware = opts.withPM

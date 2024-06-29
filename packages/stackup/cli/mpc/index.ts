@@ -1,13 +1,13 @@
 import qrCodeTerm from "qrcode-terminal";
 
 import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
-import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/authenticator";
 import { CliStorage } from "./storage";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { ethers } from "ethers";
-
+import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
+import 'dotenv/config'
 const WALLET_ID = "stackup";
+
 const storage = new CliStorage();
 export const mpcAuth = new MpcAuthenticator({
   walletId: WALLET_ID,

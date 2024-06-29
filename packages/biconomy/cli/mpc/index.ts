@@ -3,7 +3,7 @@ import qrCodeTerm from "qrcode-terminal";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { ethers } from "ethers";
 import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
 
 const WALLET_ID = "biconomy";
 const storage = new CliStorage();
