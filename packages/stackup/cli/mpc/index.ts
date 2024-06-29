@@ -37,5 +37,5 @@ export async function generate(): Promise<MpcSigner> {
     throw new Error("Failed to generate p1KeyShare");
   }
 
-  return new MpcSigner(keygenResult, mpcAuth);
+  return new MpcSigner(mpcAuth);
 }

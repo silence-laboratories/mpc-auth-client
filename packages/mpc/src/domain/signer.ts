@@ -25,6 +25,7 @@ import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
 import { _toUtf8String } from "@ethersproject/strings/lib/utf8";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
 import { MpcAuthenticator } from "./authenticator";
+import { DistributedKey } from "../types";
 
 /**
  * Represents a signer that utilizes Multi-Party Computation (MPC) for signing Ethereum transactions and messages.
@@ -33,19 +34,14 @@ import { MpcAuthenticator } from "./authenticator";
  * @class MpcSigner
  * @extends {Signer}
  *
+ * @property {DistributedKey} distributedKey - Distributed key of the signer.
  * @property {string} address - Ethereum address associated with this signer.
  * @property {string} public_key - Public key of the signer.
- * @property {IP1KeyShare} p1KeyShare - Party 1 key share used in the MPC process.
- * @property {any} keygenResult - Result of the key generation process, containing necessary information for signing.
  * @property {MpcAuthenticator} mpcAuth - MPC SDK instance used for signing operations.
  * @property {Provider} [provider] - Ethers.js provider instance to interact with the Ethereum network.
  *
  * @constructor
  * Creates an instance of MpcSigner.
- * @param {string} address - Ethereum address associated with this signer.
- * @param {string} public_key - Public key of the signer.
- * @param {any} p1KeyShare - Party 1 key share used in the MPC process.
- * @param {any} keygenResult - Result of the key generation process.
  * @param {MpcAuthenticator} mpcAuth - MPC SDK instance for signing operations.
  * @param {Provider} [provider] - ethers.js provider instance.
  */
@@ -54,19 +50,19 @@ export class MpcSigner extends Signer {
   public address: string;
   public public_key: string;
   readonly provider?: ethers.providers.Provider;
-  keygenResult: any;
+  private distributedKey: DistributedKey;
 
-  constructor(
-    keygenResult: any,
-    mpcAuth: MpcAuthenticator,
-    provider?: Provider
-  ) {
+  constructor(mpcAuth: MpcAuthenticator, provider?: Provider) {
     super();
     this.mpcAuth = mpcAuth;
+    const distributedKey = mpcAuth.getDistributionKey();
+    if (!distributedKey) {
+      throw new Error("No distributed key found");
+    }
+    this.distributedKey = distributedKey;
+    this.public_key = distributedKey.publicKey;
     this.address = mpcAuth.accountManager.getEoa()!;
-    this.public_key = mpcAuth.getDistributionKey()?.publicKey!;
     this.provider = provider;
-    this.keygenResult = keygenResult;
   }
 
   /**
@@ -100,8 +96,8 @@ export class MpcSigner extends Signer {
       hexMessage,
       messageDigest,
       "eth_sign",
-      this.keygenResult.distributedKey.accountId,
-      this.keygenResult.distributedKey.keyShareData
+      this.mpcAuth.getDistributionKey()!.accountId,
+      this.mpcAuth.getDistributionKey()!.keyShareData
     );
 
     const signBytes = Buffer.from(signSdk.signature, "hex");
@@ -158,8 +154,8 @@ export class MpcSigner extends Signer {
       " ",
       messageDigest,
       "eth_sign",
-      this.keygenResult.distributedKey.accountId,
-      this.keygenResult.distributedKey.keyShareData
+      this.distributedKey.accountId,
+      this.distributedKey.keyShareData
     );
 
     const signBytes = Buffer.from(sign.signature, "hex");
@@ -181,11 +177,7 @@ export class MpcSigner extends Signer {
    * @returns {MpcSigner} A new instance of MpcSigner connected with the specified provider.
    */
   connect(provider: Provider): MpcSigner {
-    return new MpcSigner(
-      this.keygenResult,
-      this.mpcAuth,
-      provider
-    );
+    return new MpcSigner(this.mpcAuth, provider);
   }
 
   private async _signTypedData(

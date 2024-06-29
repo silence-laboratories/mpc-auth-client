@@ -1,7 +1,6 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import config from "../config.json";
 import chalk from "chalk";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { providers } from "ethers";
@@ -10,10 +9,8 @@ import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export async function getAddress() {
   // Initialize Biconomy Smart Account SDK
-  const distributedKey = config.silentSigner.keygenResult.distributedKey;
-
   const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-  const client = new MpcSigner({ distributedKey }, mpcAuth, provider);
+  const client = new MpcSigner(mpcAuth, provider);
 
   const biconomySmartAccount = await createSmartAccountClient({
     signer: client as SupportedSigner,

@@ -12,8 +12,7 @@ export async function sendTransaction(
         throw new Error("Eoa not found");
     }
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-    const distributedKey = mpcAuth.getDistributionKey();
-    const client = new MpcSigner({ distributedKey }, mpcAuth, provider);
+    const client = new MpcSigner(mpcAuth, provider);
 
     const biconomySmartAccount = await createSmartAccountClient({
         signer: client as SupportedSigner,

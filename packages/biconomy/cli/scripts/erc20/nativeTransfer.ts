@@ -4,8 +4,6 @@
 import { ethers, providers } from "ethers";
 import chalk from "chalk";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
-
-import config from "../../config.json";
 import { mpcAuth } from "../../mpc";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
@@ -13,8 +11,7 @@ export const nativeTransferPayERC20 = async (to: string, amount: number) => {
   // ------------------------STEP 1: Initialise Biconomy Smart Account SDK--------------------------------//
   try {
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-    const distributedKey = config.silentSigner.keygenResult.distributedKey;
-    const client = new MpcSigner({ distributedKey }, mpcAuth, provider);
+    const client = new MpcSigner(mpcAuth, provider);
 
     const biconomySmartAccount = await createSmartAccountClient({
       signer: client as SupportedSigner,
