@@ -30,14 +30,9 @@ export async function generate(): Promise<MpcSigner> {
       pairingSessionData,
   );
 
-    let keygenResult = await mpcAuth.runKeygen();
-    const p1KeyShare: IP1KeyShare = keygenResult.distributedKey.keyShareData;
-    if (!p1KeyShare) {
-      throw new Error("Failed to generate p1KeyShare");
-    }
+    await mpcAuth.runKeygen();
     await mpcAuth.runBackup("demopassword");
     return new MpcSigner(
-      keygenResult,
       mpcAuth
     );
   }

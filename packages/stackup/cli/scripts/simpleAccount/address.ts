@@ -11,7 +11,6 @@ import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 export default async function main() {
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     new MpcSigner(
-      config.keygenResult,
       mpcAuth
     ),
     config.rpcUrl

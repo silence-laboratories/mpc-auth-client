@@ -3,9 +3,8 @@ import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
 export async function mintWallet(mpcAuth: MpcAuthenticator) {
-    const distributedKey = mpcAuth.getDistributionKey();
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
-        new MpcSigner({ distributedKey }, mpcAuth),
+        new MpcSigner(mpcAuth),
         `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
     const response = simpleAccount.getSender();
