@@ -4,7 +4,7 @@ import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { ethers } from "ethers";
 import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
 import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
-
+import 'dotenv/config'
 const WALLET_ID = "biconomy";
 const storage = new CliStorage();
 export const mpcAuth = new MpcAuthenticator({
