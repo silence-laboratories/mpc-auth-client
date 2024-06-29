@@ -3,15 +3,14 @@ import qrCodeTerm from "qrcode-terminal";
 import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
 import { CliStorage } from "./storage";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-import { ethers } from "ethers";
 import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
-import 'dotenv/config'
+import "dotenv/config";
 const WALLET_ID = "stackup";
 
 const storage = new CliStorage();
 export const mpcAuth = new MpcAuthenticator({
   walletId: WALLET_ID,
-  storagePlatform: StoragePlatform.CLI, 
+  storagePlatform: StoragePlatform.CLI,
   customStorage: storage,
   isDev: process.env.NODE_ENV === "development",
 });
@@ -38,7 +37,5 @@ export async function generate(): Promise<MpcSigner> {
     throw new Error("Failed to generate p1KeyShare");
   }
 
-  const publicKey = p1KeyShare.public_key;
-  const address = ethers.utils.computeAddress(`0x04${publicKey}`);
-  return new MpcSigner(address, publicKey, p1KeyShare, keygenResult, mpcAuth);
+  return new MpcSigner(keygenResult, mpcAuth);
 }

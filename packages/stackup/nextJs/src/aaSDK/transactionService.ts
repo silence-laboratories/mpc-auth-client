@@ -13,18 +13,12 @@ export async function sendTransaction(
         amount: convertEtherToWei(amount),
     };
     const eoa = mpcAuth.accountManager.getEoa();
-    if(!eoa) {
+    if (!eoa) {
         throw new Error("Eoa not found");
     }
     const distributedKey = mpcAuth.getDistributionKey();
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
-        new MpcSigner(
-            eoa,
-            distributedKey?.publicKey as string,
-            distributedKey?.keyShareData,
-            { distributedKey },
-            mpcAuth
-        ),
+        new MpcSigner({ distributedKey }, mpcAuth),
         `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
     const client = await Client.init(

@@ -11,19 +11,9 @@ import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 export async function getAddress() {
   // Initialize Biconomy Smart Account SDK
   const distributedKey = config.silentSigner.keygenResult.distributedKey;
-  const address = config.silentSigner.address;
-  const keyShareData =
-    config.silentSigner.keygenResult.distributedKey.keyShareData;
 
   const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-  const client = new MpcSigner(
-    address,
-    distributedKey?.publicKey ?? "",
-    keyShareData,
-    { distributedKey },
-    mpcAuth,
-    provider
-  );
+  const client = new MpcSigner({ distributedKey }, mpcAuth, provider);
 
   const biconomySmartAccount = await createSmartAccountClient({
     signer: client as SupportedSigner,

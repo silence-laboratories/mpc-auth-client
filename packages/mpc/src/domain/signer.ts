@@ -53,26 +53,20 @@ export class MpcSigner extends Signer {
   private mpcAuth: MpcAuthenticator;
   public address: string;
   public public_key: string;
-  private p1KeyShare: IP1KeyShare;
   readonly provider?: ethers.providers.Provider;
   keygenResult: any;
 
   constructor(
-    address: string,
-    public_key: string,
-    p1KeyShare: any,
     keygenResult: any,
     mpcAuth: MpcAuthenticator,
     provider?: Provider
   ) {
     super();
-
-    this.address = address;
-    this.public_key = public_key;
-    this.p1KeyShare = p1KeyShare;
+    this.mpcAuth = mpcAuth;
+    this.address = mpcAuth.accountManager.getEoa()!;
+    this.public_key = mpcAuth.getDistributionKey()?.publicKey!;
     this.provider = provider;
     this.keygenResult = keygenResult;
-    this.mpcAuth = mpcAuth;
   }
 
   /**
@@ -188,9 +182,6 @@ export class MpcSigner extends Signer {
    */
   connect(provider: Provider): MpcSigner {
     return new MpcSigner(
-      this.address,
-      this.public_key,
-      this.p1KeyShare,
       this.keygenResult,
       this.mpcAuth,
       provider

@@ -13,18 +13,8 @@ export const erc20Transfer = async (to: string, amount: number) => {
     // Initialize Biconomy Smart Account SDK
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
     const distributedKey = config.silentSigner.keygenResult.distributedKey;
-    const address = config.silentSigner.address;
-    const keyShareData =
-      config.silentSigner.keygenResult.distributedKey.keyShareData;
-    
-    const client = new MpcSigner(
-      address,
-      distributedKey?.publicKey ?? "",
-      keyShareData,
-      { distributedKey },
-      mpcAuth,
-      provider
-    );
+
+    const client = new MpcSigner({ distributedKey }, mpcAuth, provider);
 
     const biconomySmartAccount = await createSmartAccountClient({
       signer: client as SupportedSigner,
@@ -37,12 +27,16 @@ export const erc20Transfer = async (to: string, amount: number) => {
     };
 
     console.log(chalk.blue("Sending transaction request..."));
-    const userOpResponse = await biconomySmartAccount.sendTransaction(requestData);
+    const userOpResponse = await biconomySmartAccount.sendTransaction(
+      requestData
+    );
 
     console.log(chalk.blue("Waiting for transaction receipt..."));
     const userOpReceipt = await userOpResponse.wait();
 
-    console.log(chalk.blue(`userOp: ${JSON.stringify(userOpReceipt, null, "\t")}`));
+    console.log(
+      chalk.blue(`userOp: ${JSON.stringify(userOpReceipt, null, "\t")}`)
+    );
 
     try {
       const { transactionHash } = await userOpResponse.waitForTxHash();
@@ -51,7 +45,11 @@ export const erc20Transfer = async (to: string, amount: number) => {
       const transactionDetails = await userOpResponse.wait();
       console.log(
         chalk.blue(
-          `transactionDetails: ${JSON.stringify(transactionDetails, null, "\t")}`
+          `transactionDetails: ${JSON.stringify(
+            transactionDetails,
+            null,
+            "\t"
+          )}`
         )
       );
     } catch (e) {
@@ -63,23 +61,17 @@ export const erc20Transfer = async (to: string, amount: number) => {
 };
 
 // Add this function if it is missing
-export const erc20TransferPayERC20 = async (to: string, amount: number, token: string) => {
+export const erc20TransferPayERC20 = async (
+  to: string,
+  amount: number,
+  token: string
+) => {
   try {
     // Initialize Biconomy Smart Account SDK
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
     const distributedKey = config.silentSigner.keygenResult.distributedKey;
-    const address = config.silentSigner.address;
-    const keyShareData =
-      config.silentSigner.keygenResult.distributedKey.keyShareData;
 
-    const client = new MpcSigner(
-      address,
-      distributedKey?.publicKey ?? "",
-      keyShareData,
-      { distributedKey },
-      mpcAuth,
-      provider
-    );
+    const client = new MpcSigner({ distributedKey }, mpcAuth, provider);
 
     const biconomySmartAccount = await createSmartAccountClient({
       signer: client as SupportedSigner,
@@ -93,12 +85,16 @@ export const erc20TransferPayERC20 = async (to: string, amount: number, token: s
     };
 
     console.log(chalk.blue("Sending transaction request..."));
-    const userOpResponse = await biconomySmartAccount.sendTransaction(requestData);
+    const userOpResponse = await biconomySmartAccount.sendTransaction(
+      requestData
+    );
 
     console.log(chalk.blue("Waiting for transaction receipt..."));
     const userOpReceipt = await userOpResponse.wait();
 
-    console.log(chalk.blue(`userOp: ${JSON.stringify(userOpReceipt, null, "\t")}`));
+    console.log(
+      chalk.blue(`userOp: ${JSON.stringify(userOpReceipt, null, "\t")}`)
+    );
 
     try {
       const { transactionHash } = await userOpResponse.waitForTxHash();
@@ -107,7 +103,11 @@ export const erc20TransferPayERC20 = async (to: string, amount: number, token: s
       const transactionDetails = await userOpResponse.wait();
       console.log(
         chalk.blue(
-          `transactionDetails: ${JSON.stringify(transactionDetails, null, "\t")}`
+          `transactionDetails: ${JSON.stringify(
+            transactionDetails,
+            null,
+            "\t"
+          )}`
         )
       );
     } catch (e) {

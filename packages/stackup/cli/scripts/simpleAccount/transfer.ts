@@ -23,13 +23,7 @@ export default async function main(t: string, amt: string, opts: CLIOpts) {
     )
   );
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    new MpcSigner(
-      config.address,
-      config.public_key,
-      config.p1KeyShare,
-      config.keygenResult,
-      mpcAuth
-    ),
+    new MpcSigner(config.keygenResult, mpcAuth),
     config.rpcUrl,
     { paymasterMiddleware, overrideBundlerRpc: opts.overrideBundlerRpc }
   );
