@@ -1,7 +1,6 @@
 import { CliStorage } from "./storage";
 import qrCodeTerm from "qrcode-terminal";
 import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
-import { ethers } from "ethers";
 import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
 import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
 import 'dotenv/config'
@@ -37,12 +36,7 @@ export async function generate(): Promise<MpcSigner> {
       throw new Error("Failed to generate p1KeyShare");
     }
     await mpcAuth.runBackup("demopassword");
-    const publicKey = p1KeyShare.public_key;
-    const address = ethers.utils.computeAddress(`0x04${publicKey}`);
     return new MpcSigner(
-      address,
-      publicKey,
-      p1KeyShare,
       keygenResult,
       mpcAuth
     );

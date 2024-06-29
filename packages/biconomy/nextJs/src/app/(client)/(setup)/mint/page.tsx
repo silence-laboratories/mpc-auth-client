@@ -34,7 +34,7 @@ function Page() {
         setLoading(true);
         try {
             if (eoa) {
-                await mintBiconomyWallet(eoa, mpcAuth);
+                await mintBiconomyWallet(mpcAuth);
                 setLoading(true);
                 clearOldEoa();
                 setPairingStatus(WALLET_STATUS.Minted);
