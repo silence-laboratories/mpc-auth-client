@@ -6,7 +6,7 @@ import { Presets } from "userop";
 import config from "../../config.json";
 import chalk from "chalk";
 import { mpcAuth } from "../../mpc";
-import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/cjs/domain/signer";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export default async function main() {
   const simpleAccount = await Presets.Builder.SimpleAccount.init(

@@ -5,8 +5,7 @@ import fs from "fs/promises";
 import path from "path";
 import prettier from "prettier";
 import chalk from "chalk";
-import { config } from "dotenv";
-config();
+import 'dotenv/config' // NEED to load .env file before using MPC sdk
 import { generate } from "../mpc";
 
 
