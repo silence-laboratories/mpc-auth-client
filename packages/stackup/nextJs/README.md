@@ -4,7 +4,7 @@
 ## Prerequisites:
 - Node.js v16.13.0 or higher
 - Check .env.example file and setup environment variables before running the app
-- Build MPC Authenticator libraryy, follow instruction in [packages/mpc README](../../mpc/README.md)
+- Build MPC Authenticator library, follow instruction in [packages/mpc README](../../mpc/README.md)
 
 ## Setting Up Environment Variables
 1. Create a .env file:
