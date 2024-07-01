@@ -4,9 +4,9 @@
 
 ```bash
 git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk.git
-cd /mpc-account-abstraction-sdk
+cd ./mpc-account-abstraction-sdk
 npm i
-cd /packages/mpc
+cd ./packages/mpc
 npm run build
 ```
 
