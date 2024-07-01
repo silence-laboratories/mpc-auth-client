@@ -73,6 +73,12 @@ export function PasswordBackupScreen({
         } else {
             setPasswordErr(undefined);
         }
+
+        if (currentPassword !== passwordConfirmation) {
+            setPasswordConfirmErr(PasswordInputErr.Confirm);
+        } else {
+            setPasswordConfirmErr(undefined);
+        }
     };
 
     const handleConfirmPwdOnBlur = () => {

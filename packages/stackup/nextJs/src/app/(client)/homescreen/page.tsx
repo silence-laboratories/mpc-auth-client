@@ -45,8 +45,16 @@ const Homescreen: React.FC = () => {
     const [isPasswordReady, setIsPasswordReady] = useState(false);
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
-    const chainCheckRef = useRef(false);
+    const [missingProvider, setMissingProvider] = useState(false);
     const status = getPairingStatus();
+
+    useEffect(() => {
+        // @ts-ignore
+        if (!window.ethereum) {
+            setMissingProvider(true);
+            return;
+        }
+    }, []);
 
     useEffect(() => {
         try {
@@ -83,7 +91,7 @@ const Homescreen: React.FC = () => {
     }, [router, status]);
 
     useEffect(() => {
-        if (!walletAccount || !eoa || chainCheckRef.current) return;
+        if (!walletAccount || !eoa) return;
 
         const checkAndSwitchChain = async () => {
             const isSepolia = await isChainSepolia();
@@ -100,7 +108,6 @@ const Homescreen: React.FC = () => {
             if (isSepolia || didUserSwitch) {
                 setNetwork("Sepolia Test Network");
                 await updateBalance();
-                chainCheckRef.current = true;
             }
         };
 
@@ -359,12 +366,16 @@ const Homescreen: React.FC = () => {
                         padding: "32px 40px",
                     }}
                 >
-                    {(switchChain === "popup" || switchChain === "button") && (
+                    {(switchChain === "popup" ||
+                        switchChain === "button" ||
+                        missingProvider) && (
                         <div
                             className="text-center text-indigo-300 font-bold cursor-pointer"
                             onClick={onSwitchChainClick}
                         >
-                            Switch to Sepolia (Testnet) ...
+                            {missingProvider
+                                ? "Please install Metamask or your favorite ETH Wallet to continue"
+                                : " Switch to Sepolia (Testnet) ..."}
                         </div>
                     )}
                     {switchChain === "none" && (

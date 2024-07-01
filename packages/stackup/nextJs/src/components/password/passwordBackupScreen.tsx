@@ -66,6 +66,12 @@ export const PasswordBackupScreen: React.FunctionComponent<{
         } else {
             setPasswordErr(undefined);
         }
+
+        if (currentPassword !== passwordConfirmation) {
+            setPasswordConfirmErr(PasswordInputErr.Confirm);
+        } else {
+            setPasswordConfirmErr(undefined);
+        }
     };
 
     const handleConfirmPwdOnBlur = () => {
