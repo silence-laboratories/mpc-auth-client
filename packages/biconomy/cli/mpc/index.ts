@@ -1,8 +1,7 @@
 import { CliStorage } from "./storage";
 import qrCodeTerm from "qrcode-terminal";
-import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/cjs/types";
+import { StoragePlatform } from "@silencelaboratories/mpc-sdk";
 import 'dotenv/config'
 const WALLET_ID = "biconomy";
 const storage = new CliStorage();
