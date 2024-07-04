@@ -98,12 +98,12 @@ export class LocalStorageManager implements IStorage {
       );
       const eoaV0 = JSON.parse(
         localStorage.getItem("eoa") || "null"
-      ) as AccountData;
+      ) as AccountData | null;
       const passwordReadyV0 = JSON.parse(
         localStorage.getItem("passwordReady") || "false"
-      );
+      ) as boolean;
       const storageData = this.getStorageData();
-      storageData.eoa = eoaV0.address;
+      storageData.eoa = eoaV0 ? eoaV0.address : null;
       storageData.walletAccount = walletAccountV0;
       storageData.passwordReady = passwordReadyV0;
       this.setStorageData(storageData);
