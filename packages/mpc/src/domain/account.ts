@@ -28,7 +28,7 @@ export class AccountManager {
    * @param {AccountData} walletAccount - The account data to be stored.
    */
   setSmartContractAccount(walletAccount: AccountData) {
-    if (!walletAccount.address) return;
+    if (walletAccount && !walletAccount.address) return;
     const storageData = this.storage.getStorageData();
     storageData.walletAccount = walletAccount;
     this.storage.setStorageData(storageData);
