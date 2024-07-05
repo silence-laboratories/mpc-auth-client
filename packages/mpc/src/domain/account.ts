@@ -1,6 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
+import { MpcError, MpcErrorCode } from "../error";
 import { IStorage } from "../storage/types";
 import { AccountData, DeviceOS } from "../types";
 
@@ -71,6 +72,9 @@ export class AccountManager {
    */
   getDeviceOS(): DeviceOS {
     const storageData = this.storage.getStorageData();
+    if(!storageData.pairingData) {
+      throw new MpcError("Pairing data not found", MpcErrorCode.StorageFetchFailed);
+    }
     const deviceName = storageData.pairingData.deviceName;
     try {
       const deviceOS = deviceName

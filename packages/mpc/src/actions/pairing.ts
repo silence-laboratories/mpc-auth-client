@@ -144,10 +144,8 @@ export class PairingAction {
         deviceName: pairingSessionData.deviceName,
       };
       return {
-        newPairingState: {
-          pairingData,
-          distributedKey: distributedKey ?? null,
-        },
+        pairingData,
+        distributedKey: distributedKey ?? null,
         elapsedTime: Date.now() - startTime,
         deviceName: pairingSessionData.deviceName,
       };
