@@ -2,7 +2,7 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { MpcError, MpcErrorCode } from "../error";
-import { AccountData, StorageData } from "../types";
+import { AccountData, V0StorageData, StorageData } from "../types";
 import { IStorage } from "./types";
 
 export class LocalStorageManager implements IStorage {
@@ -87,6 +87,33 @@ export class LocalStorageManager implements IStorage {
     return jsonObject;
   };
 
+
+    /**
+   * Retrieve SilentShareStorage
+   *
+   * @returns SilentShareStorage object
+   */
+    getV0StorageData = (): V0StorageData => {
+      const _isStorageExist = this.isStorageExist();
+      if (!_isStorageExist) {
+        throw new MpcError("Wallet is not paired", MpcErrorCode.StorageFetchFailed);
+      }
+  
+      let walletId = this.getWalletId();
+      let state = localStorage.getItem(walletId);
+  
+      if (!state) {
+        throw new MpcError(
+          "Wallet failed to fetch state",
+          MpcErrorCode.StorageFetchFailed
+        );
+      }
+  
+      const jsonObject: V0StorageData = JSON.parse(state as string);
+  
+      return jsonObject;
+    };
+
   migrate = () => {
     if (!this.isStorageExist()) {
       return;
@@ -102,10 +129,19 @@ export class LocalStorageManager implements IStorage {
       const passwordReadyV0 = JSON.parse(
         localStorage.getItem("passwordReady") || "false"
       ) as boolean;
+      
+      const V0StorageData = this.getV0StorageData();
+      const pairingData = V0StorageData.newPairingState ? V0StorageData.newPairingState.pairingData : null;
+      const distributedKey = V0StorageData.newPairingState ? V0StorageData.newPairingState.distributedKey : null;
+      // Update v0 storage data to v1
       const storageData = this.getStorageData();
       storageData.eoa = eoaV0 ? eoaV0.address : null;
       storageData.walletAccount = walletAccountV0;
       storageData.passwordReady = passwordReadyV0;
+      storageData.pairingData = pairingData;
+      storageData.distributedKey = distributedKey;
+      delete ((storageData as any).newPairingState);
+      
       this.setStorageData(storageData);
       localStorage.removeItem("walletAccount");
       localStorage.removeItem("eoa");
