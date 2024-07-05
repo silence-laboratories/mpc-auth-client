@@ -26,6 +26,7 @@ import { _toUtf8String } from "@ethersproject/strings/lib/utf8";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
 import { MpcAuthenticator } from "./authenticator";
 import { DistributedKey } from "../types";
+import { MpcError, MpcErrorCode } from "../error";
 
 /**
  * Represents a signer that utilizes Multi-Party Computation (MPC) for signing Ethereum transactions and messages.
@@ -56,12 +57,16 @@ export class MpcSigner extends Signer {
     super();
     this.mpcAuth = mpcAuth;
     const distributedKey = mpcAuth.getDistributionKey();
-    if (!distributedKey) {
-      throw new Error("No distributed key found");
-    }
     this.distributedKey = distributedKey;
     this.public_key = distributedKey.publicKey;
-    this.address = mpcAuth.accountManager.getEoa()!;
+    const eoa = mpcAuth.accountManager.getEoa();
+    if(!eoa) {
+      throw new MpcError(
+        "EOA not found",
+        MpcErrorCode.AccountNotCreated
+      );
+    }
+    this.address = eoa;
     this.provider = provider;
   }
 
@@ -96,8 +101,8 @@ export class MpcSigner extends Signer {
       hexMessage,
       messageDigest,
       "eth_sign",
-      this.mpcAuth.getDistributionKey()!.accountId,
-      this.mpcAuth.getDistributionKey()!.keyShareData
+      this.mpcAuth.getDistributionKey().accountId,
+      this.mpcAuth.getDistributionKey().keyShareData
     );
 
     const signBytes = Buffer.from(signSdk.signature, "hex");

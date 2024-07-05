@@ -51,8 +51,10 @@ export class PairingAction {
 
       return qrCode;
     } catch (error) {
-      if (error instanceof Error) {
-        throw new MpcError(error.message, MpcErrorCode.UnknownError);
+      if (error instanceof MpcError) {
+        throw error;
+      } else if (error instanceof Error) {
+        throw new MpcError(error.message, MpcErrorCode.PairingFailed);
       } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
   };
@@ -62,7 +64,7 @@ export class PairingAction {
       if (!this.pairingDataInit) {
         throw new MpcError(
           "Pairing data not initialized",
-          MpcErrorCode.PairingNotInitialized
+          MpcErrorCode.PairingFailed
         );
       }
 
@@ -78,8 +80,10 @@ export class PairingAction {
       );
       return pairingSessionData;
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof MpcError) {
         throw error;
+      } else if (error instanceof Error) {
+        throw new MpcError(error.message, MpcErrorCode.PairingFailed);
       } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
   };
@@ -92,7 +96,7 @@ export class PairingAction {
     if (!this.pairingDataInit) {
       throw new MpcError(
         "Pairing data not initialized",
-        MpcErrorCode.PairingNotInitialized
+        MpcErrorCode.PairingFailed
       );
     }
     try {
@@ -148,8 +152,10 @@ export class PairingAction {
         deviceName: pairingSessionData.deviceName,
       };
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof MpcError) {
         throw error;
+      } else if (error instanceof Error) {
+        throw new MpcError(error.message, MpcErrorCode.PairingFailed);
       } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
   };
@@ -176,9 +182,11 @@ export class PairingAction {
         elapsedTime: Date.now() - startTime,
       };
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof MpcError) {
         throw error;
-      } else throw new MpcError(`unkown-error`, MpcErrorCode.UnknownError);
+      } else if (error instanceof Error) {
+        throw new MpcError(error.message, MpcErrorCode.HttpError);
+      } else throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
     }
   };
 
@@ -190,7 +198,7 @@ export class PairingAction {
     if (!this.pairingDataInit) {
       throw new MpcError(
         "Pairing data not initialized",
-        MpcErrorCode.PairingNotInitialized
+        MpcErrorCode.PairingFailed
       );
     }
     try {
@@ -235,7 +243,7 @@ export class PairingAction {
     if (!this.pairingDataInit) {
       throw new MpcError(
         "Pairing data not initialized",
-        MpcErrorCode.PairingNotInitialized
+        MpcErrorCode.PairingFailed
       );
     }
     if (currentAccountAddress && !accountAddress) {
@@ -252,7 +260,7 @@ export class PairingAction {
 
       throw new MpcError(
         "No backup data while repairing",
-        MpcErrorCode.RejectedPairingRequest
+        MpcErrorCode.PairingFailed
       );
     } else if (
       currentAccountAddress &&

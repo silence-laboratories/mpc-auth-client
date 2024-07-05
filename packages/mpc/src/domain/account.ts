@@ -10,13 +10,17 @@ import { AccountData, DeviceOS } from "../types";
 export class AccountManager {
   private storage: IStorage;
 
+  /**
+   * Creates an instance of AccountManager.
+   * @param {IStorage} storage - The storage mechanism for persisting account data.
+   */
   constructor(storage: IStorage) {
     this.storage = storage;
   }
 
   /**
-   * Creates an instance of AccountManager.
-   * @param {IStorage} storage - The storage mechanism for persisting account data.
+   * Gets the account address from storage.
+   * @returns {string | null} The EOA string if available, otherwise null.
    */
   getEoa(): string | null {
     const storageData = this.storage.getStorageData();

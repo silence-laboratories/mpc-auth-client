@@ -152,7 +152,7 @@ export class SignAction {
                 if (signConversation.isApproved === false) {
                     throw new MpcError(
                         `User(phone) rejected sign request`,
-                        MpcErrorCode.UserPhoneDenied
+                        MpcErrorCode.PhoneDenied
                     );
                 }
                 round++;
@@ -166,7 +166,7 @@ export class SignAction {
             };
         } catch (error) {
             if (error instanceof MpcError) {
-                if (error.code != MpcErrorCode.SignResourceBusy) {
+                if (error.code !== MpcErrorCode.SignResourceBusy) {
                     running = false;
                 }
                 throw error;
