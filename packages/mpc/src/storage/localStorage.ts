@@ -20,7 +20,7 @@ export class LocalStorageManager implements IStorage {
   getWalletId(): string {
     let walletId = localStorage.getItem("walletId");
     if (walletId === null) {
-      throw new MpcError("Wallet id is not found", MpcErrorCode.UnknownError);
+      throw new MpcError("Wallet id is not found", MpcErrorCode.StorageFetchFailed);
     }
     return walletId;
   }
@@ -53,7 +53,7 @@ export class LocalStorageManager implements IStorage {
     if (data === null) {
       throw new MpcError(
         "Storage data cannot be null",
-        MpcErrorCode.InvalidStorageData
+        MpcErrorCode.StorageDataInvalid
       );
     }
     let walletId = this.getWalletId();
@@ -69,7 +69,7 @@ export class LocalStorageManager implements IStorage {
   getStorageData = (): StorageData => {
     const _isStorageExist = this.isStorageExist();
     if (!_isStorageExist) {
-      throw new MpcError("Wallet is not paired", MpcErrorCode.NotPaired);
+      throw new MpcError("Wallet is not paired", MpcErrorCode.StorageFetchFailed);
     }
 
     let walletId = this.getWalletId();
@@ -78,7 +78,7 @@ export class LocalStorageManager implements IStorage {
     if (!state) {
       throw new MpcError(
         "Wallet failed to fetch state",
-        MpcErrorCode.UnknownError
+        MpcErrorCode.StorageFetchFailed
       );
     }
 

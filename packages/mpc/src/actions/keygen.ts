@@ -123,7 +123,7 @@ export class KeygenAction {
         if (keygenConversation.isApproved === false) {
           throw new MpcError(
             `User(phone) denied keygen`,
-            MpcErrorCode.UserPhoneDenied
+            MpcErrorCode.PhoneDenied
           );
         }
         round++;
@@ -137,7 +137,7 @@ export class KeygenAction {
       };
     } catch (error) {
       if (error instanceof MpcError) {
-        if (error.code != MpcErrorCode.KeygenResourceBusy) {
+        if (error.code !== MpcErrorCode.KeygenResourceBusy) {
           running = false;
         }
         throw error;

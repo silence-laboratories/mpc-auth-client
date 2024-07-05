@@ -18,7 +18,7 @@ export class HttpClient {
       .then(async (data) => {
         const temp: Response = await data.json();
         if (temp.error) {
-          throw new MpcError(temp.error, MpcErrorCode.FirebaseError);
+          throw new MpcError(temp.error, MpcErrorCode.HttpError);
         } else return temp.response;
       })
       .catch((error) => {
@@ -26,8 +26,8 @@ export class HttpClient {
           throw error;
         }
         if (error instanceof Error) {
-          throw new MpcError(error.message, MpcErrorCode.FirebaseError);
-        } else throw new MpcError(`unkown-error`, MpcErrorCode.FirebaseError);
+          throw new MpcError(error.message, MpcErrorCode.HttpError);
+        } else throw new MpcError(`unkown-error`, MpcErrorCode.HttpError);
       });
   };
 
