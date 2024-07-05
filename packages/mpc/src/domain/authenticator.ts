@@ -117,14 +117,14 @@ export class MpcAuthenticator {
       );
     let silentShareStorage = this.storage.getStorageData();
 
-    if (!silentShareStorage.newPairingState?.distributedKey) {
+    if (!silentShareStorage.distributedKey) {
       throw new MpcError(
         "Distributed key not found",
         MpcErrorCode.WalletNotCreated
       );
     }
 
-    return silentShareStorage.newPairingState.distributedKey;
+    return silentShareStorage.distributedKey;
   }
 
   /**
@@ -140,16 +140,10 @@ export class MpcAuthenticator {
         MpcErrorCode.StorageFetchFailed
       );
     try {
-      let silentShareStorage = this.storage.getStorageData();
-      const deviceName = silentShareStorage.pairingData.deviceName;
+      const deviceName = this.accountManager.getDeviceOS();
       return {
         isPaired: true,
         deviceName,
-        // Avoid chaning this, have some legacy reference
-        isAccountExist:
-          silentShareStorage.pairingData.pairingId ===
-            silentShareStorage.newPairingState?.pairingData?.pairingId &&
-          silentShareStorage.newPairingState?.distributedKey,
       };
     } catch {
       return {
@@ -203,15 +197,14 @@ export class MpcAuthenticator {
       currentAccountAddress,
       password
     );
-    const distributedKey = result.newPairingState.distributedKey;
+    const distributedKey = result.distributedKey;
 
     const eoa = distributedKey
       ? getAddressFromPubkey(distributedKey.publicKey)
       : null;
 
     this.storage.setStorageData({
-      newPairingState: result.newPairingState,
-      pairingData: result.newPairingState.pairingData,
+      ...result,
       eoa,
     });
 
@@ -237,11 +230,14 @@ export class MpcAuthenticator {
       );
     let silentShareStorage: StorageData = this.storage.getStorageData();
     let pairingData = silentShareStorage.pairingData;
+    if (!pairingData) {
+      throw new MpcError(
+        "Pairing data not found",
+        MpcErrorCode.WalletNotCreated
+      );
+    }
     let result = await this.pairingAction.refreshToken(pairingData);
-    this.storage.setStorageData({
-      ...silentShareStorage,
-      pairingData: result.newPairingData,
-    });
+    this.storage.setStorageData(silentShareStorage);
     return result.newPairingData;
   }
 
@@ -259,18 +255,22 @@ export class MpcAuthenticator {
       );
     let { pairingData, silentShareStorage } =
       await this.getPairingDataAndStorage();
+
+    if (!pairingData) {
+      throw new MpcError(
+        "Pairing data not found",
+        MpcErrorCode.WalletNotCreated
+      );
+    }
     let x1 = fromHexStringToBytes(await requestEntropy());
     let accountId = 1;
     let result = await this.keygenAction.keygen(pairingData, accountId, x1);
     this.storage.setStorageData({
       ...silentShareStorage,
-      newPairingState: {
-        pairingData: null,
-        distributedKey: {
-          publicKey: result.publicKey,
-          accountId,
-          keyShareData: result.keyShareData,
-        },
+      distributedKey: {
+        publicKey: result.publicKey,
+        accountId,
+        keyShareData: result.keyShareData,
       },
       eoa: getAddressFromPubkey(result.publicKey),
     });
@@ -292,27 +292,27 @@ export class MpcAuthenticator {
   async runBackup(password: string) {
     let { pairingData, silentShareStorage } =
       await this.getPairingDataAndStorage();
+    if (!pairingData) {
+      throw new MpcError(
+        "Pairing data not found",
+        MpcErrorCode.WalletNotCreated
+      );
+    }
     if (password.length === 0) {
       await this.backupAction.backup(pairingData, "", "", this.getWalletId());
       return;
     }
 
-    if (
-      password &&
-      password.length >= 8 &&
-      silentShareStorage.newPairingState?.distributedKey
-    ) {
+    if (password && password.length >= 8 && silentShareStorage.distributedKey) {
       try {
         const encryptedMessage = await aeadEncrypt(
-          JSON.stringify(silentShareStorage.newPairingState?.distributedKey),
+          JSON.stringify(silentShareStorage.distributedKey),
           password
         );
         await this.backupAction.backup(
           pairingData,
           encryptedMessage,
-          getAddressFromPubkey(
-            silentShareStorage.newPairingState?.distributedKey.publicKey
-          ),
+          getAddressFromPubkey(silentShareStorage.distributedKey.publicKey),
           this.getWalletId()
         );
       } catch (error) {
@@ -349,6 +349,12 @@ export class MpcAuthenticator {
       message = message.slice(2);
     }
     let { pairingData } = await this.getPairingDataAndStorage();
+    if (!pairingData) {
+      throw new MpcError(
+        "Pairing data not found",
+        MpcErrorCode.WalletNotCreated
+      );
+    }
     let messageHash = fromHexStringToBytes(messageHashHex);
     if (messageHash.length !== 32) {
       throw new MpcError(
@@ -393,6 +399,12 @@ export class MpcAuthenticator {
       );
     let silentShareStorage: StorageData = this.storage.getStorageData();
     let pairingData = silentShareStorage.pairingData;
+    if (!pairingData) {
+      throw new MpcError(
+        "Pairing data not found",
+        MpcErrorCode.WalletNotCreated
+      );
+    }
     if (pairingData.tokenExpiration < Date.now() - this.TOKEN_LIFE_TIME) {
       pairingData = await this.refreshPairing();
     }
