@@ -1,15 +1,15 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from '../error';
-import { HttpClient } from '../transport/httpClient';
-import { BackupConversation, PairingData } from '../types';
+import { MpcError, MpcErrorCode } from "../error";
+import type { HttpClient } from "../transport/httpClient";
+import type { BackupConversation, PairingData } from "../types";
 
 export class BackupAction {
 	private httpClient: HttpClient;
 	constructor(httpClient: HttpClient) {
 		this.httpClient = httpClient;
-	  }
+	}
 
 	backup = async (
 		pairingData: PairingData,
@@ -20,7 +20,7 @@ export class BackupAction {
 		try {
 			const response = await this.httpClient.sendMessage(
 				pairingData.token,
-				'backup',
+				"backup",
 				{
 					backupData: encryptedMessage,
 					pairingId: pairingData.pairingId,
@@ -32,15 +32,16 @@ export class BackupAction {
 				false,
 			);
 			if (response) {
-				throw new MpcError('Backup failed', MpcErrorCode.BackupFailed);
+				throw new MpcError("Backup failed", MpcErrorCode.BackupFailed);
 			}
 		} catch (error) {
 			if (error instanceof MpcError) {
 				throw error;
-			} else if (error instanceof Error) {
+			}
+			if (error instanceof Error) {
 				throw new MpcError(error.message, MpcErrorCode.BackupFailed);
-			} else throw new MpcError('unknown-error', MpcErrorCode.UnknownError);
+			}
+			throw new MpcError("unknown-error", MpcErrorCode.UnknownError);
 		}
 	};
-	
 }

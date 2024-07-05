@@ -1,4 +1,4 @@
-import { StoragePlatform } from './types';
+import { StoragePlatform } from "./types";
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
