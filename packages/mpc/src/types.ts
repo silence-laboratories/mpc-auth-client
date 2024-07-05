@@ -80,13 +80,18 @@ export interface DistributedKey {
   keyShareData: IP1KeyShare;
 }
 
+export type V0StorageData = {
+	pairingData: PairingData;
+	newPairingState?: {
+		pairingData: PairingData | null;
+		distributedKey: DistributedKey | null;
+	};
+};
+
 export interface StorageData {
   version?: number;
-  pairingData: PairingData;
-  newPairingState?: {
-    pairingData: PairingData | null;
-    distributedKey: DistributedKey | null;
-  };
+  pairingData: PairingData | null;
+  distributedKey: DistributedKey | null;
   walletAccount?: AccountData;
   eoa: string | null;
   passwordReady?: boolean;
