@@ -21,7 +21,7 @@
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@silencelaboratories/ecdsa-tss": "^1.1.3",
-    "@silencelaboratories/mpc-sdk": "file:../../mpc",
+    "@silencelaboratories/mpc-sdk": "^0.0.1-beta",
     "animate.css": "^4.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
