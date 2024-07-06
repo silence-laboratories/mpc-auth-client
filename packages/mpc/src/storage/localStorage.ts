@@ -139,9 +139,7 @@ export class LocalStorageManager implements IStorage {
 			) as boolean;
 
 			const V0StorageData = this.getV0StorageData();
-			const pairingData = V0StorageData.newPairingState
-				? V0StorageData.newPairingState.pairingData
-				: null;
+			const pairingData = V0StorageData.pairingData;
 			const distributedKey = V0StorageData.newPairingState
 				? V0StorageData.newPairingState.distributedKey
 				: null;
