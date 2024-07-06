@@ -25,7 +25,7 @@ jobs:
           popd
           pushd packages/biconomy/nextJs
           echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env 
-          npm i &&  npm run build
+          npm run build
           popd
 
           pushd packages/zerodev/nextJs
@@ -42,7 +42,7 @@ jobs:
 
           pushd packages/stackup/nextJs
           echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env 
-          npm i &&  npm run build
+          npm run build
           popd
 
       - name: Build artifact
