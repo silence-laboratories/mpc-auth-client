@@ -23,7 +23,7 @@
 - Copy the API Key for your instance.
 
 ### How to run
-1. `npm install`
+1. Build MPC Authenticator library, follow instruction in [packages/mpc README](../../mpc/README.md)
 2. `npm run dev` to run dev version
 
 Once started, the app is running on http://localhost:3000/. Ensure that you use only port 3000 strictly.

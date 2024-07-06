@@ -3,7 +3,6 @@
 
 ## Prerequisites:
 - Node.js v16.13.0 or higher
-- Build MPC Authenticator library, follow instruction in [packages/mpc README](../../mpc/README.md)
 
 ## Setting Up Environment Variables
 1. Create a .env file:
@@ -23,7 +22,7 @@
 - You can also set up a paymaster (optional) by configuring the paymaster section:
 
 ### How to run
-1. `npm install`
+1. Build MPC Authenticator library, follow instruction in [packages/mpc README](../../mpc/README.md)
 2. `npm run dev` to run dev version
 
 Once started, the app is running on http://localhost:3000/. Ensure that you use only port 3000 strictly.
