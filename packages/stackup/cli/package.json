@@ -1,5 +1,5 @@
 {
-  "name": "erc-4337-examples",
+  "name": "@silencelaboratories/stackup-cli",
   "version": "1.0.0",
   "description": "A collection of example scripts for working with ERC-4337.",
   "repository": "git@github.com:stackup-wallet/erc-4337-examples.git",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@ethereumjs/tx": "^4.1.2",
     "@silencelaboratories/ecdsa-tss": "^1.1.2",
-    "@silencelaboratories/mpc-sdk": "file:../../mpc",
+    "@silencelaboratories/mpc-sdk": "^0.0.1-beta",
     "axios": "^1.2.3",
     "body-parser": "^1.20.2",
     "buffer": "^6.0.3",

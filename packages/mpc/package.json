@@ -1,5 +1,5 @@
 {
-  "name": "@silencelaboratories/mpc-authenticator-sdk",
+  "name": "@silencelaboratories/mpc-sdk",
   "homepage": "https://github.com/silence-laboratories/mpc-account-abstraction-sdk/packages/mpc#readme",
   "repository": {
     "type": "git",
