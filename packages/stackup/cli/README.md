@@ -50,11 +50,7 @@ To set up the rpcUrl, create an instance at StackUp:
 
 ## Step 3: Install Dependencies
 
-This example uses the userop.js library to build user operations. You can think of it like ethers.js but for ERC-4337. Install it, and all other dependencies.
-
-```bash
-npm install
-```
+This example uses the userop.js library to build user operations. You can think of it like ethers.js but for ERC-4337. We've installed it while [Build MPC Authenticator library in Step 1](#build-mpc-authenticator-library)
 
 ### Step 4: Using the Silent Shard App
 

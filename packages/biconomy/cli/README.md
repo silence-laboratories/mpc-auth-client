@@ -50,11 +50,8 @@ To set up the `rpcUrl`, create an instance at:
 
 ### Step 3: Install Dependencies
 
-- This example demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK. Install it, and all other dependencies.
+- This example demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK. We've installed it while [Build MPC Authenticator library in Step 1](#build-mpc-authenticator-library)
 
-  ```bash
-  npm install
-  ```
 ### Step 4: Using the Silent Shard App
 
 As defined earlier, this setup is between your CLI and the Silent Shard Mobile Application. To interact further with this setup, please install the Silent Shard App.
