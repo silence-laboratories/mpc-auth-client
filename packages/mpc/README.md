@@ -43,7 +43,6 @@ await mpcAuth.runEndPairingSession(pairingSessionData);
 const keygenResult = await mpcAuth.runKeygen(); // Retrieve our MPC keyshares after MPC Key Generation is done
 
 await mpcAuth.runBackup("demopassword"); // (Optional) Sent our backup for key restoration later
-
 ```
 
 ### MpcSigner
@@ -51,11 +50,13 @@ await mpcAuth.runBackup("demopassword"); // (Optional) Sent our backup for key r
 The `MpcSigner` class is responsible for signing Ethereum transactions and messages. It is inherited from ethers.js `Signer` class, so we could use it with any ethers.js compatible interfaces out-of-the-box.
 
 An example of `MpcSigner`:
-```javascript
-const keygenResult = await mpcAuth.runKeygen(); // Required
-const p1KeyShare: IP1KeyShare = keygenResult.distributedKey.keyShareData;
-const publicKey = p1KeyShare.public_key;
-const address = ethers.utils.computeAddress(`0x04${publicKey}`);
-const mpcSigner = new MpcSigner(address, publicKey, p1KeyShare, keygenResult, mpcAuth); // Now, we could use mpcSigner to sign our transactions
 
+```javascript
+const mpcSigner = new MpcSigner(mpcAuth); // Now, we could use mpcSigner to sign our transactions
+
+// Example using Biconomy account creation
+const biconomySmartAccount = await createSmartAccountClient({
+  signer: client as SupportedSigner,
+  bundlerUrl: `https://bundler.biconomy.io/api/v2/11155111/${process.env.API_KEY}`,
+});
 ```
