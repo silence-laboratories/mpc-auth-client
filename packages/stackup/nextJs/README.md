@@ -3,16 +3,29 @@
 
 ## Prerequisites:
 - Node.js v16.13.0 or higher
-- Check .env.example file and setup environment variables before running the app
+- Build MPC Authenticator library, follow instruction in [packages/mpc README](../../mpc/README.md)
 
 ## Setting Up Environment Variables
-1. Create a .env file:
+
+1. Clone the repository.
+
+```bash
+git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
+```
+
+- Navigate to the nextJs directory within the cloned repository:
+
+```bash
+cd packages/stackup/nextJs
+```
+
+2. Create a .env file:
 - In the root of your project, create a new file named .env
 
-2. Fill in your API keys in .env:
+- Fill in your API keys in .env:
     ``` bash
-    NEXT_PUBLIC_BASE_URL= https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
-    API_KEY = your_stackup_api_key_here //update this API key using step 3 below
+    API_KEY = your_stackup_api_key_here #update this API key using step 3 below
+    NODE_ENV=development #only require for development
     ```
 3. Set the rpcUrl:
 - To set the rpcUrl, you can create an instance at app.stackup.sh. Follow these steps:
@@ -23,12 +36,15 @@
 - You can also set up a paymaster (optional) by configuring the paymaster section:
 
 ### How to run
-1. `npm install`
-2. `npm run dev` to run dev version
+Make sure you've done all the steps mentioned above. Run command:
 
-Once started, the app is running on http://localhost:3000/. Ensure that you use only port 3000 strictly.
+```sh
+npm run dev
+```
 
-### Using the Silent Shard App
+Once started, the dapp is running on http://localhost:3000/. Ensure that you use only port 3000 strictly.
+
+### Using the Silent Shard App to interact with the DApp
 To interact with QR codes essential for this setup, you'll need to use the Silent Shard app. Follow these steps:
 1. Download the App:
  - Get the Silent Shard app from the Google Play Store.

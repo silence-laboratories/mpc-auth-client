@@ -1,9 +1,19 @@
 
 ## MPC X AA CLI
 
+ This example is a basic command-line wallet application which uses the userop.js library to build user operations. You can think of it like ethers.js but for ERC-4337. 
+
+## Prerequisites:
+
+- **Build MPC Authenticator library**. Follow instruction in [packages/mpc README](../../mpc/README.md)
+
+- **Node Version:** Ensure you are using Node.js version 18.
+
+## How to run
+
 ### Step 1: Clone the Repository
 
-Clone the mpc-account-abstraction-sdk repository. This example is a basic command-line wallet application.
+Clone the repository.
 
 ```bash
 git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
@@ -15,12 +25,7 @@ Navigate to the cli directory within the cloned repository:
 cd packages/stackup/cli
 ```
 
-## Configuration Setup
-
-- **Node Version:** Ensure you are using Node.js version 18
-
-
-### Set Up the RPC URL
+#### Set Up the RPC URL
 
 To set up the rpcUrl, create an instance at StackUp:
 
@@ -37,21 +42,15 @@ To set up the rpcUrl, create an instance at StackUp:
 2. Fill in your Base urls and API keys in `.env`:
 
     - Replace `your_stackup_api_key_here` with your actual stackup's API key.
+    - To run in development environment, add `NODE_ENV=development`.
 
         ```env
-        FIREBASE_BASEURL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
         API_KEY=your_stsackup_api_key_here
+        NODE_ENV=development
         ```
 
-## Step 3: Install Dependencies
 
-This example uses the userop.js library to build user operations. You can think of it like ethers.js but for ERC-4337. Install it, and all other dependencies.
-
-```bash
-npm install
-```
-
-### Step 4: Using the Silent Shard App
+### Step 3: Using the Silent Shard App
 
 As defined earlier, this setup is between your CLI and the Silent Shard Mobile Application. To interact further with this setup, please install the Silent Shard App.
 
@@ -61,7 +60,7 @@ As defined earlier, this setup is between your CLI and the Silent Shard Mobile A
 
 2. Press the "Connect new Account" button to initiate the QR scanner on the app to pair with the CLI.
 
-## Step 5: Initialising and Distributed Key Generation
+## Step 4: Initialising and Distributed Key Generation
 
 Initialize your local configuration by running the following command:
 
@@ -119,7 +118,7 @@ A `config.json` file will be created. The file will look like this:
 - `paymaster`: URL of the Paymaster service you are using and context (optional)
 - `keygenResult`: Contains the result of the key generation process, including the distributed public key and key share data, along with the elapsed time for the operation.
 
-## Step 6: Create an account
+## Step 5: Create an account
 
 Create a counterfactual address by running the command:
 
@@ -129,13 +128,13 @@ npm run simpleAccount address
 
 A SimpleAccount address will be returned. At this point, the Smart Account has not been deployed. ERC-4337 account addresses are deterministic, so you don't need to deploy the contract to know its address.
 
-## Step 7: Fund the account
+## Step 6: Fund the account
 
 You will now need to deposit the native token of the blockchain you are using into your new Smart Account. Since we are using the sepolia testnet, you will deposit sepolia ETH into the account.
 
 Navigate to a faucet, such as [this link](https://cloud.google.com/application/web3/faucet/ethereum/sepolia). Enter the account address from Step 6 and claim the testnet token.
 
-## Step 8: Initiate the transfer
+## Step 7: Initiate the transfer
 
 The simpleAccount transfer command allows you to transfer the native token from the smart contract account to any address. It will create a User Operation, sign it, and send it to the Bundler:
 
@@ -143,7 +142,7 @@ The simpleAccount transfer command allows you to transfer the native token from 
 npm run simpleAccount transfer --to <address> --amount <eth>
 ```
 
-## Step 9: Approve the signature on the paired Mobile Application
+## Step 8: Approve the signature on the paired Mobile Application
 
 When transferring the token to any address via this integration, your phone will receive a signature alert notification twice. You need to swipe right to approve the transaction both times. Once approved, you will see the signed userOperation object and the transaction hash.
 
