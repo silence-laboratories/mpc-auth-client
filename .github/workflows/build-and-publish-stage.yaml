@@ -61,13 +61,12 @@ jobs:
 
       - run: |
             if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
-            ln -sf /opt/service/update/node_modules /opt/service/biconomy/node_modules
             mv /opt/service/update/packages/biconomy/nextJs /opt/service/biconomy
+            ln -sf /opt/service/update/node_modules /opt/service/biconomy/node_modules
       - run: |
             if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-            ln -sf /opt/service/update/node_modules /opt/service/stackup/node_modules
             mv /opt/service/update/packages/stackup/nextJs /opt/service/stackup
-            
+            ln -sf /opt/service/update/node_modules /opt/service/stackup/node_modules
       - run: sudo systemctl restart biconomy.service stackup.service
 
           
