@@ -42,7 +42,17 @@ Make sure you've done all the steps mentioned above. Run command:
 npm run dev
 ```
 
-Once started, the dapp is running on http://localhost:3000/. Ensure that you use only port 3000 strictly.
+If you see the error below:
+
+```sh
+npm ERR! code ENOWORKSPACES
+npm ERR! This command does not support workspaces.
+```
+
+It is an [issue](https://github.com/vercel/next.js/issues/47121) of NextJS with npm workspace.
+You could ignore the error or skips the error by running the command `npx next telemetry disable`
+
+**Note:** The dapp is required to run on port 3000 only, if we don't strictly run dapp at http://localhost:3000/ the functionality of the dapp will not work as expected.
 
 ### Using the Silent Shard App to interact with the DApp
 To interact with QR codes essential for this setup, you'll need to use the Silent Shard app. Follow these steps:
