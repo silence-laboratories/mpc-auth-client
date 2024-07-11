@@ -2,11 +2,11 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import _sodium from "libsodium-wrappers-sumo";
-import { Crypto } from "../crypto";
 import { MpcError, MpcErrorCode } from "../error";
 import type { HttpClient } from "../transport/httpClient";
 import type { DistributedKey, PairingData, PairingSessionData } from "../types";
 import * as utils from "../utils";
+import { aeadDecrypt } from "../crypto";
 
 export enum PairingRemark {
 	WALLET_MISMATCH = "WALLET_MISMATCH",
@@ -203,7 +203,7 @@ export class PairingAction {
 			);
 		}
 		try {
-			const decreptedMessage = await Crypto.aeadDecrypt(backupData, password);
+			const decreptedMessage = await aeadDecrypt(backupData, password);
 			const distributedKey = JSON.parse(
 				utils.uint8ArrayToUtf8String(decreptedMessage),
 			);
