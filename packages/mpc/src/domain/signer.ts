@@ -36,36 +36,45 @@ import type { MpcAuthenticator } from "./authenticator";
  * @class MpcSigner
  * @extends {Signer}
  *
+ * @property {MpcAuthenticator} mpcAuth - MPC SDK instance used for signing operations.
  * @property {DistributedKey} distributedKey - Distributed key of the signer.
  * @property {string} address - Ethereum address associated with this signer.
- * @property {string} public_key - Public key of the signer.
- * @property {MpcAuthenticator} mpcAuth - MPC SDK instance used for signing operations.
- * @property {Provider} [provider] - Ethers.js provider instance to interact with the Ethereum network.
- *
  * @constructor
  * Creates an instance of MpcSigner.
- * @param {MpcAuthenticator} mpcAuth - MPC SDK instance for signing operations.
- * @param {Provider} [provider] - ethers.js provider instance.
+ * @param {MpcAuthenticator} mpcAuth - MPC SDK instance for signing operations. MUST NOT be used to create MpcSigner instance.
  */
 export class MpcSigner extends Signer {
 	#mpcAuth: MpcAuthenticator;
-	#distributedKey: DistributedKey;
-	readonly provider?: ethers.providers.Provider;
-	public address: string;
-	public public_key: string;
+	#distributedKey?: DistributedKey;
+	#address?: string;
+	static #instance: MpcSigner | null = null;
 
-	constructor(mpcAuth: MpcAuthenticator, provider?: Provider) {
+	/**
+	 *
+	 * @param mpcAuth
+	 * @returns An instance of MpcSigner. IMPORTANT: This method should be called before using the MpcSigner class.
+	 */
+	static instance = async (mpcAuth: MpcAuthenticator) => {
+		if (MpcSigner.#instance === null) {
+			MpcSigner.#instance = new MpcSigner(mpcAuth);
+			await MpcSigner.#instance.#build();
+		}
+		return MpcSigner.#instance;
+	};
+
+	constructor(mpcAuth: MpcAuthenticator) {
 		super();
 		this.#mpcAuth = mpcAuth;
-		const distributedKey = mpcAuth.getDistributionKey();
+	}
+
+	#build = async() => {
+		const distributedKey = await this.#mpcAuth.getDistributionKey();
 		this.#distributedKey = distributedKey;
-		this.public_key = distributedKey.publicKey;
-		const eoa = mpcAuth.accountManager.getEoa();
+		const eoa = await this.#mpcAuth.accountManager.getEoa();
 		if (!eoa) {
 			throw new MpcError("EOA not found", MpcErrorCode.AccountNotCreated);
 		}
-		this.address = eoa;
-		this.provider = provider;
+		this.#address = eoa;
 	}
 
 	/**
@@ -74,7 +83,13 @@ export class MpcSigner extends Signer {
 	 * @returns {Promise<string>} The Ethereum address as a promise.
 	 */
 	async getAddress(): Promise<string> {
-		return this.address;
+		if (!this.#address) {
+			throw new MpcError(
+				"Address not found",
+				MpcErrorCode.WalletNotCreated,
+			);
+		}
+		return this.#address;
 	}
 
 	/**
@@ -93,14 +108,15 @@ export class MpcSigner extends Signer {
 			message,
 		]);
 
+		const distributionKey = await this.#mpcAuth.getDistributionKey();
 		const hexMessage = hexlify(messageSome);
 		const signSdk = await this.#mpcAuth.runSign(
 			"keccak256",
 			hexMessage,
 			messageDigest,
 			"eth_sign",
-			this.#mpcAuth.getDistributionKey().accountId,
-			this.#mpcAuth.getDistributionKey().keyShareData,
+			distributionKey.accountId,
+			distributionKey.keyShareData,
 		);
 
 		const signBytes = Buffer.from(signSdk.signature, "hex");
@@ -128,9 +144,9 @@ export class MpcSigner extends Signer {
 	async signTransaction(transaction: TransactionRequest): Promise<string> {
 		return resolveProperties(transaction).then(async (tx: any) => {
 			if (tx.from != null) {
-				if (getAddress(tx.from) !== this.address) {
+				if (getAddress(tx.from) !== this.#address) {
 					throw new Error(
-						`transaction from address mismatch (from:${tx.from} address:${this.address})`,
+						`transaction from address mismatch (from:${tx.from} address:${this.#address})`,
 					);
 				}
 				tx.from = undefined;
@@ -152,6 +168,12 @@ export class MpcSigner extends Signer {
 	 */
 	async signDigest(digest: BytesLike): Promise<Signature> {
 		const messageDigest = hexlify(digest);
+		if (!this.#distributedKey) {
+			throw new MpcError(
+				"Distributed key not found",
+				MpcErrorCode.WalletNotCreated,
+			);
+		}
 		const sign = await this.#mpcAuth.runSign(
 			"keccak256",
 			" ",
@@ -179,7 +201,7 @@ export class MpcSigner extends Signer {
 	 * @param {Provider} provider - The ETH provider to connect with.
 	 * @returns {MpcSigner} A new instance of MpcSigner connected with the specified provider.
 	 */
-	connect(provider: Provider): MpcSigner {
-		return new MpcSigner(this.#mpcAuth, provider);
+	connect(_provider: Provider): MpcSigner {
+		return new MpcSigner(this.#mpcAuth);
 	}
 }

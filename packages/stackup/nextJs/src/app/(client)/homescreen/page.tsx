@@ -57,37 +57,42 @@ const Homescreen: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        try {
-            setIsPasswordReady(mpcAuth.accountManager.isPasswordReady());
-        } catch (error) {
-            console.error("isPasswordReady error", error);
-        }
+        (async () => {
+            try {
+                const isReady = await mpcAuth.accountManager.isPasswordReady();
+                setIsPasswordReady(isReady);
+            } catch (error) {
+                console.error("isPasswordReady error", error);
+            }
+        })();
     }, [openPasswordBackupDialog]);
 
     useEffect(() => {
-        try {
-            const account = mpcAuth.accountManager.getSmartContractAccount();
-            if (!account) {
-                setPairingStatus(WALLET_STATUS.BackedUp);
-                router.replace("/mint");
-                return;
-            }
-
-            const eoa = mpcAuth.accountManager.getEoa();
-            if (!eoa) {
+        (async () => {
+            try {
+                const account = await mpcAuth.accountManager.getSmartContractAccount();
+                if (!account) {
+                    setPairingStatus(WALLET_STATUS.BackedUp);
+                    router.replace("/mint");
+                    return;
+                }
+    
+                const eoa = await mpcAuth.accountManager.getEoa();
+                if (!eoa) {
+                    setPairingStatus(WALLET_STATUS.Unpaired);
+                    router.replace("/intro");
+                    return;
+                }
+    
+                setPairingStatus(WALLET_STATUS.Minted);
+                setWalletAccount(account);
+                setEoa(eoa);
+            } catch (error) {
                 setPairingStatus(WALLET_STATUS.Unpaired);
                 router.replace("/intro");
                 return;
             }
-
-            setPairingStatus(WALLET_STATUS.Minted);
-            setWalletAccount(account);
-            setEoa(eoa);
-        } catch (error) {
-            setPairingStatus(WALLET_STATUS.Unpaired);
-            router.replace("/intro");
-            return;
-        }
+        })()
     }, [router, status]);
 
     useEffect(() => {

@@ -21,9 +21,16 @@ function Page() {
     const mpcAuth = useMpcAuth();
     const router = useRouter();
     const oldEoa = getOldEoa() ?? "";
-    const eoa = mpcAuth.accountManager.getEoa() ?? "";
+    const [eoa, setEoa] = useState<string>("");
     const [showHeadsUp, setShowHeadsUp] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
+
+    useEffect(() => {
+        (async () => {
+            const val = await mpcAuth.accountManager.getEoa() ?? "";
+            setEoa(val);
+        })();
+    }, []);
 
     const handleRestoreAccount = async () => {
         if (!showHeadsUp) {
@@ -245,9 +252,7 @@ function Page() {
                     disabled={showHeadsUp && !isAgree}
                 >
                     Restore account
-                    <span className="b2-bold ml-1">
-                        {briefAddress(eoa)}
-                    </span>
+                    <span className="b2-bold ml-1">{briefAddress(eoa)}</span>
                 </Button>
             </div>
         </div>
