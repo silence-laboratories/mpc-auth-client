@@ -5,7 +5,7 @@ import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import type { IStorage } from "./storage/types";
 
 export type Options = {
-	walletId: string;
+	walletId: WalletId;
 	storagePlatform: StoragePlatform;
 	customStorage?: IStorage;
 	isDev?: boolean;
@@ -113,4 +113,9 @@ export type AccountData = {
 export enum StoragePlatform {
 	Browser = "browser",
 	CLI = "cli",
+}
+
+export enum WalletId {
+	stackup = "stackup",
+	biconomy = "biconomy",
 }

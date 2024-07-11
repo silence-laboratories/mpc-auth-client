@@ -13,6 +13,7 @@ import {
 	type SignMetadata,
 	type StorageData,
 	StoragePlatform,
+	WalletId,
 } from "../types";
 import { fromHexStringToBytes, getAddressFromPubkey } from "../utils";
 import { AccountManager } from "./account";
@@ -37,7 +38,7 @@ export class MpcAuthenticator {
 	 * The wallet identifier.
 	 * @private
 	 */
-	#walletId = "";
+	#walletId = WalletId.stackup;
 	/**
 	 * The HTTP client for making requests to the server.
 	 * @private
