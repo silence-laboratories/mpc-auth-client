@@ -3,7 +3,6 @@ import { BackupAction } from "../actions/backup";
 import { KeygenAction } from "../actions/keygen";
 import { PairingAction } from "../actions/pairing";
 import { SignAction } from "../actions/sign";
-import { Crypto } from "../crypto";
 import { MpcError, MpcErrorCode } from "../error";
 import { LocalStorageManager } from "../storage/localStorage";
 import type { IStorage } from "../storage/types";
@@ -17,6 +16,7 @@ import {
 } from "../types";
 import { fromHexStringToBytes, getAddressFromPubkey } from "../utils";
 import { AccountManager } from "./account";
+import { aeadEncrypt, requestEntropy } from "../crypto";
 
 /**
  * Represents an authenticator for managing MPC (Multi-Party Computation) operations such as pairing, key generation, signing, and backup.
@@ -262,7 +262,7 @@ export class MpcAuthenticator {
 				MpcErrorCode.WalletNotCreated,
 			);
 		}
-		const x1 = fromHexStringToBytes(await Crypto.requestEntropy());
+		const x1 = fromHexStringToBytes(await requestEntropy());
 		const accountId = 1;
 		const result = await this.#keygenAction.keygen(pairingData, accountId, x1);
 		this.#storage.setStorageData({
@@ -305,7 +305,7 @@ export class MpcAuthenticator {
 
 		if (password && password.length >= 8 && silentShareStorage.distributedKey) {
 			try {
-				const encryptedMessage = await Crypto.aeadEncrypt(
+				const encryptedMessage = await aeadEncrypt(
 					JSON.stringify(silentShareStorage.distributedKey),
 					password,
 				);
