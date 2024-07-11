@@ -12,8 +12,6 @@ import type { HttpClient } from "../transport/httpClient";
 import type { KeygenConversation, PairingData } from "../types";
 import * as utils from "../utils";
 
-let running = false;
-
 type KeygenResult = {
 	publicKey: string;
 	keyShareData: IP1KeyShare;
@@ -21,10 +19,11 @@ type KeygenResult = {
 };
 
 export class KeygenAction {
-	httpClient: HttpClient;
+	#running = false;
+	#httpClient: HttpClient;
 
 	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
+		this.#httpClient = httpClient;
 	}
 
 	keygen = async (
@@ -33,13 +32,13 @@ export class KeygenAction {
 		x1: Uint8Array,
 	): Promise<KeygenResult> => {
 		try {
-			if (running) {
+			if (this.#running) {
 				throw new MpcError(
 					"Keygen already running",
 					MpcErrorCode.KeygenResourceBusy,
 				);
 			}
-			running = true;
+			this.#running = true;
 
 			const startTime = Date.now();
 			const sessionId = _sodium.to_hex(await randBytes(32));
@@ -110,7 +109,7 @@ export class KeygenAction {
 						nonce: _sodium.to_hex(nonce),
 					},
 				};
-				const keygenConversationNew = await this.httpClient.sendMessage(
+				const keygenConversationNew = await this.#httpClient.sendMessage(
 					pairingData.token,
 					"keygen",
 					keygenConversation,
@@ -128,7 +127,7 @@ export class KeygenAction {
 				}
 				round++;
 			}
-			running = false;
+			this.#running = false;
 
 			return {
 				publicKey: keyshare.public_key,
@@ -138,7 +137,7 @@ export class KeygenAction {
 		} catch (error) {
 			if (error instanceof MpcError) {
 				if (error.code !== MpcErrorCode.KeygenResourceBusy) {
-					running = false;
+					this.#running = false;
 				}
 				throw error;
 			}

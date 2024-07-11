@@ -12,8 +12,6 @@ import type { HttpClient } from "../transport/httpClient";
 import type { PairingData, SignConversation, SignMetadata } from "../types";
 import * as utils from "../utils";
 
-let running = false;
-
 type SignResult = {
 	signature: string;
 	recId: number;
@@ -32,21 +30,22 @@ export interface SignRequest {
 }
 
 export class SignAction {
-	httpClient: HttpClient;
+	#running = false;
+	#httpClient: HttpClient;
 
 	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
+		this.#httpClient = httpClient;
 	}
 
 	sign = async (signRequest: SignRequest): Promise<SignResult> => {
 		try {
-			if (running) {
+			if (this.#running) {
 				throw new MpcError(
 					"Sign already running",
 					MpcErrorCode.SignResourceBusy,
 				);
 			}
-			running = true;
+			this.#running = true;
 			const startTime = Date.now();
 			const sessionId = _sodium.to_hex(await randBytes(32));
 			const {
@@ -134,7 +133,7 @@ export class SignAction {
 					},
 				};
 				const signConversationNew =
-					await this.httpClient.sendMessage<SignConversation>(
+					await this.#httpClient.sendMessage<SignConversation>(
 						pairingData.token,
 						"sign",
 						signConversation,
@@ -152,7 +151,7 @@ export class SignAction {
 				round++;
 			}
 
-			running = false;
+			this.#running = false;
 			return {
 				signature: sign,
 				recId,
@@ -161,7 +160,7 @@ export class SignAction {
 		} catch (error) {
 			if (error instanceof MpcError) {
 				if (error.code !== MpcErrorCode.SignResourceBusy) {
-					running = false;
+					this.#running = false;
 				}
 				throw error;
 			}

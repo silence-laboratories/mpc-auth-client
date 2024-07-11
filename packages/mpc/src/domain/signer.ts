@@ -5,11 +5,7 @@ import type {
 	Provider,
 	TransactionRequest,
 } from "@ethersproject/abstract-provider";
-import {
-	Signer,
-	type TypedDataDomain,
-	type TypedDataField,
-} from "@ethersproject/abstract-signer";
+import { Signer } from "@ethersproject/abstract-signer";
 import { getAddress } from "@ethersproject/address";
 import { hexlify } from "@ethersproject/bytes";
 import {
@@ -27,7 +23,6 @@ import {
 	type UnsignedTransaction,
 	serialize,
 } from "@ethersproject/transactions";
-import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import type { ethers } from "ethers";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
 import { MpcError, MpcErrorCode } from "../error";
@@ -53,24 +48,24 @@ import type { MpcAuthenticator } from "./authenticator";
  * @param {Provider} [provider] - ethers.js provider instance.
  */
 export class MpcSigner extends Signer {
-	private mpcAuth: MpcAuthenticator;
+	#mpcAuth: MpcAuthenticator;
+	#distributedKey: DistributedKey;
+	readonly #provider?: ethers.providers.Provider;
 	public address: string;
 	public public_key: string;
-	readonly provider?: ethers.providers.Provider;
-	private distributedKey: DistributedKey;
 
 	constructor(mpcAuth: MpcAuthenticator, provider?: Provider) {
 		super();
-		this.mpcAuth = mpcAuth;
+		this.#mpcAuth = mpcAuth;
 		const distributedKey = mpcAuth.getDistributionKey();
-		this.distributedKey = distributedKey;
+		this.#distributedKey = distributedKey;
 		this.public_key = distributedKey.publicKey;
 		const eoa = mpcAuth.accountManager.getEoa();
 		if (!eoa) {
 			throw new MpcError("EOA not found", MpcErrorCode.AccountNotCreated);
 		}
 		this.address = eoa;
-		this.provider = provider;
+		this.#provider = provider;
 	}
 
 	/**
@@ -99,13 +94,13 @@ export class MpcSigner extends Signer {
 		]);
 
 		const hexMessage = hexlify(messageSome);
-		const signSdk = await this.mpcAuth.runSign(
+		const signSdk = await this.#mpcAuth.runSign(
 			"keccak256",
 			hexMessage,
 			messageDigest,
 			"eth_sign",
-			this.mpcAuth.getDistributionKey().accountId,
-			this.mpcAuth.getDistributionKey().keyShareData,
+			this.#mpcAuth.getDistributionKey().accountId,
+			this.#mpcAuth.getDistributionKey().keyShareData,
 		);
 
 		const signBytes = Buffer.from(signSdk.signature, "hex");
@@ -157,13 +152,13 @@ export class MpcSigner extends Signer {
 	 */
 	async signDigest(digest: BytesLike): Promise<Signature> {
 		const messageDigest = hexlify(digest);
-		const sign = await this.mpcAuth.runSign(
+		const sign = await this.#mpcAuth.runSign(
 			"keccak256",
 			" ",
 			messageDigest,
 			"eth_sign",
-			this.distributedKey.accountId,
-			this.distributedKey.keyShareData,
+			this.#distributedKey.accountId,
+			this.#distributedKey.keyShareData,
 		);
 
 		const signBytes = Buffer.from(sign.signature, "hex");
@@ -185,33 +180,6 @@ export class MpcSigner extends Signer {
 	 * @returns {MpcSigner} A new instance of MpcSigner connected with the specified provider.
 	 */
 	connect(provider: Provider): MpcSigner {
-		return new MpcSigner(this.mpcAuth, provider);
-	}
-
-	private async _signTypedData(
-		domain: TypedDataDomain,
-		types: Record<string, Array<TypedDataField>>,
-		// biome-ignore lint/suspicious/noExplicitAny: Etherjs uses any
-		value: Record<string, any>,
-	): Promise<string> {
-		// Populate any ENS names
-		const populated = await _TypedDataEncoder.resolveNames(
-			domain,
-			types,
-			value,
-			//@ts-ignore
-			(name: string) => {
-				if (this.provider == null) {
-					throw new Error("cannot resolve ENS names without a provider");
-				}
-				return this.provider.resolveName(name);
-			},
-		);
-
-		return joinSignature(
-			await this.signDigest(
-				_TypedDataEncoder.hash(populated.domain, types, populated.value),
-			),
-		);
+		return new MpcSigner(this.#mpcAuth, provider);
 	}
 }
