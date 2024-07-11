@@ -20,7 +20,7 @@ function Page() {
         router.replace("/afterBackup");
     };
     const status = getPairingStatus();
-    if (status !== WALLET_STATUS.Paired || mpcAuth.accountManager.isPasswordReady()) {
+    if (status !== WALLET_STATUS.Paired) {
         return <RouteLoader />;
     }
     return (

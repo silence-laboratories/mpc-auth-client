@@ -16,8 +16,9 @@ export async function sendTransaction(
     if (!eoa) {
         throw new Error("Eoa not found");
     }
+    const signer = await MpcSigner.instance(mpcAuth);
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
-        new MpcSigner(mpcAuth),
+        signer,
         `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
     const client = await Client.init(

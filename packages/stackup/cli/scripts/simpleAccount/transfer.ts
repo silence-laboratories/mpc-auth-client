@@ -22,8 +22,9 @@ export default async function main(t: string, amt: string, opts: CLIOpts) {
       "You need to approve twice on your Silent Shard app to send a transaction"
     )
   );
+  const signer = await MpcSigner.instance(mpcAuth);
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    new MpcSigner(mpcAuth),
+    signer,
     config.rpcUrl,
     { paymasterMiddleware, overrideBundlerRpc: opts.overrideBundlerRpc }
   );

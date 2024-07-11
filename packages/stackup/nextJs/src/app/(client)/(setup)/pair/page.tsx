@@ -52,7 +52,7 @@ function Page() {
                 oldEoa ?? undefined,
                 password
             );
-            const eoa = mpcAuth.accountManager.getEoa();
+            const eoa = await mpcAuth.accountManager.getEoa();
             if (isRepairing && oldEoa !== null && eoa !== oldEoa) {
                 setPairingStatus(WALLET_STATUS.Mismatched);
                 router.replace("/mismatchAccounts");

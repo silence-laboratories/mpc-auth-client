@@ -12,7 +12,7 @@ export class CliStorage implements IStorage {
    *
    * @returns true if exists, false otherwise
    */
-  isStorageExist = (): boolean => {
+  isStorageExist = async (): Promise<boolean> => {
     try {
       const fileExists = fs.existsSync("storage.json");
       return fileExists;
@@ -24,7 +24,7 @@ export class CliStorage implements IStorage {
   /**
    * Delete the stored data, if it exists.
    */
-  clearStorageData = () => {
+  clearStorageData = async () => {
     try {
       if (fs.existsSync("storage.json")) {
         fs.unlinkSync("storage.json");
@@ -59,7 +59,7 @@ export class CliStorage implements IStorage {
    *
    * @returns SilentShareStorage object
    */
-  getStorageData = (): StorageData => {
+  getStorageData = async (): Promise<StorageData> => {
     try {
       const fileContent = fs.readFileSync("storage.json", "utf8");
       const jsonObject: StorageData = JSON.parse(fileContent);

@@ -24,8 +24,10 @@ function Page() {
             router.replace("/intro");
             return;
         }
-
-        setEoa(mpcAuth.accountManager.getEoa());
+        (async() => {
+            const val = await mpcAuth.accountManager.getEoa();
+            setEoa(val);
+        })()
     }, [router, status]);
 
     const handleMint = async () => {
