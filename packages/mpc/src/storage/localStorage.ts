@@ -7,25 +7,11 @@ import type { IStorage } from "./types";
 
 export class LocalStorageManager implements IStorage {
 	#VERSION = 1;
+	#walletId: string;
 	constructor(walletId: string) {
 		localStorage.setItem("walletId", walletId);
+		this.#walletId = walletId;
 		this.migrate();
-	}
-
-	/**
-	 * Get wallet id from local storage
-	 *
-	 * @returns walletId
-	 */
-	getWalletId = (): string => {
-		const walletId = localStorage.getItem("walletId");
-		if (walletId === null) {
-			throw new MpcError(
-				"Wallet id is not found",
-				MpcErrorCode.StorageFetchFailed,
-			);
-		}
-		return walletId;
 	}
 
 	/**
@@ -33,18 +19,16 @@ export class LocalStorageManager implements IStorage {
 	 *
 	 * @returns true if exists, false otherwise
 	 */
-	isStorageExist = (): boolean => {
-		const walletId = this.getWalletId();
-		const data = localStorage.getItem(walletId);
+	isStorageExist = async (): Promise<boolean> => {
+		const data = localStorage.getItem(this.#walletId);
 		return data !== null;
 	};
 
 	/**
 	 * Delete the stored data, if it exists.
 	 */
-	clearStorageData = () => {
-		const walletId = this.getWalletId();
-		localStorage.removeItem(walletId);
+	clearStorageData = async () => {
+		localStorage.removeItem(this.#walletId);
 	};
 
 	/**
@@ -52,16 +36,15 @@ export class LocalStorageManager implements IStorage {
 	 *
 	 * @param data obj to save
 	 */
-	setStorageData = (data: StorageData) => {
+	setStorageData = async (data: StorageData) => {
 		if (data === null) {
 			throw new MpcError(
 				"Storage data cannot be null",
 				MpcErrorCode.StorageDataInvalid,
 			);
 		}
-		const walletId = this.getWalletId();
 		data.version = this.#VERSION;
-		localStorage.setItem(walletId, JSON.stringify(data));
+		localStorage.setItem(this.#walletId, JSON.stringify(data));
 	};
 
 	/**
@@ -69,8 +52,8 @@ export class LocalStorageManager implements IStorage {
 	 *
 	 * @returns SilentShareStorage object
 	 */
-	getStorageData = (): StorageData => {
-		const _isStorageExist = this.isStorageExist();
+	getStorageData = async (): Promise<StorageData> => {
+		const _isStorageExist = await this.isStorageExist();
 		if (!_isStorageExist) {
 			throw new MpcError(
 				"Wallet is not paired",
@@ -78,8 +61,7 @@ export class LocalStorageManager implements IStorage {
 			);
 		}
 
-		const walletId = this.getWalletId();
-		const state = localStorage.getItem(walletId);
+		const state = localStorage.getItem(this.#walletId);
 
 		if (!state) {
 			throw new MpcError(
@@ -98,8 +80,8 @@ export class LocalStorageManager implements IStorage {
 	 *
 	 * @returns SilentShareStorage object
 	 */
-	getV0StorageData = (): V0StorageData => {
-		const _isStorageExist = this.isStorageExist();
+	#getV0StorageData = async (): Promise<V0StorageData> => {
+		const _isStorageExist = await this.isStorageExist();
 		if (!_isStorageExist) {
 			throw new MpcError(
 				"Wallet is not paired",
@@ -107,8 +89,7 @@ export class LocalStorageManager implements IStorage {
 			);
 		}
 
-		const walletId = this.getWalletId();
-		const state = localStorage.getItem(walletId);
+		const state = localStorage.getItem(this.#walletId);
 
 		if (!state) {
 			throw new MpcError(
@@ -122,12 +103,13 @@ export class LocalStorageManager implements IStorage {
 		return jsonObject;
 	};
 
-	migrate = () => {
-		if (!this.isStorageExist()) {
+	migrate = async () => {
+		const isExist = await this.isStorageExist();
+		if (!isExist) {
 			return;
 		}
-
-		if (this.#version < 1) {
+		const version = await this.#getVersion();
+		if (version < 1) {
 			const walletAccountV0 = JSON.parse(
 				localStorage.getItem("walletAccount") || "null",
 			);
@@ -138,13 +120,13 @@ export class LocalStorageManager implements IStorage {
 				localStorage.getItem("passwordReady") || "false",
 			) as boolean;
 
-			const V0StorageData = this.getV0StorageData();
+			const V0StorageData = await this.#getV0StorageData();
 			const pairingData = V0StorageData.pairingData;
 			const distributedKey = V0StorageData.newPairingState
 				? V0StorageData.newPairingState.distributedKey
 				: null;
 			// Update v0 storage data to v1
-			const storageData = this.getStorageData();
+			const storageData = await this.getStorageData();
 			storageData.eoa = eoaV0 ? eoaV0.address : null;
 			storageData.walletAccount = walletAccountV0;
 			storageData.passwordReady = passwordReadyV0;
@@ -152,15 +134,15 @@ export class LocalStorageManager implements IStorage {
 			storageData.distributedKey = distributedKey;
 			(storageData as any).newPairingState = undefined;
 
-			this.setStorageData(storageData);
+			await this.setStorageData(storageData);
 			localStorage.removeItem("walletAccount");
 			localStorage.removeItem("eoa");
 			localStorage.removeItem("passwordReady");
 		}
 	};
 
-	get #version(): number {
-		const storageData = this.getStorageData();
+	async #getVersion(): Promise<number> {
+		const storageData = await this.getStorageData();
 		const version = storageData.version;
 		return version || 0;
 	}
