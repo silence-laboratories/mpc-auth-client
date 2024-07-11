@@ -4,9 +4,8 @@
 import type { StorageData } from "../types";
 
 export interface IStorage {
-	isStorageExist: () => boolean;
-	clearStorageData: () => void;
-	setStorageData: (data: StorageData) => void;
-	getStorageData: () => StorageData;
-	migrate?: () => void;
+	isStorageExist: () => Promise<boolean>;
+	clearStorageData: () => Promise<void>;
+	setStorageData: (data: StorageData) => Promise<void>;
+	getStorageData: () => Promise<StorageData>;
 }
