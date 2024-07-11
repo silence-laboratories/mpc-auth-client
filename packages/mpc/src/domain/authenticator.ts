@@ -3,7 +3,7 @@ import { BackupAction } from "../actions/backup";
 import { KeygenAction } from "../actions/keygen";
 import { PairingAction } from "../actions/pairing";
 import { SignAction } from "../actions/sign";
-import { aeadEncrypt, requestEntropy } from "../crypto";
+import { Crypto } from "../crypto";
 import { MpcError, MpcErrorCode } from "../error";
 import { LocalStorageManager } from "../storage/localStorage";
 import type { IStorage } from "../storage/types";
@@ -27,26 +27,26 @@ export class MpcAuthenticator {
 	 * The lifetime of a token in milliseconds.
 	 * @private
 	 */
-	private TOKEN_LIFE_TIME = 60000;
+	#TOKEN_LIFE_TIME = 60000;
 	/**
 	 * The storage interface for persisting data.
 	 * @private
 	 */
-	private storage?: IStorage;
+	#storage?: IStorage;
 	/**
 	 * The wallet identifier.
 	 * @private
 	 */
-	private walletId = "";
+	#walletId = "";
 	/**
 	 * The HTTP client for making requests to the server.
 	 * @private
 	 */
-	private httpClient: HttpClient;
-	private pairingAction: PairingAction;
-	private keygenAction: KeygenAction;
-	private signAction: SignAction;
-	private backupAction: BackupAction;
+	#httpClient: HttpClient;
+	#pairingAction: PairingAction;
+	#keygenAction: KeygenAction;
+	#signAction: SignAction;
+	#backupAction: BackupAction;
 
 	/**
 	 * The manager for account-related operations.
@@ -62,15 +62,15 @@ export class MpcAuthenticator {
 			isDev,
 		} = configs;
 
-		this.walletId = walletId;
+		this.#walletId = walletId;
 
 		// Set Storage by platform
 		if (storagePlatform === StoragePlatform.Browser) {
-			this.storage = new LocalStorageManager(walletId);
+			this.#storage = new LocalStorageManager(walletId);
 		} else {
-			this.storage = customStorage;
+			this.#storage = customStorage;
 		}
-		if (!this.storage) {
+		if (!this.#storage) {
 			throw new MpcError(
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
@@ -78,20 +78,20 @@ export class MpcAuthenticator {
 		}
 
 		// Account Manager
-		this.accountManager = new AccountManager(this.storage);
+		this.accountManager = new AccountManager(this.#storage);
 
 		// HTTP Client
-		this.httpClient = new HttpClient(
+		this.#httpClient = new HttpClient(
 			isDev
 				? "https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net"
 				: "https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net",
 		);
 
 		// MPC Actions
-		this.pairingAction = new PairingAction(this.httpClient);
-		this.keygenAction = new KeygenAction(this.httpClient);
-		this.signAction = new SignAction(this.httpClient);
-		this.backupAction = new BackupAction(this.httpClient);
+		this.#pairingAction = new PairingAction(this.#httpClient);
+		this.#keygenAction = new KeygenAction(this.#httpClient);
+		this.#signAction = new SignAction(this.#httpClient);
+		this.#backupAction = new BackupAction(this.#httpClient);
 	}
 
 	/**
@@ -99,7 +99,7 @@ export class MpcAuthenticator {
 	 * @returns The operating system of party 2 device.
 	 * @public
 	 */
-	getDeviceOS = () => {
+	getDeviceOS() {
 		return this.accountManager.getDeviceOS();
 	};
 
@@ -110,12 +110,12 @@ export class MpcAuthenticator {
 	 * @public
 	 */
 	getDistributionKey() {
-		if (!this.storage)
+		if (!this.#storage)
 			throw new MpcError(
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
 			);
-		const silentShareStorage = this.storage.getStorageData();
+		const silentShareStorage = this.#storage.getStorageData();
 
 		if (!silentShareStorage.distributedKey) {
 			throw new MpcError(
@@ -134,7 +134,7 @@ export class MpcAuthenticator {
 	 * @public
 	 */
 	async isPaired() {
-		if (!this.storage)
+		if (!this.#storage)
 			throw new MpcError(
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
@@ -160,7 +160,7 @@ export class MpcAuthenticator {
 	 */
 	async initPairing() {
 		const walletId = this.getWalletId();
-		const qrCode = await this.pairingAction.init(walletId);
+		const qrCode = await this.#pairingAction.init(walletId);
 		return qrCode;
 	}
 
@@ -170,7 +170,7 @@ export class MpcAuthenticator {
 	 * @public
 	 */
 	async runStartPairingSession() {
-		return await this.pairingAction.startPairingSession();
+		return await this.#pairingAction.startPairingSession();
 	}
 
 	/**
@@ -187,12 +187,12 @@ export class MpcAuthenticator {
 		currentAccountAddress?: string,
 		password?: string,
 	) {
-		if (!this.storage)
+		if (!this.#storage)
 			throw new MpcError(
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
 			);
-		const result = await this.pairingAction.endPairingSession(
+		const result = await this.#pairingAction.endPairingSession(
 			pairingSessionData,
 			currentAccountAddress,
 			password,
@@ -203,7 +203,7 @@ export class MpcAuthenticator {
 			? getAddressFromPubkey(distributedKey.publicKey)
 			: null;
 
-		this.storage.setStorageData({
+		this.#storage.setStorageData({
 			...result,
 			eoa,
 		});
@@ -223,12 +223,12 @@ export class MpcAuthenticator {
 	 * @public
 	 */
 	async refreshPairing() {
-		if (!this.storage)
+		if (!this.#storage)
 			throw new MpcError(
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
 			);
-		const silentShareStorage: StorageData = this.storage.getStorageData();
+		const silentShareStorage: StorageData = this.#storage.getStorageData();
 		const pairingData = silentShareStorage.pairingData;
 		if (!pairingData) {
 			throw new MpcError(
@@ -236,8 +236,8 @@ export class MpcAuthenticator {
 				MpcErrorCode.WalletNotCreated,
 			);
 		}
-		const result = await this.pairingAction.refreshToken(pairingData);
-		this.storage.setStorageData(silentShareStorage);
+		const result = await this.#pairingAction.refreshToken(pairingData);
+		this.#storage.setStorageData(silentShareStorage);
 		return result.newPairingData;
 	}
 
@@ -248,7 +248,7 @@ export class MpcAuthenticator {
 	 * @public
 	 */
 	async runKeygen() {
-		if (!this.storage)
+		if (!this.#storage)
 			throw new MpcError(
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
@@ -262,10 +262,10 @@ export class MpcAuthenticator {
 				MpcErrorCode.WalletNotCreated,
 			);
 		}
-		const x1 = fromHexStringToBytes(await requestEntropy());
+		const x1 = fromHexStringToBytes(await Crypto.requestEntropy());
 		const accountId = 1;
-		const result = await this.keygenAction.keygen(pairingData, accountId, x1);
-		this.storage.setStorageData({
+		const result = await this.#keygenAction.keygen(pairingData, accountId, x1);
+		this.#storage.setStorageData({
 			...silentShareStorage,
 			distributedKey: {
 				publicKey: result.publicKey,
@@ -299,17 +299,17 @@ export class MpcAuthenticator {
 			);
 		}
 		if (password.length === 0) {
-			await this.backupAction.backup(pairingData, "", "", this.getWalletId());
+			await this.#backupAction.backup(pairingData, "", "", this.getWalletId());
 			return;
 		}
 
 		if (password && password.length >= 8 && silentShareStorage.distributedKey) {
 			try {
-				const encryptedMessage = await aeadEncrypt(
+				const encryptedMessage = await Crypto.aeadEncrypt(
 					JSON.stringify(silentShareStorage.distributedKey),
 					password,
 				);
-				await this.backupAction.backup(
+				await this.#backupAction.backup(
 					pairingData,
 					encryptedMessage,
 					getAddressFromPubkey(silentShareStorage.distributedKey.publicKey),
@@ -365,7 +365,7 @@ export class MpcAuthenticator {
 
 		const walletId = this.getWalletId();
 
-		return await this.signAction.sign({
+		return await this.#signAction.sign({
 			pairingData,
 			keyShare,
 			hashAlg,
@@ -383,21 +383,21 @@ export class MpcAuthenticator {
 	 * @public
 	 */
 	async signOut() {
-		if (!this.storage)
+		if (!this.#storage)
 			throw new MpcError(
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
 			);
-		this.storage.clearStorageData();
+		this.#storage.clearStorageData();
 	}
 
 	private async getPairingDataAndStorage() {
-		if (!this.storage)
+		if (!this.#storage)
 			throw new MpcError(
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
 			);
-		const silentShareStorage: StorageData = this.storage.getStorageData();
+		const silentShareStorage: StorageData = this.#storage.getStorageData();
 		let pairingData = silentShareStorage.pairingData;
 		if (!pairingData) {
 			throw new MpcError(
@@ -405,16 +405,16 @@ export class MpcAuthenticator {
 				MpcErrorCode.WalletNotCreated,
 			);
 		}
-		if (pairingData.tokenExpiration < Date.now() - this.TOKEN_LIFE_TIME) {
+		if (pairingData.tokenExpiration < Date.now() - this.#TOKEN_LIFE_TIME) {
 			pairingData = await this.refreshPairing();
 		}
 		return { pairingData, silentShareStorage };
 	}
 
 	private getWalletId(): string {
-		if (this.storage instanceof LocalStorageManager) {
-			return this.storage.getWalletId();
+		if (this.#storage instanceof LocalStorageManager) {
+			return this.#storage.getWalletId();
 		}
-		return this.walletId;
+		return this.#walletId;
 	}
 }
