@@ -6,7 +6,7 @@ import type { AccountData, StorageData, V0StorageData } from "../types";
 import type { IStorage } from "./types";
 
 export class LocalStorageManager implements IStorage {
-	private VERSION = 1;
+	#VERSION = 1;
 	constructor(walletId: string) {
 		localStorage.setItem("walletId", walletId);
 		this.migrate();
@@ -17,7 +17,7 @@ export class LocalStorageManager implements IStorage {
 	 *
 	 * @returns walletId
 	 */
-	getWalletId(): string {
+	getWalletId = (): string => {
 		const walletId = localStorage.getItem("walletId");
 		if (walletId === null) {
 			throw new MpcError(
@@ -60,7 +60,7 @@ export class LocalStorageManager implements IStorage {
 			);
 		}
 		const walletId = this.getWalletId();
-		data.version = this.VERSION;
+		data.version = this.#VERSION;
 		localStorage.setItem(walletId, JSON.stringify(data));
 	};
 
@@ -127,7 +127,7 @@ export class LocalStorageManager implements IStorage {
 			return;
 		}
 
-		if (this.version < 1) {
+		if (this.#version < 1) {
 			const walletAccountV0 = JSON.parse(
 				localStorage.getItem("walletAccount") || "null",
 			);
@@ -159,7 +159,7 @@ export class LocalStorageManager implements IStorage {
 		}
 	};
 
-	private get version(): number {
+	get #version(): number {
 		const storageData = this.getStorageData();
 		const version = storageData.version;
 		return version || 0;

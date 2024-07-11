@@ -2,7 +2,7 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import _sodium from "libsodium-wrappers-sumo";
-import { aeadDecrypt } from "../crypto";
+import { Crypto } from "../crypto";
 import { MpcError, MpcErrorCode } from "../error";
 import type { HttpClient } from "../transport/httpClient";
 import type { DistributedKey, PairingData, PairingSessionData } from "../types";
@@ -21,11 +21,11 @@ export interface PairingDataInit {
 }
 
 export class PairingAction {
-	private pairingDataInit?: PairingDataInit;
-	httpClient: HttpClient;
+	#pairingDataInit?: PairingDataInit;
+	#httpClient: HttpClient;
 
 	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
+		this.#httpClient = httpClient;
 	}
 
 	init = async (walletId: string) => {
@@ -36,7 +36,7 @@ export class PairingAction {
 			const encPair = _sodium.crypto_box_keypair();
 			const signPair = _sodium.crypto_sign_keypair();
 
-			this.pairingDataInit = {
+			this.#pairingDataInit = {
 				pairingId,
 				encPair,
 				signPair,
@@ -63,20 +63,20 @@ export class PairingAction {
 
 	startPairingSession = async () => {
 		try {
-			if (!this.pairingDataInit) {
+			if (!this.#pairingDataInit) {
 				throw new MpcError(
 					"Pairing data not initialized",
 					MpcErrorCode.PairingFailed,
 				);
 			}
 
-			const pairingId = this.pairingDataInit.pairingId;
+			const pairingId = this.#pairingDataInit.pairingId;
 			const signature = _sodium.crypto_sign_detached(
 				pairingId,
-				this.pairingDataInit.signPair.privateKey,
+				this.#pairingDataInit.signPair.privateKey,
 			);
 
-			const pairingSessionData = await this.httpClient.getTokenEndpoint(
+			const pairingSessionData = await this.#httpClient.getTokenEndpoint(
 				pairingId,
 				_sodium.to_hex(signature),
 			);
@@ -97,7 +97,7 @@ export class PairingAction {
 		currentAccountAddress?: string,
 		password?: string,
 	) => {
-		if (!this.pairingDataInit) {
+		if (!this.#pairingDataInit) {
 			throw new MpcError(
 				"Pairing data not initialized",
 				MpcErrorCode.PairingFailed,
@@ -111,7 +111,7 @@ export class PairingAction {
 			let accountAddress: string | undefined;
 
 			if (pairingSessionData.backupData && password) {
-				const backupDataJson = await this.decryptAndDeserializeBackupData(
+				const backupDataJson = await this.#decryptAndDeserializeBackupData(
 					sessionToken,
 					pairingSessionData.backupData,
 					password,
@@ -120,23 +120,23 @@ export class PairingAction {
 				accountAddress = backupDataJson.accountAddress;
 			}
 
-			await this.validateRePairing(
+			await this.#validateRePairing(
 				sessionToken,
 				accountAddress,
 				currentAccountAddress,
 			);
 
 			const pairingData: PairingData = {
-				pairingId: this.pairingDataInit.pairingId,
-				webEncPublicKey: _sodium.to_hex(this.pairingDataInit.encPair.publicKey),
+				pairingId: this.#pairingDataInit.pairingId,
+				webEncPublicKey: _sodium.to_hex(this.#pairingDataInit.encPair.publicKey),
 				webEncPrivateKey: _sodium.to_hex(
-					this.pairingDataInit.encPair.privateKey,
+					this.#pairingDataInit.encPair.privateKey,
 				),
 				webSignPublicKey: _sodium.to_hex(
-					this.pairingDataInit.signPair.publicKey,
+					this.#pairingDataInit.signPair.publicKey,
 				),
 				webSignPrivateKey: _sodium.to_hex(
-					this.pairingDataInit.signPair.privateKey,
+					this.#pairingDataInit.signPair.privateKey,
 				),
 				appPublicKey: pairingSessionData.appPublicKey,
 				token: sessionToken,
@@ -168,7 +168,7 @@ export class PairingAction {
 				_sodium.from_hex(pairingData.webSignPrivateKey),
 			);
 
-			const data = await this.httpClient.refreshTokenEndpoint(
+			const data = await this.#httpClient.refreshTokenEndpoint(
 				pairingData.token,
 				_sodium.to_hex(signature),
 			);
@@ -191,19 +191,19 @@ export class PairingAction {
 		}
 	};
 
-	private decryptAndDeserializeBackupData = async (
+	#decryptAndDeserializeBackupData = async (
 		token: string,
 		backupData: string,
 		password: string,
 	): Promise<{ distributedKey: DistributedKey; accountAddress: string }> => {
-		if (!this.pairingDataInit) {
+		if (!this.#pairingDataInit) {
 			throw new MpcError(
 				"Pairing data not initialized",
 				MpcErrorCode.PairingFailed,
 			);
 		}
 		try {
-			const decreptedMessage = await aeadDecrypt(backupData, password);
+			const decreptedMessage = await Crypto.aeadDecrypt(backupData, password);
 			const distributedKey = JSON.parse(
 				utils.uint8ArrayToUtf8String(decreptedMessage),
 			);
@@ -215,7 +215,7 @@ export class PairingAction {
 				accountAddress,
 			};
 		} catch (error) {
-			await this.httpClient.sendMessage(
+			await this.#httpClient.sendMessage(
 				token,
 				"pairing",
 				{
@@ -223,7 +223,7 @@ export class PairingAction {
 					pairingRemark: PairingRemark.INVALID_BACKUP_DATA,
 				},
 				false,
-				this.pairingDataInit.pairingId,
+				this.#pairingDataInit.pairingId,
 			);
 
 			if (error instanceof MpcError) {
@@ -239,19 +239,19 @@ export class PairingAction {
 		}
 	};
 
-	private validateRePairing = async (
+	#validateRePairing = async (
 		sessionToken: string,
 		accountAddress?: string,
 		currentAccountAddress?: string,
 	) => {
-		if (!this.pairingDataInit) {
+		if (!this.#pairingDataInit) {
 			throw new MpcError(
 				"Pairing data not initialized",
 				MpcErrorCode.PairingFailed,
 			);
 		}
 		if (currentAccountAddress && !accountAddress) {
-			await this.httpClient.sendMessage(
+			await this.#httpClient.sendMessage(
 				sessionToken,
 				"pairing",
 				{
@@ -259,7 +259,7 @@ export class PairingAction {
 					pairingRemark: PairingRemark.NO_BACKUP_DATA_WHILE_REPAIRING,
 				},
 				false,
-				this.pairingDataInit.pairingId,
+				this.#pairingDataInit.pairingId,
 			);
 
 			throw new MpcError(
@@ -272,7 +272,7 @@ export class PairingAction {
 			accountAddress &&
 			currentAccountAddress !== accountAddress
 		) {
-			await this.httpClient.sendMessage(
+			await this.#httpClient.sendMessage(
 				sessionToken,
 				"pairing",
 				{
@@ -280,17 +280,17 @@ export class PairingAction {
 					pairingRemark: PairingRemark.WALLET_MISMATCH,
 				},
 				false,
-				this.pairingDataInit.pairingId,
+				this.#pairingDataInit.pairingId,
 			);
 		} else
-			await this.httpClient.sendMessage(
+			await this.#httpClient.sendMessage(
 				sessionToken,
 				"pairing",
 				{
 					isPaired: true,
 				},
 				false,
-				this.pairingDataInit.pairingId,
+				this.#pairingDataInit.pairingId,
 			);
 	};
 }

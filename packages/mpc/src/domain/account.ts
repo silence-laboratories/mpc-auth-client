@@ -9,14 +9,14 @@ import type { AccountData, DeviceOS } from "../types";
  * Manages account-related operations, interfacing with a storage mechanism to persist and retrieve account data.
  */
 export class AccountManager {
-	private storage: IStorage;
+	#storage: IStorage;
 
 	/**
 	 * Creates an instance of AccountManager.
 	 * @param {IStorage} storage - The storage mechanism for persisting account data.
 	 */
 	constructor(storage: IStorage) {
-		this.storage = storage;
+		this.#storage = storage;
 	}
 
 	/**
@@ -24,7 +24,7 @@ export class AccountManager {
 	 * @returns {string | null} The EOA string if available, otherwise null.
 	 */
 	getEoa(): string | null {
-		const storageData = this.storage.getStorageData();
+		const storageData = this.#storage.getStorageData();
 		return storageData.eoa;
 	}
 
@@ -34,9 +34,9 @@ export class AccountManager {
 	 */
 	setSmartContractAccount(walletAccount: AccountData) {
 		if (walletAccount && !walletAccount.address) return;
-		const storageData = this.storage.getStorageData();
+		const storageData = this.#storage.getStorageData();
 		storageData.walletAccount = walletAccount;
-		this.storage.setStorageData(storageData);
+		this.#storage.setStorageData(storageData);
 	}
 
 	/**
@@ -44,7 +44,7 @@ export class AccountManager {
 	 * @returns {AccountData | null} The account data if available, otherwise null.
 	 */
 	getSmartContractAccount(): AccountData | null {
-		const storageData = this.storage.getStorageData();
+		const storageData = this.#storage.getStorageData();
 		return storageData.walletAccount ?? null;
 	}
 
@@ -53,7 +53,7 @@ export class AccountManager {
 	 * @returns {boolean} True if the password is set, false otherwise.
 	 */
 	isPasswordReady(): boolean {
-		return this.storage.getStorageData().passwordReady ?? false;
+		return this.#storage.getStorageData().passwordReady ?? false;
 	}
 
 	/**
@@ -61,9 +61,9 @@ export class AccountManager {
 	 * @param {boolean} [isPasswordReady=true] - Indicates whether the password setup is complete.
 	 */
 	setPasswordReady(isPasswordReady = true) {
-		const storageData = this.storage.getStorageData();
+		const storageData = this.#storage.getStorageData();
 		storageData.passwordReady = isPasswordReady;
-		this.storage.setStorageData(storageData);
+		this.#storage.setStorageData(storageData);
 	}
 
 	/**
@@ -71,7 +71,7 @@ export class AccountManager {
 	 * @returns {DeviceOS} The operating system of the device.
 	 */
 	getDeviceOS(): DeviceOS {
-		const storageData = this.storage.getStorageData();
+		const storageData = this.#storage.getStorageData();
 		if (!storageData.pairingData) {
 			throw new MpcError(
 				"Pairing data not found",

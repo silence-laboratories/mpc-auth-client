@@ -6,9 +6,9 @@ import type { HttpClient } from "../transport/httpClient";
 import type { BackupConversation, PairingData } from "../types";
 
 export class BackupAction {
-	private httpClient: HttpClient;
+	#httpClient: HttpClient;
 	constructor(httpClient: HttpClient) {
-		this.httpClient = httpClient;
+		this.#httpClient = httpClient;
 	}
 
 	backup = async (
@@ -18,7 +18,7 @@ export class BackupAction {
 		walletId: string,
 	) => {
 		try {
-			const response = await this.httpClient.sendMessage(
+			const response = await this.#httpClient.sendMessage(
 				pairingData.token,
 				"backup",
 				{
