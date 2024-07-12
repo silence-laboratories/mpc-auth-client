@@ -22,6 +22,18 @@ import { aeadEncrypt, requestEntropy } from "../crypto";
 /**
  * Represents an authenticator for managing MPC (Multi-Party Computation) operations such as pairing, key generation, signing, and backup.
  * This class encapsulates the logic for interacting with the underlying storage, managing accounts, and communicating with a remote server for MPC operations.
+ *
+ * @class MpcAuthenticator
+ *
+ * @property {AccountManager} accountManager - The manager for account-related operations.
+ * @property {HttpClient} httpClient - The HTTP client for making requests to the server.
+ * @property {PairingAction} pairingAction - The action for pairing operations.
+ * @property {KeygenAction} keygenAction - The action for key generation operations.
+ * @property {SignAction} signAction - The action for signing operations.
+ * @property {BackupAction} backupAction - The action for backup operations.
+ * @property {WalletId} walletId - The wallet identifier.
+ * @constructor
+ * Creates an instance of MpcAuthenticator. IMPORTANT: MUST NOT be used to create MpcAuthenticator instance.
  */
 export class MpcAuthenticator {
 	/**
@@ -55,8 +67,22 @@ export class MpcAuthenticator {
 	 */
 	accountManager: AccountManager;
 
+	static #instance: MpcAuthenticator | null = null;
+
+	/**
+	 *
+	 * @param configs
+	 * @returns An instance of MpcAuthenticator. IMPORTANT: This builder method MUST BE called to create the MpcAuthenticator instance.
+	 */
+	static instance = (configs: Options) => {
+		if (MpcAuthenticator.#instance === null) {
+			MpcAuthenticator.#instance = new MpcAuthenticator(configs);
+			
+		}
+		return MpcAuthenticator.#instance;
+	};
+
 	constructor(configs: Options) {
-		console.time("MpcAuthenticator init");
 		const {
 			storagePlatform = StoragePlatform.Browser,
 			customStorage,
@@ -94,7 +120,6 @@ export class MpcAuthenticator {
 		this.#keygenAction = new KeygenAction(this.#httpClient);
 		this.#signAction = new SignAction(this.#httpClient);
 		this.#backupAction = new BackupAction(this.#httpClient);
-		console.timeEnd("MpcAuthenticator init");
 	}
 
 	/**

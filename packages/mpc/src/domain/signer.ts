@@ -40,8 +40,7 @@ import type { MpcAuthenticator } from "./authenticator";
  * @property {DistributedKey} distributedKey - Distributed key of the signer.
  * @property {string} address - Ethereum address associated with this signer.
  * @constructor
- * Creates an instance of MpcSigner.
- * @param {MpcAuthenticator} mpcAuth - MPC SDK instance for signing operations. MUST NOT be used to create MpcSigner instance.
+ * Creates an instance of MpcSigner. IMPORTANT: MUST NOT be used to create MpcSigner instance.
  */
 export class MpcSigner extends Signer {
 	#mpcAuth: MpcAuthenticator;
@@ -52,15 +51,13 @@ export class MpcSigner extends Signer {
 	/**
 	 *
 	 * @param mpcAuth
-	 * @returns An instance of MpcSigner. IMPORTANT: This method should be called before using the MpcSigner class.
+	 * @returns An instance of MpcSigner. IMPORTANT: This builder method MUST BE called to create the MpcSigner instance.
 	 */
 	static instance = async (mpcAuth: MpcAuthenticator) => {
-		console.time("MpcSigner init");
 		if (MpcSigner.#instance === null) {
 			MpcSigner.#instance = new MpcSigner(mpcAuth);
 			await MpcSigner.#instance.#build();
 		}
-		console.timeEnd("MpcSigner init");
 		return MpcSigner.#instance;
 	};
 
