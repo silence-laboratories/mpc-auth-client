@@ -1,12 +1,11 @@
 import { CliStorage } from "./storage";
 import qrCodeTerm from "qrcode-terminal";
-import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
+import { MpcAuthenticator, MpcSigner, WalletId } from "@silencelaboratories/mpc-sdk";
 import { StoragePlatform } from "@silencelaboratories/mpc-sdk";
 import 'dotenv/config'
-const WALLET_ID = "biconomy";
 const storage = new CliStorage();
-export const mpcAuth = new MpcAuthenticator({
-  walletId: WALLET_ID, 
+export const mpcAuth = MpcAuthenticator.instance({
+  walletId: WalletId.Biconomy, 
   storagePlatform: StoragePlatform.CLI, 
   customStorage: storage,
   isDev: process.env.NODE_ENV === "development",
@@ -31,7 +30,6 @@ export async function generate(): Promise<MpcSigner> {
 
     await mpcAuth.runKeygen();
     await mpcAuth.runBackup("demopassword");
-    return new MpcSigner(
-      mpcAuth
-    );
+    const signer = await MpcSigner.instance(mpcAuth);
+    return signer;
   }

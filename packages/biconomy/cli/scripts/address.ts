@@ -2,7 +2,7 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import chalk from "chalk";
-import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
+import { type SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { providers } from "ethers";
 import { mpcAuth } from "../mpc";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk";
@@ -10,7 +10,7 @@ import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 export async function getAddress() {
   // Initialize Biconomy Smart Account SDK
   const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-  const client = new MpcSigner(mpcAuth, provider);
+  const client = await MpcSigner.instance(mpcAuth, provider);
 
   const biconomySmartAccount = await createSmartAccountClient({
     signer: client as SupportedSigner,

@@ -1,10 +1,10 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
+import type { StorageData } from "@silencelaboratories/mpc-sdk";
+import { SdkError, ErrorCode } from "./error";
 import fs from "fs";
-import { IStorage } from "@silencelaboratories/mpc-sdk/lib/esm/storage/types";
-import { ErrorCode, SdkError } from "./error";
-import { StorageData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import type { IStorage } from "@silencelaboratories/mpc-sdk";
 
 export class CliStorage implements IStorage {
   /**
@@ -12,25 +12,25 @@ export class CliStorage implements IStorage {
    *
    * @returns true if exists, false otherwise
    */
-  isStorageExist = (): boolean => {
+  isStorageExist = async (): Promise<boolean> => {
     try {
       const fileExists = fs.existsSync("storage.json");
       return fileExists;
     } catch (error) {
-      throw new SdkError("error", ErrorCode.StorageError);
+      throw new SdkError(error.message, ErrorCode.StorageError);
     }
   };
 
   /**
    * Delete the stored data, if it exists.
    */
-  clearStorageData = () => {
+  clearStorageData = async () => {
     try {
       if (fs.existsSync("storage.json")) {
         fs.unlinkSync("storage.json");
       }
     } catch (error) {
-      throw new SdkError("Error", ErrorCode.StorageError);
+      throw new SdkError(error.message, ErrorCode.StorageError);
     }
   };
 
@@ -50,7 +50,7 @@ export class CliStorage implements IStorage {
 
       fs.writeFileSync("storage.json", JSON.stringify(data));
     } catch (error) {
-      throw new SdkError("error", ErrorCode.StorageError);
+      throw new SdkError(error.message, ErrorCode.StorageError);
     }
   };
 
@@ -59,14 +59,14 @@ export class CliStorage implements IStorage {
    *
    * @returns SilentShareStorage object
    */
-  getStorageData = (): StorageData => {
+  getStorageData = async (): Promise<StorageData> => {
     try {
       const fileContent = fs.readFileSync("storage.json", "utf8");
       const jsonObject: StorageData = JSON.parse(fileContent);
 
       return jsonObject;
     } catch (error) {
-      throw new SdkError("error.message", ErrorCode.StorageError);
+      throw new SdkError(error.message, ErrorCode.StorageError);
     }
   };
 }

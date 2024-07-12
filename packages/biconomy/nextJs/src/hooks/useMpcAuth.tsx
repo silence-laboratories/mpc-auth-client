@@ -1,11 +1,9 @@
-import { WALLET_ID } from "@/constants";
-import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import { MpcAuthenticator, WalletId, StoragePlatform } from "@silencelaboratories/mpc-sdk";
 import { useState } from "react";
 export const useMpcAuth = () => {
     const [sdk] = useState<MpcAuthenticator>(
         new MpcAuthenticator({
-            walletId: WALLET_ID,
+            walletId: WalletId.Biconomy,
             storagePlatform: StoragePlatform.Browser,
             isDev: process.env.NODE_ENV === "development",
         })

@@ -31,7 +31,7 @@ INIT_CONFIG.accountIndex = 0;
 export const init = async (chainId: string) => {
   const silentSigner = await generate();
   console.log(chalk.blue("network is: ", chainId));
-  console.log(chalk.green("your address is: ", silentSigner.address))
+  console.log(chalk.green("your address is: ", await silentSigner.getAddress()))
   if (chainId === "sepolia") {
     INIT_CONFIG.chainId = 11155111;
     INIT_CONFIG.rpcUrl = "https://rpc.sepolia.org";

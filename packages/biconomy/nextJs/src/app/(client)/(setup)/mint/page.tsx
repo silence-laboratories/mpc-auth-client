@@ -11,7 +11,6 @@ import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { clearOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
-import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 function Page() {
@@ -27,7 +26,10 @@ function Page() {
             router.replace("/intro");
             return;
         }
-        setEoa(mpcAuth.accountManager.getEoa()!);
+        (async() => {
+            const val = await mpcAuth.accountManager.getEoa();
+            setEoa(val);
+        })()
     }, [router, status]);
 
     const handleMint = async () => {
