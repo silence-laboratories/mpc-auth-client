@@ -50,7 +50,7 @@ import type { MpcAuthenticator } from "./authenticator";
 export class MpcSigner extends Signer {
 	#mpcAuth: MpcAuthenticator;
 	#distributedKey: DistributedKey;
-	readonly #provider?: ethers.providers.Provider;
+	readonly provider?: ethers.providers.Provider;
 	public address: string;
 	public public_key: string;
 
@@ -65,7 +65,7 @@ export class MpcSigner extends Signer {
 			throw new MpcError("EOA not found", MpcErrorCode.AccountNotCreated);
 		}
 		this.address = eoa;
-		this.#provider = provider;
+		this.provider = provider;
 	}
 
 	/**
