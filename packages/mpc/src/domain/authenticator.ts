@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { BackupAction } from "../actions/backup";
 import { KeygenAction } from "../actions/keygen";
@@ -9,10 +12,12 @@ import type { IStorage } from "../storage/types";
 import { HttpClient } from "../transport/httpClient";
 import type {
 	Options,
-	PairingSessionData,
 	SignMetadata,
-	StorageData,
 } from "../types";
+import type {
+	PairingSessionData,
+	StorageData,
+} from "../storage/types";
 import { fromHexStringToBytes, getAddressFromPubkey } from "../utils";
 import { AccountManager } from "./account";
 import { aeadEncrypt, requestEntropy } from "../crypto";

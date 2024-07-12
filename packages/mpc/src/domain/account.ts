@@ -2,8 +2,8 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { MpcError, MpcErrorCode } from "../error";
-import type { IStorage } from "../storage/types";
-import type { AccountData, DeviceOS } from "../types";
+import type { AccountData, IStorage } from "../storage/types";
+import type { DeviceOS } from "../types";
 
 /**
  * Manages account-related operations, interfacing with a storage mechanism to persist and retrieve account data.

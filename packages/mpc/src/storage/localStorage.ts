@@ -2,7 +2,7 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { MpcError, MpcErrorCode } from "../error";
-import type { AccountData, StorageData, V0StorageData } from "../types";
+import type { AccountData, StorageData, V0StorageData } from "./types";
 import type { IStorage } from "./types";
 
 export class LocalStorageManager implements IStorage {
