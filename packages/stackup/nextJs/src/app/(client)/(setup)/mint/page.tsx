@@ -28,7 +28,7 @@ function Page() {
             const val = await mpcAuth.accountManager.getEoa();
             setEoa(val);
         })()
-    }, [router, status]);
+    }, [router, status, mpcAuth.accountManager.getEoa]);
 
     const handleMint = async () => {
         setLoading(true);

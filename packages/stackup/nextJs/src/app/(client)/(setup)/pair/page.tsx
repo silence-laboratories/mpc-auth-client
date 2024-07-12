@@ -63,7 +63,7 @@ function Page() {
             setLoading(false);
         } catch (error) {
             // TODO: handle error
-            throw error;
+            console.error("Error in pairing with backup: ", error);
         }
     };
 
@@ -140,10 +140,9 @@ function Page() {
                 setEnterPwSeconds((prev) => prev - 1);
             }, 1000);
             return () => clearInterval(interval);
-        } else {
-            setShowPasswordScreen(false);
-            setLoading(false);
         }
+        setShowPasswordScreen(false);
+        setLoading(false);
     }, [enterPwSeconds]);
 
     const onTryAgainClick = () => {
@@ -252,7 +251,7 @@ function Page() {
                                     alignItems: "center",
                                 }}
                             >
-                                {qr == "placeholder" ? (
+                                {qr === "placeholder" ? (
                                     <div className="flex items-center justify-center">
                                         <Image
                                             priority={true}
