@@ -21,7 +21,7 @@ import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
-import { AccountData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
+import type { AccountData } from "@silencelaboratories/mpc-sdk";
 import {
     clearOldEoa,
     getOldEoa,
@@ -65,25 +65,26 @@ const Homescreen: React.FC = () => {
                 console.error("isPasswordReady error", error);
             }
         })();
-    }, [openPasswordBackupDialog]);
+    }, [openPasswordBackupDialog, mpcAuth.accountManager.isPasswordReady]);
 
     useEffect(() => {
         (async () => {
             try {
-                const account = await mpcAuth.accountManager.getSmartContractAccount();
+                const account =
+                    await mpcAuth.accountManager.getSmartContractAccount();
                 if (!account) {
                     setPairingStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
                     return;
                 }
-    
+
                 const eoa = await mpcAuth.accountManager.getEoa();
                 if (!eoa) {
                     setPairingStatus(WALLET_STATUS.Unpaired);
                     router.replace("/intro");
                     return;
                 }
-    
+
                 setPairingStatus(WALLET_STATUS.Minted);
                 setWalletAccount(account);
                 setEoa(eoa);
@@ -92,8 +93,8 @@ const Homescreen: React.FC = () => {
                 router.replace("/intro");
                 return;
             }
-        })()
-    }, [router, status]);
+        })();
+    }, [router, mpcAuth.accountManager.getEoa, mpcAuth.accountManager.getSmartContractAccount]);
 
     useEffect(() => {
         if (!walletAccount || !eoa) return;
@@ -152,10 +153,8 @@ const Homescreen: React.FC = () => {
                 method: "wallet_addEthereumChain",
                 params: [SEPOLIA],
             });
-            if (true) {
-                setNetwork("Sepolia Test Network");
-                return true;
-            }
+            setNetwork("Sepolia Test Network");
+            return true;
         } catch (e: unknown) {
             console.log("switchToSepolia error", e);
             return false;
@@ -171,7 +170,7 @@ const Homescreen: React.FC = () => {
             const balance_wallet = await provider.getBalance(
                 walletAccount.address
             );
-            let balance_eoa = await provider.getBalance(eoa);
+            const balance_eoa = await provider.getBalance(eoa);
             setWalletBalance(formatEther(balance_wallet));
             return { balance_wallet, balance_eoa };
         } catch (error) {
@@ -230,9 +229,9 @@ const Homescreen: React.FC = () => {
         const isValidAmount = (
             amount: string
         ): { isValid: boolean; errorMsg: string } => {
-            const amountValue = parseFloat(amount);
+            const amountValue = Number.parseFloat(amount);
 
-            if (isNaN(amountValue)) {
+            if (Number.isNaN(amountValue)) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
             }
             if (amount.split(".")[1]?.length > 15) {
@@ -244,7 +243,7 @@ const Homescreen: React.FC = () => {
             if (amountValue < 0) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
             }
-            if (amountValue > parseFloat(walletBalance)) {
+            if (amountValue > Number.parseFloat(walletBalance)) {
                 return { isValid: false, errorMsg: "Insufficient funds" };
             }
             if (!/^\d+(\.\d+)?$/.test(amount)) {

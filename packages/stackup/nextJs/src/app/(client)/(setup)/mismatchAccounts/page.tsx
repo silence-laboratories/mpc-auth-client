@@ -30,7 +30,7 @@ function Page() {
             const val = await mpcAuth.accountManager.getEoa() ?? "";
             setEoa(val);
         })();
-    }, []);
+    }, [mpcAuth.accountManager.getEoa]);
 
     const handleRestoreAccount = async () => {
         if (!showHeadsUp) {

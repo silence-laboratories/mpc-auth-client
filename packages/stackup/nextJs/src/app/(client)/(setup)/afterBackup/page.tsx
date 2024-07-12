@@ -25,13 +25,10 @@ function Page() {
     const router = useRouter();
     const status = getPairingStatus();
     const [deviceOS, setDeviceOS] = useState<string>("");
-    useEffect(() => {
-        (async () => {
-            const val = await mpcAuth.getDeviceOS();
-            console.log(val);
-            setDeviceOS(val);
-        })()
-    }, [])
+    (async () => {
+        const val = await mpcAuth.getPairedDeviceOS();
+        setDeviceOS(val);
+    })();
     
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;

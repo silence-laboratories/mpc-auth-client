@@ -4,7 +4,7 @@
 import { StorageData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { SdkError, ErrorCode } from "./error";
 import fs from "fs";
-import { IStorage } from "@silencelaboratories/mpc-sdk/lib/esm/storage/types";
+import type { IStorage } from "@silencelaboratories/mpc-sdk";
 
 export class CliStorage implements IStorage {
   /**

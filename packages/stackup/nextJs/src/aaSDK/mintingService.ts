@@ -1,5 +1,5 @@
 import { Presets } from "userop";
-import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
+import type { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
 export async function mintWallet(mpcAuth: MpcAuthenticator) {

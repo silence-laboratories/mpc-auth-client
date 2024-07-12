@@ -1,6 +1,6 @@
 import { Client, Presets } from "userop";
 import { ethers } from "ethers";
-import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
+import type { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
 export async function sendTransaction(
