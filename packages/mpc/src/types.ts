@@ -116,6 +116,6 @@ export enum StoragePlatform {
 }
 
 export enum WalletId {
-	stackup = "stackup",
-	biconomy = "biconomy",
+	Stackup = "stackup",
+	Biconomy = "biconomy",
 }

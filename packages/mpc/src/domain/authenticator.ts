@@ -13,7 +13,7 @@ import {
 	type SignMetadata,
 	type StorageData,
 	StoragePlatform,
-	WalletId,
+	type WalletId,
 } from "../types";
 import { fromHexStringToBytes, getAddressFromPubkey } from "../utils";
 import { AccountManager } from "./account";
@@ -38,7 +38,7 @@ export class MpcAuthenticator {
 	 * The wallet identifier.
 	 * @private
 	 */
-	#walletId = WalletId.stackup;
+	#walletId: WalletId;
 	/**
 	 * The HTTP client for making requests to the server.
 	 * @private
@@ -56,6 +56,7 @@ export class MpcAuthenticator {
 	accountManager: AccountManager;
 
 	constructor(configs: Options) {
+		console.time("MpcAuthenticator init");
 		const {
 			storagePlatform = StoragePlatform.Browser,
 			customStorage,
@@ -93,6 +94,7 @@ export class MpcAuthenticator {
 		this.#keygenAction = new KeygenAction(this.#httpClient);
 		this.#signAction = new SignAction(this.#httpClient);
 		this.#backupAction = new BackupAction(this.#httpClient);
+		console.timeEnd("MpcAuthenticator init");
 	}
 
 	/**
@@ -100,8 +102,8 @@ export class MpcAuthenticator {
 	 * @returns The operating system of party 2 device.
 	 * @public
 	 */
-	getDeviceOS() {
-		return this.accountManager.getDeviceOS();
+	getPairedDeviceOS() {
+		return this.accountManager.getPairedDeviceOS();
 	};
 
 	/**
@@ -141,7 +143,7 @@ export class MpcAuthenticator {
 				MpcErrorCode.StorageFetchFailed,
 			);
 		try {
-			const deviceName = this.accountManager.getDeviceOS();
+			const deviceName = this.accountManager.getPairedDeviceOS();
 			return {
 				isPaired: true,
 				deviceName,

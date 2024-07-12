@@ -55,10 +55,12 @@ export class MpcSigner extends Signer {
 	 * @returns An instance of MpcSigner. IMPORTANT: This method should be called before using the MpcSigner class.
 	 */
 	static instance = async (mpcAuth: MpcAuthenticator) => {
+		console.time("MpcSigner init");
 		if (MpcSigner.#instance === null) {
 			MpcSigner.#instance = new MpcSigner(mpcAuth);
 			await MpcSigner.#instance.#build();
 		}
+		console.timeEnd("MpcSigner init");
 		return MpcSigner.#instance;
 	};
 

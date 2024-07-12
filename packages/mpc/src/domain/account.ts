@@ -67,10 +67,10 @@ export class AccountManager {
 	}
 
 	/**
-	 * Determines the operating system of the device based on stored pairing data.
+	 * Determines the operating system of the device which is paired with this party.
 	 * @returns {DeviceOS} The operating system of the device.
 	 */
-	async getDeviceOS(): Promise<DeviceOS> {
+	async getPairedDeviceOS(): Promise<DeviceOS> {
 		const storageData = await this.#storage.getStorageData();
 		if (!storageData.pairingData) {
 			throw new MpcError(
