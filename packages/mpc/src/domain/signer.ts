@@ -15,10 +15,9 @@ import {
 	joinSignature,
 	splitSignature,
 } from "@ethersproject/bytes";
-import { _TypedDataEncoder, hashMessage } from "@ethersproject/hash";
+import { hashMessage } from "@ethersproject/hash";
 import { keccak256 } from "@ethersproject/keccak256";
 import { resolveProperties } from "@ethersproject/properties";
-import { _toUtf8String } from "@ethersproject/strings/lib/utf8";
 import {
 	type UnsignedTransaction,
 	serialize,
