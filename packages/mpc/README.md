@@ -24,15 +24,16 @@ The `MpcAuthenticator` class is designed to handle authentication processes usin
 An example of `MpcAuthenticator`:
 
 ```javascript
-const mpcAuth = new MpcAuthenticator({
-  walletId: WALLET_ID,
+// MpcAuthenticator initialization
+const mpcAuth = MpcAuthenticator.instance({
+  walletId: WalletId.Biconomy,
   storagePlatform: StoragePlatform.CLI,
   customStorage: storage,
   isDev: process.env.NODE_ENV === "development",
 });
 
-// Use Silent Shard app to scan this generated QR
-// Follow to install Silent Shard app: https://github.com/silence-laboratories/mpc-account-abstraction-sdk/tree/main/packages/biconomy/cli#step-4-using-the-silent-shard-app
+// Use Silent Shard App to scan this generated QR
+// How to install Silent Shard App: https://github.com/silence-laboratories/mpc-account-abstraction-sdk/tree/main/packages/biconomy/cli#step-4-using-the-silent-shard-app
 const qrCode = await mpcAuth.initPairing();
 
 // ... Scanning happens
@@ -40,21 +41,22 @@ const qrCode = await mpcAuth.initPairing();
 const pairingSessionData = await mpcAuth.runStartPairingSession();
 await mpcAuth.runEndPairingSession(pairingSessionData);
 
-const keygenResult = await mpcAuth.runKeygen(); // Retrieve our MPC keyshares after MPC Key Generation is done
+const keygenResult = await mpcAuth.runKeygen(); // Retrieve MPC keyshares after MPC Key Generation is done
 
-await mpcAuth.runBackup("demopassword"); // (Optional) Sent our backup for key restoration later
+await mpcAuth.runBackup("demopassword"); // (Optional) Sent backup to Silent Shard App for key restoration later
 ```
 
 ### MpcSigner
 
 The `MpcSigner` class is responsible for signing Ethereum transactions and messages. It is inherited from ethers.js `Signer` class, so we could use it with any ethers.js compatible interfaces out-of-the-box.
 
-An example of `MpcSigner`:
+An example of `MpcSigner` with Biconomy account creation:
 
 ```javascript
-const mpcSigner = new MpcSigner(mpcAuth); // Now, we could use mpcSigner to sign our transactions
+// MpcSigner initialization
+const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
+const mpcSigner = await MpcSigner.instance(mpcAuth, provider); // Now, mpcSigner could be used to sign ETH transactions
 
-// Example using Biconomy account creation
 const biconomySmartAccount = await createSmartAccountClient({
   signer: client as SupportedSigner,
   bundlerUrl: `https://bundler.biconomy.io/api/v2/11155111/${process.env.API_KEY}`,
