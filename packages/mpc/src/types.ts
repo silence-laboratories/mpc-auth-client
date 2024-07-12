@@ -3,6 +3,7 @@
 
 import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import type { IStorage } from "./storage/types";
+import type { StoragePlatform, WalletId } from "./constants";
 
 export type Options = {
 	walletId: WalletId;
@@ -109,13 +110,3 @@ export type DeviceOS = "ios" | "android";
 export type AccountData = {
 	address: string;
 };
-
-export enum StoragePlatform {
-	Browser = "browser",
-	CLI = "cli",
-}
-
-export enum WalletId {
-	Stackup = "stackup",
-	Biconomy = "biconomy",
-}
