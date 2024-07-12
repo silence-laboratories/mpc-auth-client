@@ -2,8 +2,9 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { MpcError, MpcErrorCode } from "../error";
+import type { PairingData } from "../storage/types";
 import type { HttpClient } from "../transport/httpClient";
-import type { BackupConversation, PairingData } from "../types";
+import type { BackupConversation } from "../types";
 
 export class BackupAction {
 	#httpClient: HttpClient;

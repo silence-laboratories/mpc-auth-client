@@ -9,7 +9,8 @@ import {
 import _sodium, { base64_variants } from "libsodium-wrappers-sumo";
 import { MpcError, MpcErrorCode } from "../error";
 import type { HttpClient } from "../transport/httpClient";
-import type { PairingData, SignConversation, SignMetadata } from "../types";
+import type { SignConversation, SignMetadata } from "../types";
+import type { PairingData } from "../storage/types";
 import * as utils from "../utils";
 
 type SignResult = {

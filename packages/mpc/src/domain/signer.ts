@@ -25,7 +25,7 @@ import {
 import type { ethers } from "ethers";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
 import { MpcError, MpcErrorCode } from "../error";
-import type { DistributedKey } from "../types";
+import type { DistributedKey } from "../storage/types";
 import type { MpcAuthenticator } from "./authenticator";
 
 /**

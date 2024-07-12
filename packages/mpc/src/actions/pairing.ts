@@ -4,7 +4,7 @@
 import _sodium from "libsodium-wrappers-sumo";
 import { MpcError, MpcErrorCode } from "../error";
 import type { HttpClient } from "../transport/httpClient";
-import type { DistributedKey, PairingData, PairingSessionData } from "../types";
+import type { DistributedKey, PairingData, PairingSessionData } from "../storage/types";
 import * as utils from "../utils";
 import { aeadDecrypt } from "../crypto";
 
