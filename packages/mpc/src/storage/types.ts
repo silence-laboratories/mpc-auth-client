@@ -8,6 +8,5 @@ export interface IStorage {
 	clearStorageData: () => void;
 	setStorageData: (data: StorageData) => void;
 	getStorageData: () => StorageData;
-	getWalletId: () => string;
 	migrate?: () => void;
 }
