@@ -7,17 +7,16 @@ import { MpcError, MpcErrorCode } from "../error";
 import { LocalStorageManager } from "../storage/localStorage";
 import type { IStorage } from "../storage/types";
 import { HttpClient } from "../transport/httpClient";
-import {
-	type Options,
-	type PairingSessionData,
-	type SignMetadata,
-	type StorageData,
-	StoragePlatform,
-	type WalletId,
+import type {
+	Options,
+	PairingSessionData,
+	SignMetadata,
+	StorageData,
 } from "../types";
 import { fromHexStringToBytes, getAddressFromPubkey } from "../utils";
 import { AccountManager } from "./account";
 import { aeadEncrypt, requestEntropy } from "../crypto";
+import { StoragePlatform, type WalletId } from "../constants";
 
 /**
  * Represents an authenticator for managing MPC (Multi-Party Computation) operations such as pairing, key generation, signing, and backup.
@@ -77,7 +76,6 @@ export class MpcAuthenticator {
 	static instance = (configs: Options) => {
 		if (MpcAuthenticator.#instance === null) {
 			MpcAuthenticator.#instance = new MpcAuthenticator(configs);
-			
 		}
 		return MpcAuthenticator.#instance;
 	};
@@ -129,7 +127,7 @@ export class MpcAuthenticator {
 	 */
 	getPairedDeviceOS() {
 		return this.accountManager.getPairedDeviceOS();
-	};
+	}
 
 	/**
 	 * Retrieves the distribution key from storage.
@@ -255,7 +253,8 @@ export class MpcAuthenticator {
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
 			);
-		const silentShareStorage: StorageData = await this.#storage.getStorageData();
+		const silentShareStorage: StorageData =
+			await this.#storage.getStorageData();
 		const pairingData = silentShareStorage.pairingData;
 		if (!pairingData) {
 			throw new MpcError(
@@ -424,7 +423,8 @@ export class MpcAuthenticator {
 				"Storage not initialized",
 				MpcErrorCode.StorageFetchFailed,
 			);
-		const silentShareStorage: StorageData = await this.#storage.getStorageData();
+		const silentShareStorage: StorageData =
+			await this.#storage.getStorageData();
 		let pairingData = silentShareStorage.pairingData;
 		if (!pairingData) {
 			throw new MpcError(
@@ -437,5 +437,4 @@ export class MpcAuthenticator {
 		}
 		return { pairingData, silentShareStorage };
 	}
-
 }
