@@ -39,13 +39,14 @@ import type { MpcAuthenticator } from "./authenticator";
  * @property {MpcAuthenticator} mpcAuth - MPC SDK instance used for signing operations.
  * @property {DistributedKey} distributedKey - Distributed key of the signer.
  * @property {string} address - Ethereum address associated with this signer.
- * @constructor
+ * @property {Provider} [provider] - Ethers.js provider instance to interact with the Ethereum network. This is required for client that can't interact with the Ethereum provider in runtime.
  * Creates an instance of MpcSigner. IMPORTANT: MUST NOT be used to create MpcSigner instance.
  */
 export class MpcSigner extends Signer {
 	#mpcAuth: MpcAuthenticator;
 	#distributedKey?: DistributedKey;
 	#address?: string;
+	readonly provider?: ethers.providers.Provider; // MUST BE public
 	static #instance: MpcSigner | null = null;
 
 	/**
@@ -53,17 +54,18 @@ export class MpcSigner extends Signer {
 	 * @param mpcAuth
 	 * @returns An instance of MpcSigner. IMPORTANT: This builder method MUST BE called to create the MpcSigner instance.
 	 */
-	static instance = async (mpcAuth: MpcAuthenticator) => {
+	static instance = async (mpcAuth: MpcAuthenticator, provider?: Provider) => {
 		if (MpcSigner.#instance === null) {
-			MpcSigner.#instance = new MpcSigner(mpcAuth);
+			MpcSigner.#instance = new MpcSigner(mpcAuth, provider);
 			await MpcSigner.#instance.#build();
 		}
 		return MpcSigner.#instance;
 	};
 
-	constructor(mpcAuth: MpcAuthenticator) {
+	constructor(mpcAuth: MpcAuthenticator, provider?: Provider) {
 		super();
 		this.#mpcAuth = mpcAuth;
+		this.provider = provider;
 	}
 
 	#build = async() => {
@@ -200,7 +202,7 @@ export class MpcSigner extends Signer {
 	 * @param {Provider} provider - The ETH provider to connect with.
 	 * @returns {MpcSigner} A new instance of MpcSigner connected with the specified provider.
 	 */
-	connect(_provider: Provider): MpcSigner {
-		return new MpcSigner(this.#mpcAuth);
+	connect(provider: Provider): MpcSigner {
+		return new MpcSigner(this.#mpcAuth, provider);
 	}
 }
