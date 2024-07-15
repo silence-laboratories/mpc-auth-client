@@ -65,13 +65,22 @@ export class LocalStorageManager implements IStorage {
 
 		if (!state) {
 			throw new BaseError(
-				"Wallet failed to fetch state",
+				"Wallet data is null",
 				BaseErrorCode.StorageFetchFailed,
 			);
 		}
 
 		const jsonObject: StorageData = JSON.parse(state as string);
-
+		if (
+			!jsonObject.pairingData ||
+			!jsonObject.distributedKey ||
+			!jsonObject.eoa
+		) {
+			throw new BaseError(
+				"Wallet data is invalid due to missing fields",
+				BaseErrorCode.StorageFetchFailed,
+			);
+		}
 		return jsonObject;
 	};
 
@@ -99,7 +108,6 @@ export class LocalStorageManager implements IStorage {
 		}
 
 		const jsonObject: V0StorageData = JSON.parse(state as string);
-
 		return jsonObject;
 	};
 

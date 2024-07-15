@@ -1,11 +1,11 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { BaseError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 
 describe("Test BaseError", () => {
 	it("should match the inline snapshot for a simple error message", () => {
-		expect(new BaseError("An error occurred.", MpcErrorCode.InternalLibError)).toMatchInlineSnapshot(`
+		expect(new BaseError("An error occurred.", BaseErrorCode.InternalLibError)).toMatchInlineSnapshot(`
             [MpcError: An error occurred.
 
             Code: 10
@@ -15,7 +15,7 @@ describe("Test BaseError", () => {
 
 	it("should match the inline snapshot for an error message with details", () => {
 		expect(
-			new BaseError("An error occurred.", MpcErrorCode.InternalLibError, { details: "details" }),
+			new BaseError("An error occurred.", BaseErrorCode.InternalLibError, { details: "details" }),
 		).toMatchInlineSnapshot(`
             [MpcError: An error occurred.
 
@@ -27,7 +27,7 @@ describe("Test BaseError", () => {
 
     it("should match the inline snapshot for an error message with details and docs", () => {
 		expect(
-			new BaseError("An error occurred.", MpcErrorCode.InternalLibError, { details: "details", docsUrl: "docs" }),
+			new BaseError("An error occurred.", BaseErrorCode.InternalLibError, { details: "details", docsUrl: "docs" }),
 		).toMatchInlineSnapshot(`
             [MpcError: An error occurred.
 
@@ -40,7 +40,7 @@ describe("Test BaseError", () => {
 
     it("should match the inline snapshot for an error message with details and meta", () => {
 		expect(
-			new BaseError("An error occurred.", MpcErrorCode.InternalLibError, { details: "details", metaMessages: ["- reason1","- reason2"] }),
+			new BaseError("An error occurred.", BaseErrorCode.InternalLibError, { details: "details", metaMessages: ["- reason1","- reason2"] }),
 		).toMatchInlineSnapshot(`
             [MpcError: An error occurred.
 
