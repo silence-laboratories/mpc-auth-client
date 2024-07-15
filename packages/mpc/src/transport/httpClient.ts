@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 interface Response {
 	response: any;
 	error: string;
@@ -18,18 +18,18 @@ export class HttpClient {
 			.then(async (data) => {
 				const temp: Response = await data.json();
 				if (temp.error) {
-					throw new MpcError(temp.error, MpcErrorCode.HttpError);
+					throw new BaseError(temp.error, BaseErrorCode.HttpError);
 				}
 				return temp.response;
 			})
 			.catch((error) => {
-				if (error instanceof MpcError) {
+				if (error instanceof BaseError) {
 					throw error;
 				}
 				if (error instanceof Error) {
-					throw new MpcError(error.message, MpcErrorCode.HttpError);
+					throw new BaseError(error.message, BaseErrorCode.HttpError);
 				}
-				throw new MpcError("unkown-error", MpcErrorCode.HttpError);
+				throw new BaseError("unkown-error", BaseErrorCode.HttpError);
 			});
 	};
 

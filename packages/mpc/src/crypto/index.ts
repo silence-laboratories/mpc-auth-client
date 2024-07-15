@@ -2,7 +2,7 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import _sodium from "libsodium-wrappers-sumo";
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 
 export const requestEntropy = async (salt?: Uint8Array) => {
 	const usedSalt = salt ? salt : _sodium.randombytes_buf(32);
@@ -32,7 +32,7 @@ export const aeadDecrypt = async (
 ): Promise<Uint8Array> => {
 	const array = cipherText.split(".");
 	if (array.length !== 3) {
-		throw new MpcError("Invalid backup data", MpcErrorCode.InvalidBackupData);
+		throw new BaseError("Invalid backup data", BaseErrorCode.InvalidBackupData);
 	}
 	const salt = _sodium.from_hex(array[0]);
 

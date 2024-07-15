@@ -69,7 +69,7 @@ The library provides the following error codes:
 
 ```typescript
 enum MpcErrorCode {
-	StorageDataInvalid = 1,
+	StorageWriteFailed = 1,
 	StorageFetchFailed = 2,
 	HttpError = 3,
 	// Action errors

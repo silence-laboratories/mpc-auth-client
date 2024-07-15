@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 import type { AccountData, IStorage } from "../storage/types";
 import type { DeviceOS } from "../types";
 
@@ -73,9 +73,9 @@ export class AccountManager {
 	async getPairedDeviceOS(): Promise<DeviceOS> {
 		const storageData = await this.#storage.getStorageData();
 		if (!storageData.pairingData) {
-			throw new MpcError(
+			throw new BaseError(
 				"Pairing data not found",
-				MpcErrorCode.StorageFetchFailed,
+				BaseErrorCode.StorageFetchFailed,
 			);
 		}
 		const deviceName = storageData.pairingData.deviceName;
