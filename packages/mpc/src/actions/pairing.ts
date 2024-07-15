@@ -2,9 +2,13 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import _sodium from "libsodium-wrappers-sumo";
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 import type { HttpClient } from "../transport/httpClient";
-import type { DistributedKey, PairingData, PairingSessionData } from "../storage/types";
+import type {
+	DistributedKey,
+	PairingData,
+	PairingSessionData,
+} from "../storage/types";
 import * as utils from "../utils";
 import { aeadDecrypt } from "../crypto";
 
@@ -51,22 +55,22 @@ export class PairingAction {
 
 			return qrCode;
 		} catch (error) {
-			if (error instanceof MpcError) {
+			if (error instanceof BaseError) {
 				throw error;
 			}
 			if (error instanceof Error) {
-				throw new MpcError(error.message, MpcErrorCode.PairingFailed);
+				throw new BaseError(error.message, BaseErrorCode.PairingFailed);
 			}
-			throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
+			throw new BaseError("unkown-error", BaseErrorCode.UnknownError);
 		}
 	};
 
 	startPairingSession = async () => {
 		try {
 			if (!this.#pairingDataInit) {
-				throw new MpcError(
+				throw new BaseError(
 					"Pairing data not initialized",
-					MpcErrorCode.PairingFailed,
+					BaseErrorCode.PairingFailed,
 				);
 			}
 
@@ -82,13 +86,13 @@ export class PairingAction {
 			);
 			return pairingSessionData;
 		} catch (error) {
-			if (error instanceof MpcError) {
+			if (error instanceof BaseError) {
 				throw error;
 			}
 			if (error instanceof Error) {
-				throw new MpcError(error.message, MpcErrorCode.PairingFailed);
+				throw new BaseError(error.message, BaseErrorCode.PairingFailed);
 			}
-			throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
+			throw new BaseError("unkown-error", BaseErrorCode.UnknownError);
 		}
 	};
 
@@ -98,9 +102,9 @@ export class PairingAction {
 		password?: string,
 	) => {
 		if (!this.#pairingDataInit) {
-			throw new MpcError(
+			throw new BaseError(
 				"Pairing data not initialized",
-				MpcErrorCode.PairingFailed,
+				BaseErrorCode.PairingFailed,
 			);
 		}
 		try {
@@ -111,13 +115,13 @@ export class PairingAction {
 			let accountAddress: string | undefined;
 
 			if (pairingSessionData.backupData && password) {
-				const backupDataJson = await this.#decryptAndDeserializeBackupData(
+				const recoverData = await this.#recoverFromBackup(
 					sessionToken,
 					pairingSessionData.backupData,
 					password,
 				);
-				distributedKey = backupDataJson.distributedKey;
-				accountAddress = backupDataJson.accountAddress;
+				distributedKey = recoverData.distributedKey;
+				accountAddress = recoverData.accountAddress;
 			}
 
 			await this.#validateRePairing(
@@ -128,7 +132,9 @@ export class PairingAction {
 
 			const pairingData: PairingData = {
 				pairingId: this.#pairingDataInit.pairingId,
-				webEncPublicKey: _sodium.to_hex(this.#pairingDataInit.encPair.publicKey),
+				webEncPublicKey: _sodium.to_hex(
+					this.#pairingDataInit.encPair.publicKey,
+				),
 				webEncPrivateKey: _sodium.to_hex(
 					this.#pairingDataInit.encPair.privateKey,
 				),
@@ -150,13 +156,13 @@ export class PairingAction {
 				deviceName: pairingSessionData.deviceName,
 			};
 		} catch (error) {
-			if (error instanceof MpcError) {
+			if (error instanceof BaseError) {
 				throw error;
 			}
 			if (error instanceof Error) {
-				throw new MpcError(error.message, MpcErrorCode.PairingFailed);
+				throw new BaseError(error.message, BaseErrorCode.PairingFailed);
 			}
-			throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
+			throw new BaseError("unkown-error", BaseErrorCode.UnknownError);
 		}
 	};
 
@@ -181,25 +187,25 @@ export class PairingAction {
 				elapsedTime: Date.now() - startTime,
 			};
 		} catch (error) {
-			if (error instanceof MpcError) {
+			if (error instanceof BaseError) {
 				throw error;
 			}
 			if (error instanceof Error) {
-				throw new MpcError(error.message, MpcErrorCode.HttpError);
+				throw new BaseError(error.message, BaseErrorCode.HttpError);
 			}
-			throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
+			throw new BaseError("unkown-error", BaseErrorCode.UnknownError);
 		}
 	};
 
-	#decryptAndDeserializeBackupData = async (
+	#recoverFromBackup = async (
 		token: string,
 		backupData: string,
 		password: string,
 	): Promise<{ distributedKey: DistributedKey; accountAddress: string }> => {
 		if (!this.#pairingDataInit) {
-			throw new MpcError(
+			throw new BaseError(
 				"Pairing data not initialized",
-				MpcErrorCode.PairingFailed,
+				BaseErrorCode.PairingFailed,
 			);
 		}
 		try {
@@ -215,26 +221,33 @@ export class PairingAction {
 				accountAddress,
 			};
 		} catch (error) {
-			await this.#httpClient.sendMessage(
-				token,
-				"pairing",
-				{
-					isPaired: false,
-					pairingRemark: PairingRemark.INVALID_BACKUP_DATA,
-				},
-				false,
-				this.#pairingDataInit.pairingId,
-			);
+			try {
+				await this.#httpClient.sendMessage(
+					token,
+					"pairing",
+					{
+						isPaired: false,
+						pairingRemark: PairingRemark.INVALID_BACKUP_DATA,
+					},
+					false,
+					this.#pairingDataInit.pairingId,
+				);
+			} catch (error) {
+				if (error instanceof BaseError) {
+					throw error;
+				}
+				if (error instanceof Error) {
+					throw new BaseError(error.message, BaseErrorCode.HttpError);
+				}
+				throw new BaseError("unkown-error", BaseErrorCode.HttpError);
+			}
 
-			if (error instanceof MpcError) {
+			if (error instanceof BaseError) {
 				throw error;
 			}
-			if (error instanceof Error) {
-				throw new MpcError(error.message, MpcErrorCode.InvalidBackupData);
-			}
-			throw new MpcError(
+			throw new BaseError(
 				"wrong secret key for the given ciphertext",
-				MpcErrorCode.InvalidBackupData,
+				BaseErrorCode.InvalidBackupData,
 			);
 		}
 	};
@@ -245,9 +258,9 @@ export class PairingAction {
 		currentAccountAddress?: string,
 	) => {
 		if (!this.#pairingDataInit) {
-			throw new MpcError(
+			throw new BaseError(
 				"Pairing data not initialized",
-				MpcErrorCode.PairingFailed,
+				BaseErrorCode.PairingFailed,
 			);
 		}
 		if (currentAccountAddress && !accountAddress) {
@@ -262,9 +275,9 @@ export class PairingAction {
 				this.#pairingDataInit.pairingId,
 			);
 
-			throw new MpcError(
+			throw new BaseError(
 				"No backup data while repairing",
-				MpcErrorCode.PairingFailed,
+				BaseErrorCode.PairingFailed,
 			);
 		}
 		if (

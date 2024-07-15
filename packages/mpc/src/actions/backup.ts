@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 import type { PairingData } from "../storage/types";
 import type { HttpClient } from "../transport/httpClient";
 import type { BackupConversation } from "../types";
@@ -33,16 +33,16 @@ export class BackupAction {
 				false,
 			);
 			if (response) {
-				throw new MpcError("Backup failed", MpcErrorCode.BackupFailed);
+				throw new BaseError("Backup failed", BaseErrorCode.BackupFailed);
 			}
 		} catch (error) {
-			if (error instanceof MpcError) {
+			if (error instanceof BaseError) {
 				throw error;
 			}
 			if (error instanceof Error) {
-				throw new MpcError(error.message, MpcErrorCode.BackupFailed);
+				throw new BaseError(error.message, BaseErrorCode.BackupFailed);
 			}
-			throw new MpcError("unknown-error", MpcErrorCode.UnknownError);
+			throw new BaseError("unknown-error", BaseErrorCode.UnknownError);
 		}
 	};
 }

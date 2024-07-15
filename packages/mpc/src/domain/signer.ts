@@ -24,7 +24,7 @@ import {
 } from "@ethersproject/transactions";
 import type { ethers } from "ethers";
 import { concat, toUtf8Bytes } from "ethers/lib/utils";
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 import type { DistributedKey } from "../storage/types";
 import type { MpcAuthenticator } from "./authenticator";
 
@@ -72,7 +72,7 @@ export class MpcSigner extends Signer {
 		this.#distributedKey = distributedKey;
 		const eoa = await this.#mpcAuth.accountManager.getEoa();
 		if (!eoa) {
-			throw new MpcError("EOA not found", MpcErrorCode.AccountNotCreated);
+			throw new BaseError("Init Signer failed due to EOA not found", BaseErrorCode.WalletNotCreated);
 		}
 		this.#address = eoa;
 	};
@@ -84,7 +84,7 @@ export class MpcSigner extends Signer {
 	 */
 	getAddress = async (): Promise<string> => {
 		if (!this.#address) {
-			throw new MpcError("Address not found", MpcErrorCode.WalletNotCreated);
+			throw new BaseError("Address not found", BaseErrorCode.WalletNotCreated);
 		}
 		return this.#address;
 	};
@@ -168,9 +168,9 @@ export class MpcSigner extends Signer {
 	signDigest = async (digest: BytesLike): Promise<Signature> => {
 		const messageDigest = hexlify(digest);
 		if (!this.#distributedKey) {
-			throw new MpcError(
+			throw new BaseError(
 				"Distributed key not found",
-				MpcErrorCode.WalletNotCreated,
+				BaseErrorCode.WalletNotCreated,
 			);
 		}
 		const sign = await this.#mpcAuth.runSign(

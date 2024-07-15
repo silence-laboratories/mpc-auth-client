@@ -1,17 +1,58 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-export class MpcError extends Error {
+type BaseErrorParameters = {
+	cause?: BaseError | Error | undefined;
+	details?: string | undefined;
+	docsUrl?: string | undefined;
+	metaMessages?: string[] | undefined;
+};
+
+export class BaseError extends Error {
+	version = 1;
 	code: number;
-	constructor(message: string, code: MpcErrorCode) {
-		super(JSON.stringify({ message, code }));
+	details: string
+	docsUrl?: string;
+
+	constructor(
+		shortMessage: string,
+		code: BaseErrorCode,
+		opts: BaseErrorParameters = {},
+	) {
+		super(JSON.stringify({ code }));
 		this.name = "MpcError";
 		this.code = code;
+
+		const details =
+			opts.cause instanceof BaseError
+				? opts.cause.details
+				: opts.cause?.message
+					? opts.cause.message
+					: opts.details;
+
+		this.message = [
+			shortMessage,
+			"",
+			`Code: ${code}`,
+			...(details ? [`Details: ${details}`] : []),
+			...(opts.metaMessages ? [...opts.metaMessages] : []),
+			...(opts.docsUrl ? [`Docs: ${opts.docsUrl}`] : []),
+			`Version: ${this.version}`,
+		].join("\n");
+
+		this.details = details ?? "Unknown";
+		this.docsUrl = opts.docsUrl;
+		this.message = this.message.trim();
+
+		// Capture stack trace if available
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, BaseError);
+		}
 	}
 }
 
-export enum MpcErrorCode {
-	StorageDataInvalid = 1,
+export enum BaseErrorCode {
+	StorageWriteFailed = 1,
 	StorageFetchFailed = 2,
 	HttpError = 3,
 	// Action errors
@@ -27,6 +68,5 @@ export enum MpcErrorCode {
 	InvalidBackupData = 12,
 	InvalidMessageHashLength = 13,
 	WalletNotCreated = 14,
-	AccountNotCreated = 15,
-	UnknownError = 16,
+	UnknownError = 15,
 }

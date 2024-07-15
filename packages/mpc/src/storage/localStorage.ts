@@ -1,7 +1,7 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 import type { AccountData, StorageData, V0StorageData } from "./types";
 import type { IStorage } from "./types";
 
@@ -38,9 +38,9 @@ export class LocalStorageManager implements IStorage {
 	 */
 	setStorageData = async (data: StorageData) => {
 		if (data === null) {
-			throw new MpcError(
+			throw new BaseError(
 				"Storage data cannot be null",
-				MpcErrorCode.StorageDataInvalid,
+				BaseErrorCode.StorageWriteFailed,
 			);
 		}
 		data.version = this.#VERSION;
@@ -55,18 +55,18 @@ export class LocalStorageManager implements IStorage {
 	getStorageData = async (): Promise<StorageData> => {
 		const _isStorageExist = await this.isStorageExist();
 		if (!_isStorageExist) {
-			throw new MpcError(
+			throw new BaseError(
 				"Wallet is not paired",
-				MpcErrorCode.StorageFetchFailed,
+				BaseErrorCode.StorageFetchFailed,
 			);
 		}
 
 		const state = localStorage.getItem(this.#walletId);
 
 		if (!state) {
-			throw new MpcError(
+			throw new BaseError(
 				"Wallet failed to fetch state",
-				MpcErrorCode.StorageFetchFailed,
+				BaseErrorCode.StorageFetchFailed,
 			);
 		}
 
@@ -83,18 +83,18 @@ export class LocalStorageManager implements IStorage {
 	#getV0StorageData = async (): Promise<V0StorageData> => {
 		const _isStorageExist = await this.isStorageExist();
 		if (!_isStorageExist) {
-			throw new MpcError(
+			throw new BaseError(
 				"Wallet is not paired",
-				MpcErrorCode.StorageFetchFailed,
+				BaseErrorCode.StorageFetchFailed,
 			);
 		}
 
 		const state = localStorage.getItem(this.#walletId);
 
 		if (!state) {
-			throw new MpcError(
+			throw new BaseError(
 				"Wallet failed to fetch state",
-				MpcErrorCode.StorageFetchFailed,
+				BaseErrorCode.StorageFetchFailed,
 			);
 		}
 
