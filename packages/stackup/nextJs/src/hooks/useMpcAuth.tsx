@@ -1,8 +1,9 @@
-import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
 import {
+    MpcAuthenticator,
     StoragePlatform,
     WalletId,
-} from "@silencelaboratories/mpc-sdk/lib/esm/types";
+} from "@silencelaboratories/mpc-sdk";
+
 import { useState } from "react";
 export const useMpcAuth = () => {
     const [sdk] = useState<MpcAuthenticator>(

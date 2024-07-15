@@ -1,11 +1,11 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import type { AccountData, StorageData } from "./storage/types";
+import type { AccountData, StorageData, PairingSessionData } from "./storage/types";
 import type { IStorage } from "./storage/types";
 import { StoragePlatform, WalletId,  } from "./constants";
 import { MpcAuthenticator } from "./domain/authenticator";
 import { MpcSigner } from "./domain/signer";
 
 export { MpcAuthenticator, MpcSigner, StoragePlatform, WalletId };
-export type { AccountData, IStorage, StorageData };
+export type { AccountData, IStorage, StorageData, PairingSessionData };

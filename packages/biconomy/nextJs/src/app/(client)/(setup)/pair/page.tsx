@@ -22,8 +22,8 @@ import {
     getPairingStatus,
     setPairingStatus,
 } from "@/storage/localStorage";
-import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
+import { PairingSessionData } from "@silencelaboratories/mpc-sdk";
 
 function Page() {
     const mpcAuth = useMpcAuth();
