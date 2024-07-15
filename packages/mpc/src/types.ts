@@ -1,7 +1,6 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import type { IStorage } from "./storage/types";
 import type { StoragePlatform, WalletId } from "./constants";
 
