@@ -67,7 +67,7 @@ export class MpcSigner extends Signer {
 		this.provider = provider;
 	}
 
-	#build = async() => {
+	#build = async () => {
 		const distributedKey = await this.#mpcAuth.getDistributionKey();
 		this.#distributedKey = distributedKey;
 		const eoa = await this.#mpcAuth.accountManager.getEoa();
@@ -75,22 +75,19 @@ export class MpcSigner extends Signer {
 			throw new MpcError("EOA not found", MpcErrorCode.AccountNotCreated);
 		}
 		this.#address = eoa;
-	}
+	};
 
 	/**
 	 * Returns the Ethereum address associated with this signer.
 	 *
 	 * @returns {Promise<string>} The Ethereum address as a promise.
 	 */
-	async getAddress(): Promise<string> {
+	getAddress = async (): Promise<string> => {
 		if (!this.#address) {
-			throw new MpcError(
-				"Address not found",
-				MpcErrorCode.WalletNotCreated,
-			);
+			throw new MpcError("Address not found", MpcErrorCode.WalletNotCreated);
 		}
 		return this.#address;
-	}
+	};
 
 	/**
 	 * Signs a given message using the signer's private key. Get the signature from MpcAuthenticator.
@@ -98,7 +95,7 @@ export class MpcSigner extends Signer {
 	 * @param {ethers.utils.Bytes} message - The message to sign.
 	 * @returns {Promise<string>} The signed message as a promise.
 	 */
-	async signMessage(message: ethers.utils.Bytes): Promise<string> {
+	signMessage = async (message: ethers.utils.Bytes): Promise<string> => {
 		const messagePrefix = "\x19Ethereum Signed Message:\n";
 
 		const messageDigest = hashMessage(message);
@@ -133,7 +130,7 @@ export class MpcSigner extends Signer {
 		const signedMsg = joinSignature(split);
 
 		return signedMsg;
-	}
+	};
 
 	/**
 	 * Signs a transaction with the signer's private key. Get the signature from MpcAuthenticator.
@@ -141,7 +138,9 @@ export class MpcSigner extends Signer {
 	 * @param {TransactionRequest} transaction - The transaction to sign.
 	 * @returns {Promise<string>} The signed transaction as a promise.
 	 */
-	async signTransaction(transaction: TransactionRequest): Promise<string> {
+	signTransaction = async (
+		transaction: TransactionRequest,
+	): Promise<string> => {
 		return resolveProperties(transaction).then(async (tx: any) => {
 			if (tx.from != null) {
 				if (getAddress(tx.from) !== this.#address) {
@@ -158,7 +157,7 @@ export class MpcSigner extends Signer {
 
 			return serialize(<UnsignedTransaction>tx, signature);
 		});
-	}
+	};
 
 	/**
 	 * Signs a digest with the signer's private key.
@@ -166,7 +165,7 @@ export class MpcSigner extends Signer {
 	 * @param {BytesLike} digest - The digest to sign.
 	 * @returns {Promise<Signature>} The signature as a promise.
 	 */
-	async signDigest(digest: BytesLike): Promise<Signature> {
+	signDigest = async (digest: BytesLike): Promise<Signature> => {
 		const messageDigest = hexlify(digest);
 		if (!this.#distributedKey) {
 			throw new MpcError(
@@ -193,7 +192,7 @@ export class MpcSigner extends Signer {
 			r: hexZeroPad(`0x${r.toString("hex")}`, 32),
 			s: hexZeroPad(`0x${s.toString("hex")}`, 32),
 		});
-	}
+	};
 
 	/**
 	 * Connects the signer with a provider.
@@ -201,7 +200,7 @@ export class MpcSigner extends Signer {
 	 * @param {Provider} provider - The ETH provider to connect with.
 	 * @returns {MpcSigner} A new instance of MpcSigner connected with the specified provider.
 	 */
-	connect(provider: Provider): MpcSigner {
+	connect = (provider: Provider): MpcSigner => {
 		return new MpcSigner(this.#mpcAuth, provider);
-	}
+	};
 }

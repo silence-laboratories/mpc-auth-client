@@ -141,9 +141,9 @@ export class LocalStorageManager implements IStorage {
 		}
 	};
 
-	async #getVersion(): Promise<number> {
+	#getVersion = async (): Promise<number> => {
 		const storageData = await this.getStorageData();
 		const version = storageData.version;
 		return version || 0;
-	}
+	};
 }
