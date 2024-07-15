@@ -68,7 +68,7 @@ const biconomySmartAccount = await createSmartAccountClient({
 The library provides the following error codes:
 
 ```typescript
-enum MpcErrorCode {
+enum BaseErrorCode {
 	StorageWriteFailed = 1,
 	StorageFetchFailed = 2,
 	HttpError = 3,
