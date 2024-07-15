@@ -10,17 +10,15 @@ import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
-import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 function Page() {
-    const mpcAuth = useMpcAuth();
     const router = useRouter();
     const moveToNext = () => {
         setPairingStatus(WALLET_STATUS.BackedUp);
         router.replace("/afterBackup");
     };
     const status = getPairingStatus();
-    if (status !== WALLET_STATUS.Paired || mpcAuth.accountManager.isPasswordReady()) {
+    if (status !== WALLET_STATUS.Paired) {
         return <RouteLoader />;
     }
     return (

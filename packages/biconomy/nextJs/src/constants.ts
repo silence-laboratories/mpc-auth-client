@@ -1,5 +1,3 @@
-export const WALLET_ID = "biconomy";
-
 export const SEPOLIA = {
     chainId: "0xaa36a7", // in hex
     chainName: "Sepolia Test Network",

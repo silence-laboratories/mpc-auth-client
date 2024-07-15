@@ -14,23 +14,24 @@ function Page() {
     const mpcAuth = useMpcAuth();
     const router = useRouter();
 
-    try {
-        const eoa = mpcAuth.accountManager.getEoa();
-        const account = mpcAuth.accountManager.getSmartContractAccount();
-        if (eoa && !account) {
-            setPairingStatus(WALLET_STATUS.BackedUp);
-            router.replace("/mint");
-            return;
-        } else if (eoa && account) {
+    (async () => {
+        try {
+            const eoa = await mpcAuth.accountManager.getEoa();
+            const account =
+                await mpcAuth.accountManager.getSmartContractAccount();
+            if (eoa && !account) {
+                setPairingStatus(WALLET_STATUS.BackedUp);
+                router.replace("/mint");
+                return;
+            }
             setPairingStatus(WALLET_STATUS.Minted);
             router.replace("/homescreen");
             return;
+        } catch (error) {
+            console.log("Error in getting account", error);
         }
-    } catch (error) {
-        console.log("Error in getting account", error);
-    }
+    })();
 
-    
     const nextPageClick = () => {
         router.replace("/pair");
     };
@@ -51,7 +52,7 @@ function Page() {
                     letterSpacing: "0px",
                 }}
             >
-                Eliminate Single Points of failure with<br></br>
+                Eliminate Single Points of failure with<b/>
                 Distributed Smart Contract Accounts
             </div>
             <div
@@ -75,7 +76,7 @@ function Page() {
                 </span>{" "}
                 to enable a 2FA- like experience
             </div>
-            <br></br>
+            <br/>
 
             <div className="flex items-center justify-center">
                 <Image

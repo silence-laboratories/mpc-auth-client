@@ -1,6 +1,6 @@
 import { Client, Presets } from "userop";
 import { ethers } from "ethers";
-import { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
+import type { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
 export async function sendTransaction(
@@ -16,8 +16,9 @@ export async function sendTransaction(
     if (!eoa) {
         throw new Error("Eoa not found");
     }
+    const signer = await MpcSigner.instance(mpcAuth);
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
-        new MpcSigner(mpcAuth),
+        signer,
         `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
     const client = await Client.init(

@@ -1,26 +1,37 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { BackupAction } from "../actions/backup";
 import { KeygenAction } from "../actions/keygen";
 import { PairingAction } from "../actions/pairing";
 import { SignAction } from "../actions/sign";
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 import { LocalStorageManager } from "../storage/localStorage";
-import type { IStorage } from "../storage/types";
+import type { IStorage, PairingData } from "../storage/types";
 import { HttpClient } from "../transport/httpClient";
-import {
-	type Options,
-	type PairingSessionData,
-	type SignMetadata,
-	type StorageData,
-	StoragePlatform,
-} from "../types";
+import type { Options, SignMetadata } from "../types";
+import type { PairingSessionData, StorageData } from "../storage/types";
 import { fromHexStringToBytes, getAddressFromPubkey } from "../utils";
 import { AccountManager } from "./account";
 import { aeadEncrypt, requestEntropy } from "../crypto";
+import { StoragePlatform, type WalletId } from "../constants";
 
 /**
  * Represents an authenticator for managing MPC (Multi-Party Computation) operations such as pairing, key generation, signing, and backup.
  * This class encapsulates the logic for interacting with the underlying storage, managing accounts, and communicating with a remote server for MPC operations.
+ *
+ * @class MpcAuthenticator
+ *
+ * @property {AccountManager} accountManager - The manager for account-related operations.
+ * @property {HttpClient} httpClient - The HTTP client for making requests to the server.
+ * @property {PairingAction} pairingAction - The action for pairing operations.
+ * @property {KeygenAction} keygenAction - The action for key generation operations.
+ * @property {SignAction} signAction - The action for signing operations.
+ * @property {BackupAction} backupAction - The action for backup operations.
+ * @property {WalletId} walletId - The wallet identifier.
+ * @constructor
+ * Creates an instance of MpcAuthenticator. IMPORTANT: MUST NOT be used to create MpcAuthenticator instance.
  */
 export class MpcAuthenticator {
 	/**
@@ -32,12 +43,12 @@ export class MpcAuthenticator {
 	 * The storage interface for persisting data.
 	 * @private
 	 */
-	#storage?: IStorage;
+	#storage: IStorage;
 	/**
 	 * The wallet identifier.
 	 * @private
 	 */
-	#walletId = "";
+	#walletId: WalletId;
 	/**
 	 * The HTTP client for making requests to the server.
 	 * @private
@@ -54,6 +65,20 @@ export class MpcAuthenticator {
 	 */
 	accountManager: AccountManager;
 
+	static #instance: MpcAuthenticator | null = null;
+
+	/**
+	 *
+	 * @param configs
+	 * @returns An instance of MpcAuthenticator. IMPORTANT: This builder method MUST BE called to create the MpcAuthenticator instance.
+	 */
+	static instance = (configs: Options) => {
+		if (MpcAuthenticator.#instance === null) {
+			MpcAuthenticator.#instance = new MpcAuthenticator(configs);
+		}
+		return MpcAuthenticator.#instance;
+	};
+
 	constructor(configs: Options) {
 		const {
 			storagePlatform = StoragePlatform.Browser,
@@ -67,14 +92,12 @@ export class MpcAuthenticator {
 		// Set Storage by platform
 		if (storagePlatform === StoragePlatform.Browser) {
 			this.#storage = new LocalStorageManager(walletId);
-		} else {
+		} else if (customStorage) {
 			this.#storage = customStorage;
-		}
-		if (!this.#storage) {
-			throw new MpcError(
-				"Storage not initialized",
-				MpcErrorCode.StorageFetchFailed,
-			);
+		} else {
+			throw new BaseError("Missing Storage", BaseErrorCode.StorageFetchFailed, {
+				details: "Storage is required to initialize MpcAuthenticator",
+			});
 		}
 
 		// Account Manager
@@ -99,48 +122,38 @@ export class MpcAuthenticator {
 	 * @returns The operating system of party 2 device.
 	 * @public
 	 */
-	getDeviceOS() {
-		return this.accountManager.getDeviceOS();
+	getPairedDeviceOS = () => {
+		return this.accountManager.getPairedDeviceOS();
 	};
 
 	/**
 	 * Retrieves the distribution key from storage.
 	 * @returns The distribution key if available.
-	 * @throws {MpcError} If the storage is not initialized.
+	 * @throws {BaseError} If the storage is not initialized.
 	 * @public
 	 */
-	getDistributionKey() {
-		if (!this.#storage)
-			throw new MpcError(
-				"Storage not initialized",
-				MpcErrorCode.StorageFetchFailed,
-			);
-		const silentShareStorage = this.#storage.getStorageData();
+	getDistributionKey = async () => {
+		const storageData = await this.#storage.getStorageData();
 
-		if (!silentShareStorage.distributedKey) {
-			throw new MpcError(
+		if (!storageData.distributedKey) {
+			throw new BaseError(
 				"Distributed key not found",
-				MpcErrorCode.WalletNotCreated,
+				BaseErrorCode.WalletNotCreated,
 			);
 		}
 
-		return silentShareStorage.distributedKey;
-	}
+		return storageData.distributedKey;
+	};
 
 	/**
 	 * Checks if the device is paired.
 	 * @returns An object indicating if the device is paired and additional pairing information.
-	 * @throws {MpcError} If the storage is not initialized.
+	 * @throws {BaseError} If the storage is not initialized.
 	 * @public
 	 */
-	async isPaired() {
-		if (!this.#storage)
-			throw new MpcError(
-				"Storage not initialized",
-				MpcErrorCode.StorageFetchFailed,
-			);
+	isPaired = async () => {
 		try {
-			const deviceName = this.accountManager.getDeviceOS();
+			const deviceName = this.accountManager.getPairedDeviceOS();
 			return {
 				isPaired: true,
 				deviceName,
@@ -151,27 +164,26 @@ export class MpcAuthenticator {
 				deviceName: null,
 			};
 		}
-	}
+	};
 
 	/**
 	 * Initializes the pairing process and returns a QR code for pairing.
 	 * @returns A QR code for pairing.
 	 * @public
 	 */
-	async initPairing() {
-		const walletId = this.getWalletId();
-		const qrCode = await this.#pairingAction.init(walletId);
+	initPairing = async () => {
+		const qrCode = await this.#pairingAction.init(this.#walletId);
 		return qrCode;
-	}
+	};
 
 	/**
 	 * Starts the pairing session.
 	 * @returns The result of starting the pairing session.
 	 * @public
 	 */
-	async runStartPairingSession() {
+	runStartPairingSession = async () => {
 		return await this.#pairingAction.startPairingSession();
-	}
+	};
 
 	/**
 	 * Ends the pairing session with the provided session data.
@@ -179,19 +191,14 @@ export class MpcAuthenticator {
 	 * @param {string} [currentAccountAddress] - The current account address, to serve re-pairing operation.
 	 * @param {string} [password] - The password, if available, to serve re-pairing operation.
 	 * @returns The result of ending the pairing session.
-	 * @throws {MpcError} If the storage is not initialized.
+	 * @throws {BaseError} If the storage is not initialized.
 	 * @public
 	 */
-	async runEndPairingSession(
+	runEndPairingSession = async (
 		pairingSessionData: PairingSessionData,
 		currentAccountAddress?: string,
 		password?: string,
-	) {
-		if (!this.#storage)
-			throw new MpcError(
-				"Storage not initialized",
-				MpcErrorCode.StorageFetchFailed,
-			);
+	) => {
 		const result = await this.#pairingAction.endPairingSession(
 			pairingSessionData,
 			currentAccountAddress,
@@ -214,59 +221,26 @@ export class MpcAuthenticator {
 			deviceName: result.deviceName,
 			elapsedTime: result.elapsedTime,
 		};
-	}
-
-	/**
-	 * Refreshes the pairing information and session token.
-	 * @returns The new pairing data.
-	 * @throws {MpcError} If the storage is not initialized.
-	 * @public
-	 */
-	async refreshPairing() {
-		if (!this.#storage)
-			throw new MpcError(
-				"Storage not initialized",
-				MpcErrorCode.StorageFetchFailed,
-			);
-		const silentShareStorage: StorageData = this.#storage.getStorageData();
-		const pairingData = silentShareStorage.pairingData;
-		if (!pairingData) {
-			throw new MpcError(
-				"Pairing data not found",
-				MpcErrorCode.WalletNotCreated,
-			);
-		}
-		const result = await this.#pairingAction.refreshToken(pairingData);
-		this.#storage.setStorageData(silentShareStorage);
-		return result.newPairingData;
-	}
+	};
 
 	/**
 	 * Runs the key generation process.
 	 * @returns The result of the key generation process.
-	 * @throws {MpcError} If the storage is not initialized.
+	 * @throws {BaseError} If the storage is not initialized.
 	 * @public
 	 */
-	async runKeygen() {
-		if (!this.#storage)
-			throw new MpcError(
-				"Storage not initialized",
-				MpcErrorCode.StorageFetchFailed,
-			);
-		const { pairingData, silentShareStorage } =
-			await this.getPairingDataAndStorage();
+	runKeygen = async () => {
+		const storageData: StorageData = await this.#storage.getStorageData();
+		const pairingData = await this.#checkPairingExpiration(
+			storageData.pairingData,
+		);
 
-		if (!pairingData) {
-			throw new MpcError(
-				"Pairing data not found",
-				MpcErrorCode.WalletNotCreated,
-			);
-		}
 		const x1 = fromHexStringToBytes(await requestEntropy());
+
 		const accountId = 1;
 		const result = await this.#keygenAction.keygen(pairingData, accountId, x1);
 		this.#storage.setStorageData({
-			...silentShareStorage,
+			...storageData,
 			distributedKey: {
 				publicKey: result.publicKey,
 				accountId,
@@ -282,47 +256,51 @@ export class MpcAuthenticator {
 			},
 			elapsedTime: result.elapsedTime,
 		};
-	}
+	};
 
 	/**
 	 * Runs the backup process with the provided password.
 	 * @param {string} password - The password for encrypting the backup.
 	 * @public
 	 */
-	async runBackup(password: string) {
-		const { pairingData, silentShareStorage } =
-			await this.getPairingDataAndStorage();
+	runBackup = async (password: string) => {
+		const storageData: StorageData = await this.#storage.getStorageData();
+		const pairingData = await this.#checkPairingExpiration(
+			storageData.pairingData,
+		);
+
 		if (!pairingData) {
-			throw new MpcError(
+			throw new BaseError(
 				"Pairing data not found",
-				MpcErrorCode.WalletNotCreated,
+				BaseErrorCode.WalletNotCreated,
+				{ details: "Storage is not found while running backup" },
 			);
 		}
 		if (password.length === 0) {
-			await this.#backupAction.backup(pairingData, "", "", this.getWalletId());
+			await this.#backupAction.backup(pairingData, "", "", this.#walletId);
 			return;
 		}
 
-		if (password && password.length >= 8 && silentShareStorage.distributedKey) {
+		if (password && password.length >= 8 && storageData.distributedKey) {
 			try {
 				const encryptedMessage = await aeadEncrypt(
-					JSON.stringify(silentShareStorage.distributedKey),
+					JSON.stringify(storageData.distributedKey),
 					password,
 				);
 				await this.#backupAction.backup(
 					pairingData,
 					encryptedMessage,
-					getAddressFromPubkey(silentShareStorage.distributedKey.publicKey),
-					this.getWalletId(),
+					getAddressFromPubkey(storageData.distributedKey.publicKey),
+					this.#walletId,
 				);
 			} catch (error) {
 				if (error instanceof Error) {
 					throw error;
 				}
-				throw new MpcError("unkown-error", MpcErrorCode.UnknownError);
+				throw new BaseError("unkown-error", BaseErrorCode.UnknownError);
 			}
 		}
-	}
+	};
 
 	/**
 	 * Runs the signing process with the provided parameters.
@@ -335,21 +313,18 @@ export class MpcAuthenticator {
 	 * @returns The result of the signing process.
 	 * @public
 	 */
-	async runSign(
+	runSign = async (
 		hashAlg: string,
 		message: string,
 		messageHashHex: string,
 		signMetadata: SignMetadata,
 		accountId: number,
 		keyShare: IP1KeyShare,
-	) {
-		const { pairingData } = await this.getPairingDataAndStorage();
-		if (!pairingData) {
-			throw new MpcError(
-				"Pairing data not found",
-				MpcErrorCode.WalletNotCreated,
-			);
-		}
+	) => {
+		const storageData: StorageData = await this.#storage.getStorageData();
+		const pairingData = await this.#checkPairingExpiration(
+			storageData.pairingData,
+		);
 
 		const messageHash = fromHexStringToBytes(
 			messageHashHex.startsWith("0x")
@@ -357,13 +332,13 @@ export class MpcAuthenticator {
 				: messageHashHex,
 		);
 		if (messageHash.length !== 32) {
-			throw new MpcError(
+			throw new BaseError(
 				"Invalid length of messageHash, should be 32 bytes",
-				MpcErrorCode.InvalidMessageHashLength,
+				BaseErrorCode.InvalidMessageHashLength,
 			);
 		}
 
-		const walletId = this.getWalletId();
+		const walletId = this.#walletId;
 
 		return await this.#signAction.sign({
 			pairingData,
@@ -375,46 +350,46 @@ export class MpcAuthenticator {
 			accountId,
 			walletId,
 		});
-	}
+	};
 
 	/**
 	 * Signs out by clearing the storage data.
-	 * @throws {MpcError} If the storage is not initialized.
+	 * @throws {BaseError} If the storage is not initialized.
 	 * @public
 	 */
-	async signOut() {
-		if (!this.#storage)
-			throw new MpcError(
-				"Storage not initialized",
-				MpcErrorCode.StorageFetchFailed,
-			);
+	signOut = async () => {
 		this.#storage.clearStorageData();
-	}
+	};
 
-	private async getPairingDataAndStorage() {
-		if (!this.#storage)
-			throw new MpcError(
-				"Storage not initialized",
-				MpcErrorCode.StorageFetchFailed,
-			);
-		const silentShareStorage: StorageData = this.#storage.getStorageData();
-		let pairingData = silentShareStorage.pairingData;
+	#refreshPairing = async () => {
+		const storageData: StorageData = await this.#storage.getStorageData();
+		const pairingData = storageData.pairingData;
 		if (!pairingData) {
-			throw new MpcError(
+			throw new BaseError(
 				"Pairing data not found",
-				MpcErrorCode.WalletNotCreated,
+				BaseErrorCode.WalletNotCreated,
 			);
 		}
-		if (pairingData.tokenExpiration < Date.now() - this.#TOKEN_LIFE_TIME) {
-			pairingData = await this.refreshPairing();
-		}
-		return { pairingData, silentShareStorage };
-	}
+		const result = await this.#pairingAction.refreshToken(pairingData);
+		this.#storage.setStorageData(storageData);
+		return result.newPairingData;
+	};
 
-	private getWalletId(): string {
-		if (this.#storage instanceof LocalStorageManager) {
-			return this.#storage.getWalletId();
+	#checkPairingExpiration = async (pairingData: PairingData | null) => {
+		if (!pairingData) {
+			throw new BaseError(
+				"Pairing data not found",
+				BaseErrorCode.WalletNotCreated,
+				{
+					details:
+						"Pairing data is not found while checking session expiration",
+				},
+			);
 		}
-		return this.#walletId;
-	}
+
+		if (pairingData.tokenExpiration < Date.now() - this.#TOKEN_LIFE_TIME) {
+			return await this.#refreshPairing();
+		}
+		return pairingData;
+	};
 }

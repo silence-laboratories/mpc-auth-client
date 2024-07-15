@@ -3,7 +3,7 @@
 
 ## Prerequisites:
 - Node.js v16.13.0 or higher
-- Build MPC Authenticator library, follow instruction in [packages/mpc README](../../mpc/README.md)
+- Build MPC Authenticator library, follow instruction in ["How to build" section](../../mpc/README.md#how-to-build)
 
 ## Setting Up Environment Variables
 

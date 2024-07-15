@@ -24,9 +24,11 @@ function Page() {
             router.replace("/intro");
             return;
         }
-
-        setEoa(mpcAuth.accountManager.getEoa());
-    }, [router, status]);
+        (async() => {
+            const val = await mpcAuth.accountManager.getEoa();
+            setEoa(val);
+        })()
+    }, [router, status, mpcAuth.accountManager.getEoa]);
 
     const handleMint = async () => {
         setLoading(true);

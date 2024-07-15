@@ -1,17 +1,19 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { ethers, providers } from "ethers";
+import { ethers } from "ethers";
 import chalk from "chalk";
-import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
+import { type SupportedSigner, createSmartAccountClient } from "@biconomy/account";
 import { mpcAuth } from "../../mpc";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export const nativeTransferPayERC20 = async (to: string, amount: number) => {
   // ------------------------STEP 1: Initialise Biconomy Smart Account SDK--------------------------------//
   try {
-    const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-    const client = new MpcSigner(mpcAuth, provider);
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://rpc.sepolia.org"
+    );
+    const client = await MpcSigner.instance(mpcAuth, provider);
 
     const biconomySmartAccount = await createSmartAccountClient({
       signer: client as SupportedSigner,

@@ -1,10 +1,9 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { StorageData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { SdkError, ErrorCode } from "./error";
 import fs from "fs";
-import { IStorage } from "@silencelaboratories/mpc-sdk/lib/esm/storage/types";
+import type { IStorage, StorageData } from "@silencelaboratories/mpc-sdk";
 
 export class CliStorage implements IStorage {
   /**
@@ -12,7 +11,7 @@ export class CliStorage implements IStorage {
    *
    * @returns true if exists, false otherwise
    */
-  isStorageExist = (): boolean => {
+  isStorageExist = async (): Promise<boolean> => {
     try {
       const fileExists = fs.existsSync("storage.json");
       return fileExists;
@@ -24,7 +23,7 @@ export class CliStorage implements IStorage {
   /**
    * Delete the stored data, if it exists.
    */
-  clearStorageData = () => {
+  clearStorageData = async () => {
     try {
       if (fs.existsSync("storage.json")) {
         fs.unlinkSync("storage.json");
@@ -59,7 +58,7 @@ export class CliStorage implements IStorage {
    *
    * @returns SilentShareStorage object
    */
-  getStorageData = (): StorageData => {
+  getStorageData = async (): Promise<StorageData> => {
     try {
       const fileContent = fs.readFileSync("storage.json", "utf8");
       const jsonObject: StorageData = JSON.parse(fileContent);

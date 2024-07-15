@@ -7,9 +7,10 @@ import {
 	randBytes,
 } from "@silencelaboratories/ecdsa-tss";
 import _sodium, { base64_variants } from "libsodium-wrappers-sumo";
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 import type { HttpClient } from "../transport/httpClient";
-import type { KeygenConversation, PairingData } from "../types";
+import type { KeygenConversation } from "../types";
+import type { PairingData } from "../storage/types";
 import * as utils from "../utils";
 
 type KeygenResult = {
@@ -33,9 +34,9 @@ export class KeygenAction {
 	): Promise<KeygenResult> => {
 		try {
 			if (this.#running) {
-				throw new MpcError(
+				throw new BaseError(
 					"Keygen already running",
-					MpcErrorCode.KeygenResourceBusy,
+					BaseErrorCode.KeygenResourceBusy,
 				);
 			}
 			this.#running = true;
@@ -82,9 +83,9 @@ export class KeygenAction {
 					? utils.b64ToString(decryptedMessage)
 					: null;
 				const msg = await p1.processMessage(decodedMessage).catch((error) => {
-					throw new MpcError(
+					throw new BaseError(
 						`Internal library error: ${error}`,
-						MpcErrorCode.InternalLibError,
+						BaseErrorCode.InternalLibError,
 					);
 				});
 				if (msg.p1_key_share) {
@@ -120,9 +121,9 @@ export class KeygenAction {
 					keygenConversation = keygenConversationNew;
 				}
 				if (keygenConversation.isApproved === false) {
-					throw new MpcError(
+					throw new BaseError(
 						"User(phone) denied keygen",
-						MpcErrorCode.PhoneDenied,
+						BaseErrorCode.PhoneDenied,
 					);
 				}
 				round++;
@@ -135,16 +136,16 @@ export class KeygenAction {
 				elapsedTime: Date.now() - startTime,
 			};
 		} catch (error) {
-			if (error instanceof MpcError) {
-				if (error.code !== MpcErrorCode.KeygenResourceBusy) {
+			if (error instanceof BaseError) {
+				if (error.code !== BaseErrorCode.KeygenResourceBusy) {
 					this.#running = false;
 				}
 				throw error;
 			}
 			if (error instanceof Error) {
-				throw new MpcError(error.message, MpcErrorCode.KeygenFailed);
+				throw new BaseError(error.message, BaseErrorCode.KeygenFailed);
 			}
-			throw new MpcError("unknown-error", MpcErrorCode.UnknownError);
+			throw new BaseError("unknown-error", BaseErrorCode.UnknownError);
 		}
 	};
 }

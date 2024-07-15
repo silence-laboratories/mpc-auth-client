@@ -3,9 +3,9 @@
 
 import { pubToAddress } from "@ethereumjs/util";
 import _sodium from "libsodium-wrappers-sumo";
-import { MpcError, MpcErrorCode } from "./error";
+import { BaseError, BaseErrorCode } from "./error";
 
-export const fromHexStringToBytes = (hexString: string) => {
+export function fromHexStringToBytes(hexString: string) {
 	try {
 		const matched = hexString.match(/.{1,2}/g);
 		if (matched) {
@@ -15,11 +15,11 @@ export const fromHexStringToBytes = (hexString: string) => {
 	} catch (error) {
 		throw error instanceof Error
 			? error
-			: new MpcError("unknown-error", MpcErrorCode.UnknownError);
+			: new BaseError("unknown-error", BaseErrorCode.UnknownError);
 	}
 };
 
-export const toHexString = (bytes: Uint8Array) => {
+export function toHexString(bytes: Uint8Array) {
 	try {
 		return bytes.reduce(
 			(str, byte) => str + byte.toString(16).padStart(2, "0"),
@@ -28,7 +28,7 @@ export const toHexString = (bytes: Uint8Array) => {
 	} catch (error) {
 		throw error instanceof Error
 			? error
-			: new MpcError("unknown-error", MpcErrorCode.UnknownError);
+			: new BaseError("unknown-error", BaseErrorCode.UnknownError);
 	}
 };
 

@@ -22,8 +22,8 @@ import {
     getPairingStatus,
     setPairingStatus,
 } from "@/storage/localStorage";
-import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
+import { PairingSessionData } from "@silencelaboratories/mpc-sdk";
 
 function Page() {
     const mpcAuth = useMpcAuth();
@@ -54,7 +54,7 @@ function Page() {
                 oldEoa ?? undefined,
                 password
             );
-            const eoa = mpcAuth.accountManager.getEoa();
+            const eoa = await mpcAuth.accountManager.getEoa();
             if (isRepairing && oldEoa !== null && eoa !== oldEoa) {
                 setPairingStatus(WALLET_STATUS.Mismatched);
                 router.replace("/mismatchAccounts");
@@ -65,7 +65,7 @@ function Page() {
             setLoading(false);
         } catch (error) {
             // TODO: handle error
-            throw error;
+            console.error("Error in pairing with backup: ", error);
         }
     };
 
@@ -89,7 +89,7 @@ function Page() {
                 } else {
                     await mpcAuth.runEndPairingSession(
                         pairingSessionData,
-                        oldEoa ?? undefined,
+                        oldEoa ?? undefined
                     );
                     await mpcAuth.runKeygen();
 
@@ -125,10 +125,9 @@ function Page() {
                 setEnterPwSeconds((prev) => prev - 1);
             }, 1000);
             return () => clearInterval(interval);
-        } else {
-            setShowPasswordScreen(false);
-            setLoading(false);
         }
+        setShowPasswordScreen(false);
+        setLoading(false);
     }, [enterPwSeconds]);
 
     const onTryAgainClick = () => {
@@ -146,14 +145,14 @@ function Page() {
                 router.replace("/intro");
             }
         }
-    }
+    };
 
     const onBackFromEnterPassword = () => {
         setLoading(false);
         setPairingSessionDataState(null);
         setShowPasswordScreen(false);
         generateWallet();
-    }
+    };
 
     const isQrExpired = !(qr && seconds > 0);
     const status = getPairingStatus();
@@ -255,7 +254,7 @@ function Page() {
                                     alignItems: "center",
                                 }}
                             >
-                                {qr == "placeholder" ? (
+                                {qr === "placeholder" ? (
                                     <div className="flex items-center justify-center">
                                         <Image
                                             priority={true}

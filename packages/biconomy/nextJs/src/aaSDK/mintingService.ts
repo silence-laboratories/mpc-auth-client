@@ -4,8 +4,7 @@ import { providers } from "ethers";
 
 export async function mintBiconomyWallet(mpcAuth: MpcAuthenticator) {
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-
-    const client = new MpcSigner(mpcAuth, provider);
+    const client = await MpcSigner.instance(mpcAuth, provider);
 
     const biconomySmartAccount = await createSmartAccountClient({
         signer: client as SupportedSigner,

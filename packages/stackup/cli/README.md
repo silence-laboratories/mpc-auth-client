@@ -5,7 +5,7 @@
 
 ## Prerequisites:
 
-- **Build MPC Authenticator library**. Follow instruction in [packages/mpc README](../../mpc/README.md)
+- **Build MPC Authenticator library**. Follow instruction in ["How to build" section](../../mpc/README.md#how-to-build)
 
 - **Node Version:** Ensure you are using Node.js version 18.
 

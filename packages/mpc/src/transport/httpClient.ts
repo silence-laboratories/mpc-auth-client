@@ -1,16 +1,16 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 interface Response {
 	response: any;
 	error: string;
 }
 
 export class HttpClient {
-	private baseUrl: string;
+	#baseUrl: string;
 	constructor(baseUrl: string) {
-		this.baseUrl = baseUrl;
+		this.#baseUrl = baseUrl;
 	}
 
 	modifiedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -18,23 +18,23 @@ export class HttpClient {
 			.then(async (data) => {
 				const temp: Response = await data.json();
 				if (temp.error) {
-					throw new MpcError(temp.error, MpcErrorCode.HttpError);
+					throw new BaseError(temp.error, BaseErrorCode.HttpError);
 				}
 				return temp.response;
 			})
 			.catch((error) => {
-				if (error instanceof MpcError) {
+				if (error instanceof BaseError) {
 					throw error;
 				}
 				if (error instanceof Error) {
-					throw new MpcError(error.message, MpcErrorCode.HttpError);
+					throw new BaseError(error.message, BaseErrorCode.HttpError);
 				}
-				throw new MpcError("unkown-error", MpcErrorCode.HttpError);
+				throw new BaseError("unkown-error", BaseErrorCode.HttpError);
 			});
 	};
 
 	getTokenEndpoint = async (pairingId: string, signature: string) => {
-		const url = `${this.baseUrl}/getToken`;
+		const url = `${this.#baseUrl}/getToken`;
 		const data: {
 			token: string;
 			appPublicKey: string;
@@ -52,7 +52,7 @@ export class HttpClient {
 	};
 
 	refreshTokenEndpoint = async (token: string, signedToken: string) => {
-		const url = `${this.baseUrl}/refreshToken`;
+		const url = `${this.#baseUrl}/refreshToken`;
 		const data: {
 			token: string;
 			tokenExpiration: number;
@@ -76,7 +76,7 @@ export class HttpClient {
 		expectResponse: boolean,
 		docId?: string,
 	) => {
-		const url = `${this.baseUrl}/sendMessage`;
+		const url = `${this.#baseUrl}/sendMessage`;
 		const data: T | null = await this.modifiedFetch(url, {
 			method: "POST",
 			headers: {
@@ -94,7 +94,7 @@ export class HttpClient {
 	};
 
 	snapVersion = async () => {
-		const url = `${this.baseUrl}/snapVersion`;
+		const url = `${this.#baseUrl}/snapVersion`;
 		const data = await fetch(url);
 		return await data.text();
 	};

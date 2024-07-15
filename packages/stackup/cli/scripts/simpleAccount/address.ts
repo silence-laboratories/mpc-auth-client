@@ -9,10 +9,9 @@ import { mpcAuth } from "../../mpc";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export default async function main() {
+  const signer = await MpcSigner.instance(mpcAuth);
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    new MpcSigner(
-      mpcAuth
-    ),
+    signer,
     config.rpcUrl
   );
   const address = simpleAccount.getSender();

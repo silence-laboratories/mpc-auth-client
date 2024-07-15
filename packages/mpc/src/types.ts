@@ -1,11 +1,11 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import type { IStorage } from "./storage/types";
+import type { StoragePlatform, WalletId } from "./constants";
 
 export type Options = {
-	walletId: string;
+	walletId: WalletId;
 	storagePlatform: StoragePlatform;
 	customStorage?: IStorage;
 	isDev?: boolean;
@@ -62,55 +62,5 @@ export interface BackupConversation {
 	walletId: string;
 }
 
-export interface PairingData {
-	pairingId: string;
-	webEncPublicKey: string;
-	webEncPrivateKey: string;
-	webSignPublicKey: string;
-	webSignPrivateKey: string;
-	token: string;
-	tokenExpiration: number;
-	appPublicKey: string;
-	deviceName: string;
-}
-
-export interface DistributedKey {
-	accountId: number;
-	publicKey: string;
-	keyShareData: IP1KeyShare;
-}
-
-export type V0StorageData = {
-	pairingData: PairingData;
-	newPairingState?: {
-		pairingData: PairingData | null;
-		distributedKey: DistributedKey | null;
-	};
-};
-
-export interface StorageData {
-	version?: number;
-	pairingData: PairingData | null;
-	distributedKey: DistributedKey | null;
-	walletAccount?: AccountData;
-	eoa: string | null;
-	passwordReady?: boolean;
-}
-export interface PairingSessionData {
-	token: string;
-	appPublicKey: string;
-	deviceName: string;
-	tokenExpiration: number;
-	backupData?: string | undefined;
-}
-
 export type DeviceOS = "ios" | "android";
 
-export type AccountData = {
-	address: string;
-};
-
-export enum StoragePlatform {
-	Browser = "browser",
-	CLI = "cli",
-}

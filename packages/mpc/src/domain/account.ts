@@ -1,9 +1,9 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { MpcError, MpcErrorCode } from "../error";
-import type { IStorage } from "../storage/types";
-import type { AccountData, DeviceOS } from "../types";
+import { BaseError, BaseErrorCode } from "../error";
+import type { AccountData, IStorage } from "../storage/types";
+import type { DeviceOS } from "../types";
 
 /**
  * Manages account-related operations, interfacing with a storage mechanism to persist and retrieve account data.
@@ -23,8 +23,8 @@ export class AccountManager {
 	 * Gets the account address from storage.
 	 * @returns {string | null} The EOA string if available, otherwise null.
 	 */
-	getEoa(): string | null {
-		const storageData = this.#storage.getStorageData();
+	async getEoa(): Promise<string | null> {
+		const storageData = await this.#storage.getStorageData();
 		return storageData.eoa;
 	}
 
@@ -32,9 +32,9 @@ export class AccountManager {
 	 * Sets the smart contract account information in storage.
 	 * @param {AccountData} walletAccount - The account data to be stored.
 	 */
-	setSmartContractAccount(walletAccount: AccountData) {
+	async setSmartContractAccount(walletAccount: AccountData) {
 		if (walletAccount && !walletAccount.address) return;
-		const storageData = this.#storage.getStorageData();
+		const storageData = await this.#storage.getStorageData();
 		storageData.walletAccount = walletAccount;
 		this.#storage.setStorageData(storageData);
 	}
@@ -43,8 +43,8 @@ export class AccountManager {
 	 * Retrieves the smart contract account information from storage.
 	 * @returns {AccountData | null} The account data if available, otherwise null.
 	 */
-	getSmartContractAccount(): AccountData | null {
-		const storageData = this.#storage.getStorageData();
+	async getSmartContractAccount(): Promise<AccountData | null> {
+		const storageData = await this.#storage.getStorageData();
 		return storageData.walletAccount ?? null;
 	}
 
@@ -52,30 +52,30 @@ export class AccountManager {
 	 * Checks if the password setup is complete.
 	 * @returns {boolean} True if the password is set, false otherwise.
 	 */
-	isPasswordReady(): boolean {
-		return this.#storage.getStorageData().passwordReady ?? false;
+	async isPasswordReady(): Promise<boolean> {
+		return (await this.#storage.getStorageData()).passwordReady ?? false;
 	}
 
 	/**
 	 * Marks the password setup as complete or incomplete in storage.
 	 * @param {boolean} [isPasswordReady=true] - Indicates whether the password setup is complete.
 	 */
-	setPasswordReady(isPasswordReady = true) {
-		const storageData = this.#storage.getStorageData();
+	async setPasswordReady(isPasswordReady = true) {
+		const storageData = await this.#storage.getStorageData();
 		storageData.passwordReady = isPasswordReady;
 		this.#storage.setStorageData(storageData);
 	}
 
 	/**
-	 * Determines the operating system of the device based on stored pairing data.
+	 * Determines the operating system of the device which is paired with this party.
 	 * @returns {DeviceOS} The operating system of the device.
 	 */
-	getDeviceOS(): DeviceOS {
-		const storageData = this.#storage.getStorageData();
+	async getPairedDeviceOS(): Promise<DeviceOS> {
+		const storageData = await this.#storage.getStorageData();
 		if (!storageData.pairingData) {
-			throw new MpcError(
+			throw new BaseError(
 				"Pairing data not found",
-				MpcErrorCode.StorageFetchFailed,
+				BaseErrorCode.StorageFetchFailed,
 			);
 		}
 		const deviceName = storageData.pairingData.deviceName;

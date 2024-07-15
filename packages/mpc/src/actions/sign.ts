@@ -7,9 +7,10 @@ import {
 	randBytes,
 } from "@silencelaboratories/ecdsa-tss";
 import _sodium, { base64_variants } from "libsodium-wrappers-sumo";
-import { MpcError, MpcErrorCode } from "../error";
+import { BaseError, BaseErrorCode } from "../error";
 import type { HttpClient } from "../transport/httpClient";
-import type { PairingData, SignConversation, SignMetadata } from "../types";
+import type { SignConversation, SignMetadata } from "../types";
+import type { PairingData } from "../storage/types";
 import * as utils from "../utils";
 
 type SignResult = {
@@ -40,9 +41,9 @@ export class SignAction {
 	sign = async (signRequest: SignRequest): Promise<SignResult> => {
 		try {
 			if (this.#running) {
-				throw new MpcError(
+				throw new BaseError(
 					"Sign already running",
-					MpcErrorCode.SignResourceBusy,
+					BaseErrorCode.SignResourceBusy,
 				);
 			}
 			this.#running = true;
@@ -103,9 +104,9 @@ export class SignAction {
 					: null;
 
 				const msg = await p1.processMessage(decodedMessage).catch((error) => {
-					throw new MpcError(
+					throw new BaseError(
 						`Internal library error: ${error}`,
-						MpcErrorCode.InternalLibError,
+						BaseErrorCode.InternalLibError,
 					);
 				});
 
@@ -143,9 +144,9 @@ export class SignAction {
 					signConversation = signConversationNew;
 				}
 				if (signConversation.isApproved === false) {
-					throw new MpcError(
+					throw new BaseError(
 						"User(phone) rejected sign request",
-						MpcErrorCode.PhoneDenied,
+						BaseErrorCode.PhoneDenied,
 					);
 				}
 				round++;
@@ -158,16 +159,16 @@ export class SignAction {
 				elapsedTime: Date.now() - startTime,
 			};
 		} catch (error) {
-			if (error instanceof MpcError) {
-				if (error.code !== MpcErrorCode.SignResourceBusy) {
+			if (error instanceof BaseError) {
+				if (error.code !== BaseErrorCode.SignResourceBusy) {
 					this.#running = false;
 				}
 				throw error;
 			}
 			if (error instanceof Error) {
-				throw new MpcError(error.message, MpcErrorCode.KeygenFailed);
+				throw new BaseError(error.message, BaseErrorCode.KeygenFailed);
 			}
-			throw new MpcError("unknown-error", MpcErrorCode.SignFailed);
+			throw new BaseError("unknown-error", BaseErrorCode.SignFailed);
 		}
 	};
 }
