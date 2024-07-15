@@ -9,20 +9,10 @@ export class LocalStorageManager implements IStorage {
 	#VERSION = 1;
 	#walletId: string;
 	constructor(walletId: string) {
-		localStorage.setItem("walletId", walletId);
 		this.#walletId = walletId;
 		this.migrate();
 	}
 
-	/**
-	 * Check if a storage exist for the wallet
-	 *
-	 * @returns true if exists, false otherwise
-	 */
-	isStorageExist = async (): Promise<boolean> => {
-		const data = localStorage.getItem(this.#walletId);
-		return data !== null;
-	};
 
 	/**
 	 * Delete the stored data, if it exists.
@@ -53,14 +43,6 @@ export class LocalStorageManager implements IStorage {
 	 * @returns SilentShareStorage object
 	 */
 	getStorageData = async (): Promise<StorageData> => {
-		const _isStorageExist = await this.isStorageExist();
-		if (!_isStorageExist) {
-			throw new BaseError(
-				"Wallet is not paired",
-				BaseErrorCode.StorageFetchFailed,
-			);
-		}
-
 		const state = localStorage.getItem(this.#walletId);
 
 		if (!state) {
@@ -90,14 +72,6 @@ export class LocalStorageManager implements IStorage {
 	 * @returns SilentShareStorage object
 	 */
 	#getV0StorageData = async (): Promise<V0StorageData> => {
-		const _isStorageExist = await this.isStorageExist();
-		if (!_isStorageExist) {
-			throw new BaseError(
-				"Wallet is not paired",
-				BaseErrorCode.StorageFetchFailed,
-			);
-		}
-
 		const state = localStorage.getItem(this.#walletId);
 
 		if (!state) {
@@ -112,10 +86,10 @@ export class LocalStorageManager implements IStorage {
 	};
 
 	migrate = async () => {
-		const isExist = await this.isStorageExist();
-		if (!isExist) {
-			return;
-		}
+        const state = localStorage.getItem(this.#walletId);
+		if (!state) {
+            return;
+        }
 		const version = await this.#getVersion();
 		if (version < 1) {
 			const walletAccountV0 = JSON.parse(

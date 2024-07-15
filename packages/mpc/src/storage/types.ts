@@ -3,10 +3,10 @@
 
 import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 export interface IStorage {
-	isStorageExist: () => Promise<boolean>;
 	clearStorageData: () => Promise<void>;
 	setStorageData: (data: StorageData) => Promise<void>;
 	getStorageData: () => Promise<StorageData>;
+	migrate?(): void;
 }
 
 export interface PairingData {

@@ -46,6 +46,26 @@ const keygenResult = await mpcAuth.runKeygen(); // The generated keyshares will 
 await mpcAuth.runBackup("demopassword"); 
 ```
 
+#### MpcAuthenticator options
+
+- `walletId` - Supported Wallet ID to use for identifying the wallet. Check `WalletId` enum for available options.
+- `storagePlatform` - Supported Storage platform to use for storing keyshares and pairing data. Check `StoragePlatform` enum for available options.
+- `customStorage` - Custom storage object to use for storing keyshares and pairing data. If not provided, the library will use the default storage, which is `localStorage` (assuming the library is used in the browser).
+- `isDev` - Development mode flag. If set to `true`, the library will use the development mode for the MPC SDK.
+
+#### Custom Storage
+
+The library provides a way to use custom storage for data storing. The custom storage must implement `IStorage` interface, `MpcAuthenticator` will access the storage using the provided methods.
+
+```typescript
+interface IStorage {
+	clearStorageData: () => Promise<void>;
+	setStorageData: (data: StorageData) => Promise<void>;
+	getStorageData: () => Promise<StorageData>;
+	migrate?(): void;
+}
+```
+
 ### MpcSigner
 
 The `MpcSigner` class is designed for signing Ethereum transactions and messages using `MpcAuthenticator` keyshares.
