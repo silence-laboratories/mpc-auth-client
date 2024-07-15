@@ -1,7 +1,6 @@
 import { CliStorage } from "./storage";
 import qrCodeTerm from "qrcode-terminal";
-import { MpcAuthenticator, MpcSigner, WalletId } from "@silencelaboratories/mpc-sdk";
-import { StoragePlatform } from "@silencelaboratories/mpc-sdk";
+import { MpcAuthenticator, MpcSigner, WalletId, StoragePlatform } from "@silencelaboratories/mpc-sdk";
 import 'dotenv/config'
 const storage = new CliStorage();
 export const mpcAuth = MpcAuthenticator.instance({

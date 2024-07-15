@@ -1,10 +1,9 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import { StorageData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { SdkError, ErrorCode } from "./error";
 import fs from "fs";
-import type { IStorage } from "@silencelaboratories/mpc-sdk";
+import type { IStorage, StorageData } from "@silencelaboratories/mpc-sdk";
 
 export class CliStorage implements IStorage {
   /**

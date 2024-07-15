@@ -14,7 +14,6 @@ import LoadingScreen from "@/components/loadingScreen";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { PairingSessionData } from "@silencelaboratories/mpc-sdk/lib/esm/types";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
 import {
     clearOldEoa,
@@ -22,6 +21,7 @@ import {
     getPairingStatus,
     setPairingStatus,
 } from "@/storage/localStorage";
+import { PairingSessionData } from "@silencelaboratories/mpc-sdk";
 
 function Page() {
     const mpcAuth = useMpcAuth();

@@ -1,7 +1,7 @@
 import qrCodeTerm from "qrcode-terminal";
 
 import { CliStorage } from "./storage";
-import { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
+import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import { MpcAuthenticator, MpcSigner, StoragePlatform, WalletId } from "@silencelaboratories/mpc-sdk";
 import "dotenv/config";
 
