@@ -6,7 +6,6 @@ export interface IStorage {
 	clearStorageData: () => Promise<void>;
 	setStorageData: (data: StorageData) => Promise<void>;
 	getStorageData: () => Promise<StorageData>;
-	migrate?(): void;
 }
 
 export interface PairingData {
