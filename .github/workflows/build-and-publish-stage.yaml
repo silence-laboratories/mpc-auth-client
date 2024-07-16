@@ -24,12 +24,12 @@ jobs:
           popd
           pushd packages/biconomy/nextJs 
           echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env
-          echo "NODE_ENV=development" >> .env 
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
           popd 
           pushd packages/stackup/nextJs
           echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env
-          echo "NODE_ENV=development" >> .env 
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
           popd
 
