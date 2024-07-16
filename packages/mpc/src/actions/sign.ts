@@ -83,6 +83,7 @@ export class SignAction {
 			let sign = null;
 			let recId = null;
 			let expectResponse = true;
+
 			await _sodium.ready;
 			while (sign === null || recId === null) {
 				let decryptedMessage: string | null = null;
@@ -133,6 +134,7 @@ export class SignAction {
 						nonce: _sodium.to_hex(nonce),
 					},
 				};
+				
 				const signConversationNew =
 					await this.#httpClient.sendMessage<SignConversation>(
 						pairingData.token,

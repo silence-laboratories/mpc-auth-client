@@ -21,7 +21,7 @@ import {
     getPairingStatus,
     setPairingStatus,
 } from "@/storage/localStorage";
-import { PairingSessionData } from "@silencelaboratories/mpc-sdk";
+import { BaseError, PairingSessionData } from "@silencelaboratories/mpc-sdk";
 
 function Page() {
     const mpcAuth = useMpcAuth();
@@ -62,8 +62,11 @@ function Page() {
             }
             setLoading(false);
         } catch (error) {
-            // TODO: handle error
-            console.error("Error in pairing with backup: ", error);
+            onBackFromEnterPassword();
+            if(error instanceof BaseError) {
+                console.error(error.message);
+            }
+            throw error;
         }
     };
 
@@ -94,7 +97,9 @@ function Page() {
                     router.replace("/backup");
                 }
             } catch (error) {
-                console.error(error);
+                if(error instanceof BaseError) {
+                    console.error(error.message);
+                }
                 setLoading(false);
                 if (isRepairing) {
                     router.replace("/homescreen");

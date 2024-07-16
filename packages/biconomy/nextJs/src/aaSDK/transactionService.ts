@@ -29,7 +29,6 @@ export async function sendTransaction(
             requestData
         );
         const { transactionHash } = await userOpResponse.waitForTxHash();
-        console.log("Transaction Hash:", transactionHash);
         const userOpReceipt = await userOpResponse.wait();
         return { userOpReceipt, transactionHash };
     } catch (error) {

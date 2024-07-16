@@ -35,10 +35,7 @@ export async function sendTransaction(
                 onBuild: (op) => console.log("Signed UserOperation:", op),
             }
         );
-        console.log("userOp Hash", res.userOpHash);
-
         const ev = await res.wait();
-        console.log("transactionHash", ev?.transactionHash ?? null);
 
         return {
             success: true,
