@@ -146,27 +146,6 @@ export class MpcAuthenticator {
 	};
 
 	/**
-	 * Checks if the device is paired.
-	 * @returns An object indicating if the device is paired and additional pairing information.
-	 * @throws {BaseError} If the storage is not initialized.
-	 * @public
-	 */
-	isPaired = async () => {
-		try {
-			const deviceName = this.accountManager.getPairedDeviceOS();
-			return {
-				isPaired: true,
-				deviceName,
-			};
-		} catch {
-			return {
-				isPaired: false,
-				deviceName: null,
-			};
-		}
-	};
-
-	/**
 	 * Initializes the pairing process and returns a QR code for pairing.
 	 * @returns A QR code for pairing.
 	 * @public
