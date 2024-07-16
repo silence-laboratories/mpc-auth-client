@@ -5,7 +5,7 @@ export const useMpcAuth = () => {
         new MpcAuthenticator({
             walletId: WalletId.Biconomy,
             storagePlatform: StoragePlatform.Browser,
-            isDev: process.env.NODE_ENV === "development",
+            isDev: process.env.NEXT_PUBLIC_SDK_MODE === "development",
         })
     );
     return sdk;

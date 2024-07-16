@@ -42,11 +42,11 @@ To set up the `rpcUrl`, create an instance at:
 2. Fill in your Base urls and API keys in `.env`:
 
     - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
-    - To run in development environment, add `NODE_ENV=development`.
+    - To run in development environment, add `NEXT_PUBLIC_SDK_MODE=development`.
 
         ```env
         API_KEY=your_biconomy_api_key_here
-        NODE_ENV=development
+        NEXT_PUBLIC_SDK_MODE=development
         ```
 
 ### Step 3: Using the Silent Shard App

@@ -28,7 +28,7 @@ const mpcAuth = MpcAuthenticator.instance({
   walletId: WalletId.Biconomy,
   storagePlatform: StoragePlatform.CLI,
   customStorage: storage,
-  isDev: process.env.NODE_ENV === "development",
+  isDev: process.env.NEXT_PUBLIC_SDK_MODE === "development",
 });
 
 // 2. Generate QR code for Silent Shard App pairing
