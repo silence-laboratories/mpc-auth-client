@@ -10,7 +10,7 @@ export const mpcAuth = MpcAuthenticator.instance({
   walletId: WalletId.Stackup,
   storagePlatform: StoragePlatform.CLI,
   customStorage: storage,
-  isDev: process.env.NODE_ENV === "development",
+  isDev: process.env.NEXT_PUBLIC_SDK_MODE === "development",
 });
 
 export async function generate(): Promise<MpcSigner> {
