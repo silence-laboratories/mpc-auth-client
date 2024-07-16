@@ -9,6 +9,7 @@ import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
+import { BaseError } from "@silencelaboratories/mpc-sdk";
 
 function Page() {
     const mpcAuth = useMpcAuth();
@@ -28,7 +29,9 @@ function Page() {
             router.replace("/homescreen");
             return;
         } catch (error) {
-            console.log("Error in getting account", error);
+            if(error instanceof BaseError) {
+                console.error(error.message);
+            }
         }
     })();
 

@@ -12,6 +12,7 @@ import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
 import { clearOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
+import { BaseError } from "@silencelaboratories/mpc-sdk";
 
 function Page() {
     const mpcAuth = useMpcAuth();
@@ -44,7 +45,9 @@ function Page() {
                 setLoading(false);
             }
         } catch (error) {
-            console.log("Minting failed.", error);
+            if(error instanceof BaseError) {
+                console.error(error.message);
+            }
             setLoading(false);
         }
     };
