@@ -19,7 +19,8 @@ export class BaseError extends Error {
 		code: BaseErrorCode,
 		opts: BaseErrorParameters = {},
 	) {
-		super(JSON.stringify({ code }));
+		super(JSON.stringify({ message: shortMessage, code }));
+		
 		this.name = "MpcError";
 		this.code = code;
 
@@ -42,7 +43,6 @@ export class BaseError extends Error {
 
 		this.details = details ?? "Unknown";
 		this.docsUrl = opts.docsUrl;
-		this.message = this.message.trim();
 
 		// Capture stack trace if available
 		if (Error.captureStackTrace) {

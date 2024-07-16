@@ -27,7 +27,9 @@ export class HttpClient {
 					throw error;
 				}
 				if (error instanceof Error) {
-					throw new BaseError(error.message, BaseErrorCode.HttpError);
+					throw new BaseError(error.message, BaseErrorCode.HttpError, {
+						details: "HTTP request failed",
+					});
 				}
 				throw new BaseError("unkown-error", BaseErrorCode.HttpError);
 			});
