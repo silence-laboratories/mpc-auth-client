@@ -10,4 +10,6 @@ export enum WalletId {
 	MetaMask = "metamask",
 	Stackup = "stackup",
 	Biconomy = "biconomy",
+	ZeroDev = "zerodev",
+	Pimlico = "pimlico",
 }
