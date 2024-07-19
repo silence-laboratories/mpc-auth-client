@@ -97,15 +97,16 @@ enum BaseErrorCode {
 	KeygenFailed = 5,
 	BackupFailed = 6,
 	SignFailed = 7,
+	RecoverFailed = 8,
 
-	KeygenResourceBusy = 8,
-	SignResourceBusy = 9,
-	InternalLibError = 10,
-	PhoneDenied = 11,
-	InvalidBackupData = 12,
-	InvalidMessageHashLength = 13,
-	WalletNotCreated = 14,
-	UnknownError = 15,
+	KeygenResourceBusy = 9,
+	SignResourceBusy = 10,
+	InternalLibError = 11,
+	PhoneDenied = 12,
+	InvalidBackupData = 13,
+	InvalidMessageHashLength = 14,
+	WalletNotCreated = 15,
+	UnknownError = 16,
 }
 ```
 

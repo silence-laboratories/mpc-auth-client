@@ -10,7 +10,7 @@ describe("Test BaseError", () => {
 		).toMatchInlineSnapshot(`
             [MpcError: An error occurred.
 
-            Code: 10
+            Code: 11
             Version: 1]
         `);
 	});
@@ -23,7 +23,7 @@ describe("Test BaseError", () => {
 		).toMatchInlineSnapshot(`
             [MpcError: An error occurred.
 
-            Code: 10
+            Code: 11
             Details: details
             Version: 1]
         `);
@@ -38,7 +38,7 @@ describe("Test BaseError", () => {
 		).toMatchInlineSnapshot(`
             [MpcError: An error occurred.
 
-            Code: 10
+            Code: 11
             Details: details
             Docs: docs
             Version: 1]
@@ -54,7 +54,7 @@ describe("Test BaseError", () => {
 		).toMatchInlineSnapshot(`
             [MpcError: An error occurred.
 
-            Code: 10
+            Code: 11
             Details: details
             - reason1
             - reason2
