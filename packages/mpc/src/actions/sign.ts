@@ -8,9 +8,9 @@ import {
 } from "@silencelaboratories/ecdsa-tss";
 import _sodium, { base64_variants } from "libsodium-wrappers-sumo";
 import { BaseError, BaseErrorCode } from "../error";
+import type { PairingData } from "../storage/types";
 import type { HttpClient } from "../transport/httpClient";
 import type { SignConversation, SignMetadata } from "../types";
-import type { PairingData } from "../storage/types";
 import * as utils from "../utils";
 
 type SignResult = {
@@ -134,7 +134,7 @@ export class SignAction {
 						nonce: _sodium.to_hex(nonce),
 					},
 				};
-				
+
 				const signConversationNew =
 					await this.#httpClient.sendMessage<SignConversation>(
 						pairingData.token,

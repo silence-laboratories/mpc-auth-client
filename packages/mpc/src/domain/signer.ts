@@ -72,7 +72,10 @@ export class MpcSigner extends Signer {
 		this.#distributedKey = distributedKey;
 		const eoa = await this.#mpcAuth.accountManager.getEoa();
 		if (!eoa) {
-			throw new BaseError("Init Signer failed due to EOA not found", BaseErrorCode.WalletNotCreated);
+			throw new BaseError(
+				"Init Signer failed due to EOA not found",
+				BaseErrorCode.WalletNotCreated,
+			);
 		}
 		this.#address = eoa;
 	};

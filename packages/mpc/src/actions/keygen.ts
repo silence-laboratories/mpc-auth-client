@@ -8,9 +8,9 @@ import {
 } from "@silencelaboratories/ecdsa-tss";
 import _sodium, { base64_variants } from "libsodium-wrappers-sumo";
 import { BaseError, BaseErrorCode } from "../error";
+import type { PairingData } from "../storage/types";
 import type { HttpClient } from "../transport/httpClient";
 import type { KeygenConversation } from "../types";
-import type { PairingData } from "../storage/types";
 import * as utils from "../utils";
 
 type KeygenResult = {

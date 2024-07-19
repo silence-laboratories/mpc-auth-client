@@ -17,7 +17,7 @@ export function fromHexStringToBytes(hexString: string) {
 			? error
 			: new BaseError("unknown-error", BaseErrorCode.UnknownError);
 	}
-};
+}
 
 export function toHexString(bytes: Uint8Array) {
 	try {
@@ -30,7 +30,7 @@ export function toHexString(bytes: Uint8Array) {
 			? error
 			: new BaseError("unknown-error", BaseErrorCode.UnknownError);
 	}
-};
+}
 
 export function checkOwnKeys(keys: string[], object: object) {
 	return keys.every((key) => Object.prototype.hasOwnProperty.call(object, key));

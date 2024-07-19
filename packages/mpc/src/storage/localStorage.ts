@@ -13,7 +13,6 @@ export class LocalStorageManager implements IStorage {
 		this.migrate();
 	}
 
-
 	/**
 	 * Delete the stored data, if it exists.
 	 */
@@ -76,10 +75,10 @@ export class LocalStorageManager implements IStorage {
 	};
 
 	migrate = async () => {
-        const state = localStorage.getItem(this.#walletId);
+		const state = localStorage.getItem(this.#walletId);
 		if (!state) {
-            return;
-        }
+			return;
+		}
 		const version = await this.#getVersion();
 		if (version < 1) {
 			const walletAccountV0 = JSON.parse(
