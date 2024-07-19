@@ -6,16 +6,16 @@ import { BackupAction } from "../actions/backup";
 import { KeygenAction } from "../actions/keygen";
 import { PairingAction } from "../actions/pairing";
 import { SignAction } from "../actions/sign";
+import { StoragePlatform, type WalletId } from "../constants";
+import { aeadEncrypt, requestEntropy } from "../crypto";
 import { BaseError, BaseErrorCode } from "../error";
 import { LocalStorageManager } from "../storage/localStorage";
 import type { IStorage, PairingData } from "../storage/types";
+import type { PairingSessionData, StorageData } from "../storage/types";
 import { HttpClient } from "../transport/httpClient";
 import type { Options, SignMetadata } from "../types";
-import type { PairingSessionData, StorageData } from "../storage/types";
 import { fromHexStringToBytes, getAddressFromPubkey } from "../utils";
 import { AccountManager } from "./account";
-import { aeadEncrypt, requestEntropy } from "../crypto";
-import { StoragePlatform, type WalletId } from "../constants";
 
 /**
  * Represents an authenticator for managing MPC (Multi-Party Computation) operations such as pairing, key generation, signing, and backup.
@@ -167,27 +167,55 @@ export class MpcAuthenticator {
 	/**
 	 * Ends the pairing session with the provided session data.
 	 * @param {PairingSessionData} pairingSessionData - The data from the pairing session.
+	 * @returns The result of ending the pairing session.
+	 * @throws {BaseError} If the storage is not initialized.
+	 * @public
+	 */
+	runEndPairingSession = async (pairingSessionData: PairingSessionData) => {
+		const result =
+			await this.#pairingAction.endPairingSession(pairingSessionData);
+
+		this.#storage.setStorageData({
+			...result,
+			eoa: null,
+		});
+
+		return {
+			pairingStatus: "paired",
+			newAccountAddress: null,
+			deviceName: result.deviceName,
+			elapsedTime: result.elapsedTime,
+		};
+	};
+
+	/**
+	 * Ends the recover session with the provided session data.
+	 * @param {PairingSessionData} pairingSessionData - The data from the pairing session.
 	 * @param {string} [currentAccountAddress] - The current account address, to serve re-pairing operation.
 	 * @param {string} [password] - The password, if available, to serve re-pairing operation.
 	 * @returns The result of ending the pairing session.
 	 * @throws {BaseError} If the storage is not initialized.
 	 * @public
 	 */
-	runEndPairingSession = async (
+	runEndRecoverSession = async (
 		pairingSessionData: PairingSessionData,
-		currentAccountAddress?: string,
-		password?: string,
+		currentAccountAddress: string,
+		password: string,
 	) => {
-		const result = await this.#pairingAction.endPairingSession(
+		const result = await this.#pairingAction.endRecoverSession(
 			pairingSessionData,
 			currentAccountAddress,
 			password,
 		);
 		const distributedKey = result.distributedKey;
-
-		const eoa = distributedKey
-			? getAddressFromPubkey(distributedKey.publicKey)
-			: null;
+		if (distributedKey === null) {
+			this.#storage.setStorageData({
+				...result,
+				eoa: currentAccountAddress,
+			});
+			throw new BaseError("Key recovering failed", BaseErrorCode.RecoverFailed);
+		}
+		const eoa = getAddressFromPubkey(distributedKey.publicKey);
 
 		this.#storage.setStorageData({
 			...result,

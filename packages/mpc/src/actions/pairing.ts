@@ -2,20 +2,21 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import _sodium from "libsodium-wrappers-sumo";
+import { aeadDecrypt } from "../crypto";
 import { BaseError, BaseErrorCode } from "../error";
-import type { HttpClient } from "../transport/httpClient";
 import type {
 	DistributedKey,
 	PairingData,
 	PairingSessionData,
 } from "../storage/types";
+import type { HttpClient } from "../transport/httpClient";
 import * as utils from "../utils";
-import { aeadDecrypt } from "../crypto";
 
 export enum PairingRemark {
 	WALLET_MISMATCH = "WALLET_MISMATCH",
 	NO_BACKUP_DATA_WHILE_REPAIRING = "NO_BACKUP_DATA_WHILE_REPAIRING",
 	INVALID_BACKUP_DATA = "INVALID_BACKUP_DATA",
+	WRONG_PASSWORD = "WRONG_PASSWORD",
 }
 
 export interface PairingDataInit {
@@ -96,11 +97,7 @@ export class PairingAction {
 		}
 	};
 
-	endPairingSession = async (
-		pairingSessionData: PairingSessionData,
-		currentAccountAddress?: string,
-		password?: string,
-	) => {
+	endPairingSession = async (pairingSessionData: PairingSessionData) => {
 		if (!this.#pairingDataInit) {
 			throw new BaseError(
 				"Pairing data not initialized",
@@ -110,26 +107,7 @@ export class PairingAction {
 		try {
 			const startTime = Date.now();
 			const sessionToken = pairingSessionData.token;
-
-			let distributedKey: DistributedKey | undefined;
-			let accountAddress: string | undefined;
-
-			if (pairingSessionData.backupData && password) {
-				const recoverData = await this.#recoverFromBackup(
-					sessionToken,
-					pairingSessionData.backupData,
-					password,
-				);
-				distributedKey = recoverData.distributedKey;
-				accountAddress = recoverData.accountAddress;
-			}
-
-			await this.#validateRePairing(
-				sessionToken,
-				accountAddress,
-				currentAccountAddress,
-			);
-
+			await this.#validatePairingAddress(sessionToken, null, null);
 			const pairingData: PairingData = {
 				pairingId: this.#pairingDataInit.pairingId,
 				webEncPublicKey: _sodium.to_hex(
@@ -151,10 +129,74 @@ export class PairingAction {
 			};
 			return {
 				pairingData,
-				distributedKey: distributedKey ?? null,
+				distributedKey: null,
 				elapsedTime: Date.now() - startTime,
 				deviceName: pairingSessionData.deviceName,
 			};
+		} catch (error) {
+			if (error instanceof BaseError) {
+				throw error;
+			}
+			if (error instanceof Error) {
+				throw new BaseError(error.message, BaseErrorCode.PairingFailed);
+			}
+			throw new BaseError("unkown-error", BaseErrorCode.UnknownError);
+		}
+	};
+
+	endRecoverSession = async (
+		pairingSessionData: PairingSessionData,
+		currentAccountAddress: string,
+		password: string,
+	) => {
+		if (!this.#pairingDataInit) {
+			throw new BaseError(
+				"Pairing data not initialized",
+				BaseErrorCode.PairingFailed,
+			);
+		}
+		try {
+			const startTime = Date.now();
+			const pairingData: PairingData = {
+				pairingId: this.#pairingDataInit.pairingId,
+				webEncPublicKey: _sodium.to_hex(
+					this.#pairingDataInit.encPair.publicKey,
+				),
+				webEncPrivateKey: _sodium.to_hex(
+					this.#pairingDataInit.encPair.privateKey,
+				),
+				webSignPublicKey: _sodium.to_hex(
+					this.#pairingDataInit.signPair.publicKey,
+				),
+				webSignPrivateKey: _sodium.to_hex(
+					this.#pairingDataInit.signPair.privateKey,
+				),
+				appPublicKey: pairingSessionData.appPublicKey,
+				token: pairingSessionData.token,
+				tokenExpiration: pairingSessionData.tokenExpiration,
+				deviceName: pairingSessionData.deviceName,
+			};
+			try {
+				const distributedKey = await this.#recoverKeyFromBackup(
+					pairingSessionData,
+					currentAccountAddress,
+					password,
+				);
+
+				return {
+					pairingData,
+					distributedKey: distributedKey ?? null,
+					elapsedTime: Date.now() - startTime,
+					deviceName: pairingSessionData.deviceName,
+				};
+			} catch (error) {
+				return {
+					pairingData,
+					distributedKey: null,
+					elapsedTime: Date.now() - startTime,
+					deviceName: pairingSessionData.deviceName,
+				};
+			}
 		} catch (error) {
 			if (error instanceof BaseError) {
 				throw error;
@@ -197,7 +239,33 @@ export class PairingAction {
 		}
 	};
 
-	#recoverFromBackup = async (
+	#recoverKeyFromBackup = async (
+		pairingSessionData: PairingSessionData,
+		currentAccountAddress: string,
+		password: string,
+	) => {
+		let distributedKey: DistributedKey | undefined;
+		let accountAddress: string | undefined;
+
+		const sessionToken = pairingSessionData.token;
+		if (pairingSessionData.backupData && password) {
+			const recoverData = await this.#decryptBackup(
+				sessionToken,
+				pairingSessionData.backupData,
+				password,
+			);
+			distributedKey = recoverData.distributedKey;
+			accountAddress = recoverData.accountAddress;
+		}
+		await this.#validatePairingAddress(
+			sessionToken,
+			accountAddress,
+			currentAccountAddress,
+		);
+		return distributedKey;
+	};
+
+	#decryptBackup = async (
 		token: string,
 		backupData: string,
 		password: string,
@@ -222,16 +290,34 @@ export class PairingAction {
 			};
 		} catch (error) {
 			try {
-				await this.#httpClient.sendMessage(
-					token,
-					"pairing",
-					{
-						isPaired: false,
-						pairingRemark: PairingRemark.INVALID_BACKUP_DATA,
-					},
-					false,
-					this.#pairingDataInit.pairingId,
-				);
+				if (
+					(error as Error).message.includes(
+						"wrong secret key for the given ciphertext",
+					)
+				) {
+
+					await this.#httpClient.sendMessage(
+						token,
+						"pairing",
+						{
+							isPaired: true,
+							pairingRemark: PairingRemark.WRONG_PASSWORD,
+						},
+						false,
+						this.#pairingDataInit.pairingId,
+					);
+				} else {
+					await this.#httpClient.sendMessage(
+						token,
+						"pairing",
+						{
+							isPaired: false,
+							pairingRemark: PairingRemark.INVALID_BACKUP_DATA,
+						},
+						false,
+						this.#pairingDataInit.pairingId,
+					);
+				}
 			} catch (error) {
 				if (error instanceof BaseError) {
 					throw error;
@@ -246,16 +332,16 @@ export class PairingAction {
 				throw error;
 			}
 			throw new BaseError(
-				"wrong secret key for the given ciphertext",
+				(error as Error).message,
 				BaseErrorCode.InvalidBackupData,
 			);
 		}
 	};
 
-	#validateRePairing = async (
+	#validatePairingAddress = async (
 		sessionToken: string,
-		accountAddress?: string,
-		currentAccountAddress?: string,
+		accountAddress: string | null = null,
+		currentAccountAddress: string | null = null,
 	) => {
 		if (!this.#pairingDataInit) {
 			throw new BaseError(
