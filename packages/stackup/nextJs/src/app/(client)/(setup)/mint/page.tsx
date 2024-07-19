@@ -3,14 +3,18 @@
 import React, { use, useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import LoadingScreen from "@/components/loadingScreen";
 import { mintWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { clearOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import {
+    clearOldEoa,
+    getPairingStatus,
+    setPairingStatus,
+} from "@/storage/localStorage";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
 import { BaseError } from "@silencelaboratories/mpc-sdk";
 
@@ -19,17 +23,19 @@ function Page() {
     const [loading, setLoading] = useState<boolean>(false);
     const [eoa, setEoa] = useState<string | null>(null);
     const router = useRouter();
+    const query = useSearchParams();
+    const isRepairing = query.get("repair");
     const status = getPairingStatus();
     useEffect(() => {
         if (status === WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
-        (async() => {
+        (async () => {
             const val = await mpcAuth.accountManager.getEoa();
             setEoa(val);
-        })()
-    }, [router, status, mpcAuth.accountManager.getEoa]);
+        })();
+    }, [router, status]);
 
     const handleMint = async () => {
         setLoading(true);
@@ -45,7 +51,7 @@ function Page() {
                 setLoading(false);
             }
         } catch (error) {
-            if(error instanceof BaseError) {
+            if (error instanceof BaseError) {
                 console.error(error.message);
             }
             setLoading(false);
@@ -53,10 +59,15 @@ function Page() {
     };
 
     const handleMoveBack = () => {
-        mpcAuth.signOut();
         clearOldEoa();
-        setPairingStatus(WALLET_STATUS.Unpaired);
-        router.replace("/intro");
+        if (isRepairing) {
+            setPairingStatus(WALLET_STATUS.Minted);
+            router.replace("/homescreen");
+        } else {
+            mpcAuth.signOut();
+            setPairingStatus(WALLET_STATUS.Unpaired);
+            router.replace("/intro");
+        }
     };
 
     if (status !== WALLET_STATUS.BackedUp) {

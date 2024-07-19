@@ -216,11 +216,20 @@ export class MpcAuthenticator {
 			throw new BaseError("Key recovering failed", BaseErrorCode.RecoverFailed);
 		}
 		const eoa = getAddressFromPubkey(distributedKey.publicKey);
-
-		this.#storage.setStorageData({
-			...result,
-			eoa,
-		});
+		try {
+			const storageData: StorageData = await this.#storage.getStorageData();
+			this.#storage.setStorageData({
+				...storageData,
+				...result,
+				eoa,
+			});
+		} catch (error) {
+			// In case, repairing without storage initialization
+			this.#storage.setStorageData({
+				...result,
+				eoa,
+			});
+		}
 
 		return {
 			pairingStatus: "paired",

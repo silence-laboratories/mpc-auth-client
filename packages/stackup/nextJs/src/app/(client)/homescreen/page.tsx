@@ -65,7 +65,7 @@ const Homescreen: React.FC = () => {
                 console.error("isPasswordReady error", error);
             }
         })();
-    }, [openPasswordBackupDialog, mpcAuth.accountManager.isPasswordReady]);
+    }, [openPasswordBackupDialog]);
 
     useEffect(() => {
         (async () => {
@@ -94,7 +94,7 @@ const Homescreen: React.FC = () => {
                 return;
             }
         })();
-    }, [router, mpcAuth.accountManager.getEoa, mpcAuth.accountManager.getSmartContractAccount]);
+    }, [router]);
 
     useEffect(() => {
         if (!walletAccount || !eoa) return;

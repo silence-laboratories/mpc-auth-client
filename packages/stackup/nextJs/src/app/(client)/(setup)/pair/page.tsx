@@ -47,9 +47,9 @@ function Page() {
         password: string
     ) => {
         try {
-            await mpcAuth.runEndPairingSession(
+            await mpcAuth.runEndRecoverSession(
                 pairingSessionData,
-                oldEoa ?? undefined,
+                oldEoa ?? "",
                 password
             );
             const eoa = await mpcAuth.accountManager.getEoa();
@@ -58,15 +58,14 @@ function Page() {
                 router.replace("/mismatchAccounts");
             } else {
                 setPairingStatus(WALLET_STATUS.BackedUp);
-                router.replace("/mint");
+                router.replace("/mint?repair=true");
             }
             setLoading(false);
         } catch (error) {
-            onBackFromEnterPassword();
+            // TODO: we don't throw error so users can continue key-in the password
             if(error instanceof BaseError) {
                 console.error(error.message);
             }
-            throw error;
         }
     };
 
@@ -87,17 +86,14 @@ function Page() {
                     setPairingSessionDataState(pairingSessionData);
                     setShowPasswordScreen(true);
                 } else {
-                    await mpcAuth.runEndPairingSession(
-                        pairingSessionData,
-                        oldEoa ?? undefined
-                    );
+                    await mpcAuth.runEndPairingSession(pairingSessionData);
                     await mpcAuth.runKeygen();
 
                     setPairingStatus(WALLET_STATUS.Paired);
                     router.replace("/backup");
                 }
             } catch (error) {
-                if(error instanceof BaseError) {
+                if (error instanceof BaseError) {
                     console.error(error.message);
                 }
                 setLoading(false);
