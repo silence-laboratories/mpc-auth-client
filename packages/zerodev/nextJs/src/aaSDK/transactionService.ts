@@ -1,8 +1,5 @@
-import { SilentWallet } from "@/silentWallet";
 import { getSilentShareStorage } from "@/mpc/storage/wallet";
 import * as store from "@/mpc/storage/account";
-import { Client, Presets } from "userop";
-import { ethers } from "ethers";
 import { createPublicClient, createWalletClient, Hex, http } from "viem";
 import { createViemAccount } from "@/viemSigner";
 import { sepolia } from "viem/chains";
@@ -27,38 +24,6 @@ export async function sendTransaction(
         amount: convertEtherToWei(amount),
     };
 
-    // // TODO: Move this to `mpc`
-    // const keyshards = getSilentShareStorage();
-    // const distributedKey = keyshards.newPairingState?.distributedKey;
-    // const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    //     new SilentWallet(
-    //         store.getEoa().address,
-    //         distributedKey?.publicKey as string,
-    //         distributedKey?.keyShareData,
-    //         { distributedKey }
-    //     ),
-    //     `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
-    // );
-    // const client = await Client.init(
-    //     `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
-    // );
-    // try{
-    // const target = ethers.utils.getAddress(requestData.to);
-    // const value = requestData.amount;
-
-    // const res = await client.sendUserOperation(
-    //     simpleAccount.execute(target, value, "0x"),
-    //     {
-    //       // Add necessary options as needed
-    //         onBuild: (op) => console.log("Signed UserOperation:", op),
-    //     }
-    // );
-    // console.log("userOp Hash", res.userOpHash);
-
-    // const ev = await res.wait();
-    // console.log("transactionHash", ev?.transactionHash ?? null);
-
-    // return {success:true,transactionHash:ev?.transactionHash ?? null, userOpHash:res.userOpHash}
     const eoa = store.getEoa();
     const keyshards = getSilentShareStorage();
     const distributedKey = keyshards.newPairingState?.distributedKey;
@@ -77,7 +42,7 @@ export async function sendTransaction(
         ),
         chain: sepolia,
         transport: http(
-            "https://rpc.zerodev.app/api/v2/bundler/521c47a3-535f-46db-ba5d-e0084aa0eedf"
+             `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
         ),
     });
     console.log("walletClient",walletClient);
@@ -100,19 +65,17 @@ export async function sendTransaction(
         },
         entryPoint,
     });
-    console.log("account1",account)
-    console.log("transaction props",requestData.to as Hex, requestData.amount);
 
     const kernelClient = createKernelAccountClient({
         account: account,
         entryPoint,
         chain: sepolia,
-        bundlerTransport: http("https://rpc.zerodev.app/api/v2/bundler/521c47a3-535f-46db-ba5d-e0084aa0eedf"),
+        bundlerTransport: http(`https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`),
          middleware: {
       sponsorUserOperation: async ({ userOperation }) => {
         const paymasterClient = createZeroDevPaymasterClient({
           chain:sepolia,
-          transport: http("https://rpc.zerodev.app/api/v2/paymaster/521c47a3-535f-46db-ba5d-e0084aa0eedf"),
+          transport: http(`https://rpc.zerodev.app/api/v2/paymaster/${process.env.API_KEY}`),
           entryPoint,
         })
         return paymasterClient.sponsorUserOperation({
@@ -122,8 +85,6 @@ export async function sendTransaction(
       },
     },
     });
-    console.log("transaction props",requestData.to as Hex, requestData.amount);
-
     const userOpHash = await kernelClient.sendUserOperation({
         userOperation: {
             callData: await account.encodeCallData({
@@ -138,8 +99,6 @@ export async function sendTransaction(
     const _receipt = await bundlerClient.waitForUserOperationReceipt({
         hash: userOpHash,
     });
-    console.log("receipt:", _receipt.userOpHash);
-
     return {
         success: true,
         transactionHash: _receipt ?? null,

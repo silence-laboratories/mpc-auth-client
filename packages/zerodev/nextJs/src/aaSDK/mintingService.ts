@@ -1,14 +1,11 @@
 import { createViemAccount } from "@/viemSigner";
 import { getSilentShareStorage } from "@/mpc/storage/wallet";
 import * as store from "@/mpc/storage/account";
-import { Presets } from "userop";
-import { ENTRYPOINT_ADDRESS_V07, bundlerActions, walletClientToSmartAccountSigner } from "permissionless"
+import { ENTRYPOINT_ADDRESS_V07, walletClientToSmartAccountSigner } from "permissionless"
 import { createPublicClient, createWalletClient, Hex, http } from "viem";
 import { sepolia } from "viem/chains";
 import {
-    createKernelAccount,
-    createZeroDevPaymasterClient,
-    createKernelAccountClient,
+    createKernelAccount
   } from "@zerodev/sdk"
   import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 export async function mintWallet(eoa: { address: string; }) {
@@ -20,7 +17,7 @@ export async function mintWallet(eoa: { address: string; }) {
         account: await createViemAccount(keyShareData, eoa.address as Hex,accountId),
         chain: sepolia,
         transport: http(
-          "https://rpc.zerodev.app/api/v2/bundler/521c47a3-535f-46db-ba5d-e0084aa0eedf"
+          `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
         ),
       });
      
@@ -42,10 +39,7 @@ export async function mintWallet(eoa: { address: string; }) {
     },
     entryPoint,
     });
-   
-
     const response = account.address;
-    console.log("response",response)
     store.setSmartContractAccount({ address: response });
     return response;
 }
