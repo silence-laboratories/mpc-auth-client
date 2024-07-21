@@ -45,6 +45,7 @@ export async function mintWallet(eoa: { address: string; }) {
    
 
     const response = account.address;
+    console.log("response",response)
     store.setSmartContractAccount({ address: response });
     return response;
 }
