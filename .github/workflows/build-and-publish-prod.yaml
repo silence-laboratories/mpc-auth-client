@@ -30,6 +30,12 @@ jobs:
           npm i &&  npm run build
           popd
 
+          pushd packages/pimlico/nextJs
+          echo "API_KEY=${{ secrets.PIMLICO_API_KEY }}" >> .env 
+          echo "NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net" >> .env
+          npm i &&  npm run build
+          popd
+
           pushd packages/stackup/nextJs
           echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env 
           echo "NEXT_PUBLIC_BASE_URL=https://us-central1-mobile-wallet-mm-snap.cloudfunctions.net" >> .env
