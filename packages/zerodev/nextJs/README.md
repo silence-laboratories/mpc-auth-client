@@ -1,9 +1,8 @@
 ## MPC X AA DApp
- A NextJs app that uses the Stackup SDK. This DApp allows users to pair with the silent Shard app, mint a smart contact account, and create transactions on the blockchain.
+ A NextJs app that uses the ZeroDev SDK. This DApp allows users to pair with the silent Shard app, mint a smart contact account, and create transactions on the blockchain.
 
 ## Prerequisites:
 - Node.js v16.13.0 or higher
-- Check .env.example file and setup environment variables before running the app
 
 ## Setting Up Environment Variables
 1. Create a .env file:
@@ -15,12 +14,11 @@
     API_KEY = your_zerodev_api_key_here //update this API key using step 3 below
     ```
 3. Set the rpcUrl:
-- To set the rpcUrl, you can create an instance at app.stackup.sh. Follow these steps:
+- To set the rpcUrl, you can create an instance at [ZeroDev Dashboard](https://dashboard.zerodev.app/) Follow these steps:
 - Create an account or log in if you already have one.
+- Create New Project
 - Select the Sepolia network for your instance.
-- Once the instance is created, navigate to the "Instances" tab.
-- Copy the API Key for your instance and replace API_KEY in the rpcUrl with your actual API Key.
-- You can also set up a paymaster (optional) by configuring the paymaster section:
+- Once the instance is created,Copy the API Key for your instance and paste in the .env file.
 
 ### How to run
 1. `npm install`

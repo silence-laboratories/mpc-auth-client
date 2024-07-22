@@ -250,14 +250,14 @@ const Homescreen: React.FC = () => {
             setShowTransactionInitiatedBanner(true);
             try {
                 const result = await sendTransaction(recipientAddress, amount);
-                if (!result.transactionHash) {
+                if (!result.userOpHash) {
                     setShowTransactionInitiatedBanner(false);
                     setShowTransactionfailBanner(true);
                     return;
                 }
                 setShowTransactionSignedBanner(true);
                 setShowTransactionInitiatedBanner(false);
-                store.setTxHash(result.transactionHash);
+                store.setTxHash(result.userOpHash);
                 await updateBalance();
             } catch (error) {
                 setShowTransactionInitiatedBanner(false);
