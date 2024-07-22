@@ -70,16 +70,19 @@ jobs:
       - run: cd /opt/service/update/biconomy/nextJs && npm i 
       - run: cd /opt/service/update/stackup/nextJs && npm i 
       - run: cd /opt/service/update/zerodev/nextJs && npm i 
+      - run: cd /opt/service/update/pimlico/nextJs && npm i 
 
       - run: if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
       - run: if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
       - run: if [ -d "/opt/service/zerodev" ]; then rm -Rf /opt/service/zerodev; fi
+      - run: if [ -d "/opt/service/pimlico" ]; then rm -Rf /opt/service/pimlico; fi
 
       - run: mv /opt/service/update/biconomy/nextJs /opt/service/biconomy
       - run: mv /opt/service/update/stackup/nextJs /opt/service/stackup
       - run: mv /opt/service/update/zerodev/nextJs /opt/service/zerodev
+      - run: mv /opt/service/update/pimlico/nextJs /opt/service/pimlico
 
-      - run: sudo systemctl restart biconomy.service stackup.service zerodev.service
+      - run: sudo systemctl restart biconomy.service stackup.service zerodev.service pimlico.service
 
           
 
