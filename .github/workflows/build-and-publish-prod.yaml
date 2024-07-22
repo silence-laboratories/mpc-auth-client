@@ -2,13 +2,14 @@ name: build-and-publish--biconomy-and-stackup
 
 on:
   push:
-    branches: ['main']
+    branches: ['main', 'zerodev_deploy']
   # we can also trigger manually in case needed
   workflow_dispatch:
   pull_request:
     branches: ['main']
     types:
       [closed]
+
 jobs:
   build:
     runs-on: mpc-account-abstraction-sdk-builder
@@ -59,13 +60,20 @@ jobs:
             mkdir /opt/service/update/
             mv ./biconomy-stackup.7z /opt/service/update/
       - run: cd /opt/service/update/ && 7z x biconomy-stackup.7z
+
       - run: cd /opt/service/update/biconomy/nextJs && npm i 
       - run: cd /opt/service/update/stackup/nextJs && npm i 
+      - run: cd /opt/service/update/zerodev/nextJs && npm i 
+
       - run: if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
-      - run: mv /opt/service/update/biconomy/nextJs /opt/service/biconomy
       - run: if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
+      - run: if [ -d "/opt/service/zerodev" ]; then rm -Rf /opt/service/zerodev; fi
+
+      - run: mv /opt/service/update/biconomy/nextJs /opt/service/biconomy
       - run: mv /opt/service/update/stackup/nextJs /opt/service/stackup
-      - run: sudo systemctl restart biconomy.service stackup.service
+      - run: mv /opt/service/update/zerodev/nextJs /opt/service/zerodev
+
+      - run: sudo systemctl restart biconomy.service stackup.service zerodev.service
 
           
 
