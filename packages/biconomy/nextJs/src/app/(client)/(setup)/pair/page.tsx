@@ -68,6 +68,7 @@ function Page() {
             if (error instanceof BaseError) {
                 console.error(error.message);
             }
+            throw error;
         }
     };
 
