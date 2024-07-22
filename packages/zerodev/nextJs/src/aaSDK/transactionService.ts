@@ -29,11 +29,7 @@ export async function sendTransaction(
     const distributedKey = keyshards.newPairingState?.distributedKey;
     const accountId = distributedKey?.accountId;
     const keyShareData = distributedKey?.keyShareData ?? null;
-    console.log("createViemAccount",createViemAccount(
-        keyShareData,
-        eoa.address as Hex,
-        accountId
-    ));
+ 
     const walletClient = createWalletClient({
         account: await createViemAccount(
             keyShareData,
@@ -45,7 +41,6 @@ export async function sendTransaction(
              `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
         ),
     });
-    console.log("walletClient",walletClient);
 
     const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
 
