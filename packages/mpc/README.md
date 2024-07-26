@@ -24,6 +24,8 @@ The `MpcAuthenticator` class is designed to handle authentication processes usin
 import { MpcAuthenticator, StoragePlatform, WalletId } from "@silencelaboratories/mpc-sdk";
 
 // 1. Set up MpcAuthenticator with custom storage and development mode
+const storage = new CliStorage(); // Ref: https://github.com/silence-laboratories/mpc-auth-client/blob/staging/packages/biconomy/cli/mpc/storage.ts
+
 const mpcAuth = MpcAuthenticator.instance({
   walletId: WalletId.Biconomy,
   storagePlatform: StoragePlatform.CLI,
