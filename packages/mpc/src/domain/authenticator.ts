@@ -199,32 +199,40 @@ export class MpcAuthenticator {
 	 */
 	runEndRecoverSession = async (
 		pairingSessionData: PairingSessionData,
-		currentAccountAddress: string,
+		currentAccountAddress: string | null,
 		password: string,
 	) => {
+		if (!password) {
+			throw new BaseError("Invalid parameters", BaseErrorCode.RecoverFailed, {
+				details:
+					"Password are required for recover session",
+			});
+		}
+
 		const result = await this.#pairingAction.endRecoverSession(
 			pairingSessionData,
-			currentAccountAddress,
+			currentAccountAddress ?? "",
 			password,
 		);
 		const distributedKey = result.distributedKey;
-		if (distributedKey === null) {
-			this.#storage.setStorageData({
-				...result,
-				eoa: currentAccountAddress,
-			});
+		if (!distributedKey) {
 			throw new BaseError("Key recovering failed", BaseErrorCode.RecoverFailed);
 		}
-		const eoa = getAddressFromPubkey(distributedKey.publicKey);
+		const eoa = distributedKey
+			? getAddressFromPubkey(distributedKey.publicKey)
+			: currentAccountAddress;
+
 		try {
-			const storageData: StorageData = await this.#storage.getStorageData();
+			const storageData = await this.#storage.getStorageData();
 			this.#storage.setStorageData({
 				...storageData,
 				...result,
 				eoa,
 			});
 		} catch (error) {
-			// In case, repairing without storage initialization
+			console.debug(
+				"Storage is not initialize, which is the case we are repair with the fresh dapp state",
+			);
 			this.#storage.setStorageData({
 				...result,
 				eoa,

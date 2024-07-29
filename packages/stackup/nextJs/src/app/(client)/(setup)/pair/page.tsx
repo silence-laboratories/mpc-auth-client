@@ -49,7 +49,7 @@ function Page() {
         try {
             await mpcAuth.runEndRecoverSession(
                 pairingSessionData,
-                oldEoa ?? "",
+                oldEoa,
                 password
             );
             const eoa = await mpcAuth.accountManager.getEoa();
@@ -62,7 +62,6 @@ function Page() {
             }
             setLoading(false);
         } catch (error) {
-            // TODO: we don't throw error so users can continue key-in the password
             if(error instanceof BaseError) {
                 console.error(error.message);
             }
