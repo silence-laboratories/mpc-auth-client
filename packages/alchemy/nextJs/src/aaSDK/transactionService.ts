@@ -18,9 +18,9 @@ export async function sendTransaction(
     const client = await MpcSigner.instance(mpcAuth, provider);
 
     const accountSigner = ethersToAccount(client);
-
+    console.log("api key", process.env.API_KEY);
     const smartAccountClient =  await createModularAccountAlchemyClient({
-        apiKey: "RG3jjFtRZphTN248Y4-XZLBhJ_TU_JK-",
+        apiKey: process.env.API_KEY,
         chain:sepolia,
         signer: accountSigner,
       });

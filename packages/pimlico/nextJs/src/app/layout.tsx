@@ -6,8 +6,8 @@ import Image from "next/image";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Silence x pimlico AA Wallet Demo",
-    description: "Silence x pimlico AA Wallet Demo",
+    title: "Silence x Biconomy AA Wallet Demo",
+    description: "Silence x Biconomy AA Wallet Demo",
 };
 
 export default function RootLayout({
@@ -19,16 +19,16 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <div className="app-container">
-                    <nav className="w-full z-20 top-0 start-0 border-b border-gray-700 bg-white-primary mb-6 pl-[160px] pr-[100px]">
+                <nav className="w-full z-20 top-0 start-0 border-b border-gray-700 bg-white-primary mb-6 pl-[160px] pr-[100px]">
                         <div className="flex w-full flex-wrap items-center justify-between h-[8.88vh]">
                             <div className="flex items-center">
                                 <Image
                                     priority={true}
-                                    src="/slxpimlico.svg"
+                                    src="/slxbcnmy.svg"
                                     alt="logo 1"
                                     className="mr-10"
-                                    width="213"
-                                    height="32"
+                                    width="237"
+                                    height="33"
                                 />
                                 <Image
                                     priority={true}

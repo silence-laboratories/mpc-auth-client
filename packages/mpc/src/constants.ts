@@ -12,4 +12,5 @@ export enum WalletId {
 	Biconomy = "biconomy",
 	ZeroDev = "zerodev",
 	Pimlico = "pimlico",
+	Alchemy = "alchemy",
 }

@@ -10,7 +10,7 @@ export async function mintAlchemyWallet(mpcAuth: MpcAuthenticator) {
     
     const accountSigner = ethersToAccount(client);
     const smartAccountClient =  await createModularAccountAlchemyClient({
-        apiKey: "RG3jjFtRZphTN248Y4-XZLBhJ_TU_JK-",
+        apiKey:process.env.API_KEY,
         chain:sepolia,
         signer: accountSigner,
       });
