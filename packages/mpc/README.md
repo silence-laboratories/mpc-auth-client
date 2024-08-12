@@ -78,12 +78,17 @@ An example of `MpcSigner` with `Biconomy` account creation:
 // MpcSigner initialization
 const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
 const mpcSigner = await MpcSigner.instance(mpcAuth, provider); // Now, mpcSigner could be used to sign ETH transactions
-
+const viemSigner =  await ViemSigner.instance(mpcAuth)
 const biconomySmartAccount = await createSmartAccountClient({
   signer: client as SupportedSigner,
   bundlerUrl: `https://bundler.biconomy.io/api/v2/11155111/${process.env.API_KEY}`,
 });
 ```
+
+### ViemSigner
+The `ViemSigner` class is designed to facilitate signing Ethereum transactions and messages using a MpcAuthenticator for key management. This signer integrates with the viem library to provide a seamless signing experience.
+
+An exampl
 
 ### Error codes
 
