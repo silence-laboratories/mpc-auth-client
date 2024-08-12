@@ -1,5 +1,4 @@
 import { MpcAuthenticator,ViemSigner} from "@silencelaboratories/mpc-sdk";
-import { providers } from "ethers";
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { createPublicClient, Hex, http } from "viem";
 
@@ -8,12 +7,9 @@ import {
 } from "permissionless/accounts";
 import { SmartAccountSigner } from "permissionless/_types/accounts";
 
-export async function mintBiconomyWallet(mpcAuth: MpcAuthenticator) {
+export async function mintPimlicoWallet(mpcAuth: MpcAuthenticator) {
     const client = await ViemSigner.instance(mpcAuth);
     const signer = await client.getViemAccount();
-
-
-  
     const publicClient = createPublicClient({
         transport: http("https://rpc.ankr.com/eth_sepolia"),
     });

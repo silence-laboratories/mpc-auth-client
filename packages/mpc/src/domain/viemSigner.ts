@@ -51,26 +51,17 @@ export class ViemSigner {
         return this.#viemAccount;
     };
 
-    signMessageWithSilentWallet = async (message: any, accountId: number, keyShareData: any) => {
+    signMessageWithSilentWallet = async (message: any, distributedKey :any) => {
         const messageToBytes = viem.toBytes(message);
         const messageWithPrefix = viem.toPrefixedMessage({ raw: messageToBytes });
         const messageDigest = viem.hashMessage({ raw: messageToBytes });
-        const d = {
-            hashAlg: "keccak256",
-            message: messageWithPrefix,
-            messageHashHex: messageDigest,
-            signMetadata: "eth_sign",
-            accountId: accountId,
-            keyShare: keyShareData,
-        };
-
         const signature = await this.mpcAuth.runSign(
             "keccak256",
             messageWithPrefix,
             messageDigest,
             "eth_sign",
-            accountId,
-            keyShareData
+            distributedKey.accountId,
+            distributedKey.keyShareData
         );
 
         const signBytes = Buffer.from(signature.signature, "hex");
@@ -82,10 +73,10 @@ export class ViemSigner {
         return { signature, r, s, v, recid };
     };
 
-    createViemAccount = async (keyShareData: DistributedKey, eoaAddress: viem.Address): Promise<viem.LocalAccount> => {
+    createViemAccount = async (distributedKey: DistributedKey, eoaAddress: viem.Address): Promise<viem.LocalAccount> => {
         const address = eoaAddress;
-        const accountId = keyShareData.accountId;
-        const publicKey = keyShareData.publicKey;
+        const accountId = distributedKey.accountId;
+        const publicKey = distributedKey.publicKey;
         const signMessageWithSilentWallet = this.signMessageWithSilentWallet.bind(this);
 
         return toAccount({
@@ -104,7 +95,7 @@ export class ViemSigner {
                     return viem.bytesToHex(message.raw);
                 })();
 
-                const sign = await signMessageWithSilentWallet(message, accountId, keyShareData);
+                const sign = await signMessageWithSilentWallet(message,distributedKey);
 
                 const signature: viem.Signature = {
                     r: sign.r as viem.Hex,
@@ -115,11 +106,11 @@ export class ViemSigner {
                 return viem.serializeSignature(signature);
             },
             async signTransaction(transaction) {
-                const signTransaction = await signMessageWithSilentWallet(transaction, accountId, keyShareData);
+                const signTransaction = await signMessageWithSilentWallet(transaction,distributedKey);
                 return viem.serializeTransaction(signTransaction);
             },
             async signTypedData(typedData) {
-                const sign = await signMessageWithSilentWallet(typedData, accountId, keyShareData);
+                const sign = await signMessageWithSilentWallet(typedData,distributedKey);
 
                 const signature: viem.Signature = {
                     r: sign.r as viem.Hex,

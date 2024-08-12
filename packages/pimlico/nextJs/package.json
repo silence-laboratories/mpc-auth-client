@@ -38,7 +38,7 @@
     "sharp": "^0.33.4",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
-    "viem": "2.18.7"
+    "viem": "2.19.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.2",

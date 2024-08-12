@@ -5,7 +5,7 @@ import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoadingScreen from "@/components/loadingScreen";
-import { mintBiconomyWallet } from "@/aaSDK/mintingService";
+import { mintPimlicoWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
@@ -42,7 +42,7 @@ function Page() {
         setLoading(true);
         try {
             if (eoa) {
-                await mintBiconomyWallet(mpcAuth);
+                await mintPimlicoWallet(mpcAuth);
                 setLoading(true);
                 clearOldEoa();
                 setPairingStatus(WALLET_STATUS.Minted);

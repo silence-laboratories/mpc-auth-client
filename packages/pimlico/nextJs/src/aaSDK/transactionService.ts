@@ -1,7 +1,13 @@
-import { MpcAuthenticator, MpcSigner, ViemSigner } from "@silencelaboratories/mpc-sdk";
-import { createPublicClient, Hex, http, parseEther } from "viem";
-import { signerToSimpleSmartAccount, SmartAccountSigner } from "permissionless/accounts";
-import { createSmartAccountClient, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { MpcAuthenticator, ViemSigner } from "@silencelaboratories/mpc-sdk";
+import { createPublicClient, Hex, http } from "viem";
+import {
+    signerToSimpleSmartAccount,
+    SmartAccountSigner,
+} from "permissionless/accounts";
+import {
+    createSmartAccountClient,
+    ENTRYPOINT_ADDRESS_V07,
+} from "permissionless";
 import {
     createPimlicoBundlerClient,
     createPimlicoPaymasterClient,
@@ -17,25 +23,24 @@ export async function sendTransaction(
     if (!eoa) {
         throw new Error("Eoa not found");
     }
-    const client = await ViemSigner.instance(mpcAuth);
+    const client =  await  ViemSigner.instance(mpcAuth);
     const signer = await client.getViemAccount();
-
-
-  
     const publicClient = createPublicClient({
         transport: http("https://rpc.ankr.com/eth_sepolia"),
+    });
+
+    const paymasterClient = createPimlicoPaymasterClient({
+        transport: http(
+            `https://api.pimlico.io/v2/sepolia/rpc?apikey=${process.env.API_KEY}`
+        ),
+        entryPoint: ENTRYPOINT_ADDRESS_V07,
     });
     const simpleAccount = await signerToSimpleSmartAccount(publicClient, {
         signer: signer as SmartAccountSigner,
         entryPoint: ENTRYPOINT_ADDRESS_V07,
         factoryAddress: "0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985",
     });
-    // const paymasterClient = createPimlicoPaymasterClient({
-    //     transport: http(
-    //         `https://api.pimlico.io/v2/sepolia/rpc?apikey=${process.env.API_KEY}`
-    //     ),
-    //     entryPoint: ENTRYPOINT_ADDRESS_V07,
-    // });
+  
     const pimlicoBundlerClient = createPimlicoBundlerClient({
         transport: http(
             `https://api.pimlico.io/v2/sepolia/rpc?apikey=${process.env.API_KEY}`
@@ -43,9 +48,8 @@ export async function sendTransaction(
         entryPoint: ENTRYPOINT_ADDRESS_V07,
     });
 
-
     const requestData = {
-        to: recipientAddress,
+        to: recipientAddress as Hex,
         value: convertEtherToWei(amount),
     };
 
@@ -54,13 +58,22 @@ export async function sendTransaction(
             account: simpleAccount,
             entryPoint: ENTRYPOINT_ADDRESS_V07,
             chain: sepolia,
-            bundlerTransport: http(`https://api.pimlico.io/v2/sepolia/rpc?apikey=${process.env.API_KEY}`),
-        })
+            bundlerTransport: http(
+                `https://api.pimlico.io/v2/sepolia/rpc?apikey=${process.env.API_KEY}`
+            ),
+            middleware: {
+                sponsorUserOperation: paymasterClient.sponsorUserOperation, // optional
+                gasPrice: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast, 
+            },
+        });
+
 
         const txHash = await smartAccountClient.sendTransaction({
-            to: recipientAddress as Hex,
-            value: parseEther(amount),
+            to: requestData.to,
+            value: requestData.value,
+            data: "0x123",
         });
+
         return { txHash };
     } catch (error) {
         console.error("Transaction error:", error);
@@ -72,5 +85,3 @@ function convertEtherToWei(etherString: string) {
     const weiString = (ether * 1e18).toString();
     return BigInt(weiString);
 }
-
-
