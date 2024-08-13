@@ -7,29 +7,26 @@ import { Avatar, AvatarFallback } from "@/components/avatar";
 import { Progress } from "@/components/progress";
 import { useRouter, useSearchParams } from "next/navigation";
 import loadingGif from "../../../../../public/loading.gif";
-import {
-    initPairing,
-    runKeygen,
-    runStartPairingSession,
-    runEndPairingSession,
-} from "@/mpc";
-import { pubToAddress } from "@ethereumjs/util";
+
 import { PasswordEnterScreen } from "@/components/password/passwordEnterScreen";
-import { PairingSessionData } from "@/mpc/types";
-import {
-    getWalletStatus,
-    setDeviceOS,
-    setWalletStatus,
-} from "@/mpc/storage/wallet";
-import { accountType, getOldEoa, setEoa } from "@/mpc/storage/account";
+
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import LoadingScreen from "@/components/loadingScreen";
-import { WALLET_ID, WALLET_STATUS } from "@/constants";
+import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import {
+    clearOldEoa,
+    getOldEoa,
+    getPairingStatus,
+    setPairingStatus,
+} from "@/storage/localStorage";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
+import { BaseError, PairingSessionData } from "@silencelaboratories/mpc-sdk";
 
 function Page() {
+    const mpcAuth = useMpcAuth();
     const router = useRouter();
     const query = useSearchParams();
     const isRepairing = query.get("repair");
@@ -52,30 +49,24 @@ function Page() {
         password: string
     ) => {
         try {
-            const runPairingResp = await runEndPairingSession(
+            await mpcAuth.runEndRecoverSession(
                 pairingSessionData,
-                oldEoa?.address,
+                oldEoa,
                 password
             );
-
-            const eoa = {
-                address: runPairingResp.newAccountAddress ?? "",
-            };
-            setEoa(eoa);
-            if (
-                isRepairing &&
-                oldEoa !== null &&
-                eoa.address !== oldEoa.address
-            ) {
-                setWalletStatus(WALLET_STATUS.Mismatched);
+            const eoa = await mpcAuth.accountManager.getEoa();
+            if (isRepairing && oldEoa !== null && eoa !== oldEoa) {
+                setPairingStatus(WALLET_STATUS.Mismatched);
                 router.replace("/mismatchAccounts");
             } else {
-                setWalletStatus(WALLET_STATUS.BackedUp);
-                router.replace("/mint");
+                setPairingStatus(WALLET_STATUS.BackedUp);
+                router.replace("/mint?repair=true");
             }
             setLoading(false);
         } catch (error) {
-            // TODO: handle error
+            if (error instanceof BaseError) {
+                console.error(error.message);
+            }
             throw error;
         }
     };
@@ -83,15 +74,13 @@ function Page() {
     const generateWallet = async () => {
         (async () => {
             try {
-                const qrCode = await initPairing(WALLET_ID);
+                const qrCode = await mpcAuth.initPairing();
                 setQr(qrCode);
                 setSeconds(MAX_SECONDS);
                 setEnterPwSeconds(MAX_ENTER_PW_SECONDS);
 
-                const pairingSessionData = await runStartPairingSession();
-                if (pairingSessionData) {
-                    setDeviceOS(pairingSessionData.deviceName);
-                }
+                const pairingSessionData =
+                    await mpcAuth.runStartPairingSession();
 
                 // QR is scanned
                 setLoading(true);
@@ -100,27 +89,16 @@ function Page() {
                     setPairingSessionDataState(pairingSessionData);
                     setShowPasswordScreen(true);
                 } else {
-                    await runEndPairingSession(
-                        pairingSessionData,
-                        oldEoa?.address
-                    );
-                    const keygenRes = await runKeygen();
-                    const eoa = {
-                        address:
-                            "0x" +
-                            pubToAddress(
-                                Buffer.from(
-                                    keygenRes.distributedKey.publicKey,
-                                    "hex"
-                                )
-                            ).toString("hex"),
-                    };
-                    setEoa(eoa);
-                    setWalletStatus(WALLET_STATUS.Paired);
+                    await mpcAuth.runEndPairingSession(pairingSessionData);
+                    await mpcAuth.runKeygen();
+
+                    setPairingStatus(WALLET_STATUS.Paired);
                     router.replace("/backup");
                 }
             } catch (error) {
-                console.error(error);
+                if (error instanceof BaseError) {
+                    console.error(error.message);
+                }
                 setLoading(false);
                 if (isRepairing) {
                     router.replace("/homescreen");
@@ -148,10 +126,9 @@ function Page() {
                 setEnterPwSeconds((prev) => prev - 1);
             }, 1000);
             return () => clearInterval(interval);
-        } else {
-            setShowPasswordScreen(false);
-            setLoading(false);
         }
+        setShowPasswordScreen(false);
+        setLoading(false);
     }, [enterPwSeconds]);
 
     const onTryAgainClick = () => {
@@ -160,8 +137,26 @@ function Page() {
         generateWallet();
     };
 
+    const onBackFromPairing = () => {
+        if (!loading) {
+            if (isRepairing) {
+                clearOldEoa();
+                router.replace("/homescreen");
+            } else {
+                router.replace("/intro");
+            }
+        }
+    };
+
+    const onBackFromEnterPassword = () => {
+        setLoading(false);
+        setPairingSessionDataState(null);
+        setShowPasswordScreen(false);
+        generateWallet();
+    };
+
     const isQrExpired = !(qr && seconds > 0);
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     const showLoading = isRepairing
         ? status !== WALLET_STATUS.Minted
         : status !== WALLET_STATUS.Unpaired;
@@ -180,12 +175,7 @@ function Page() {
                         );
                     }
                 }}
-                onMoveBack={() => {
-                    setLoading(false);
-                    setPairingSessionDataState(null);
-                    setShowPasswordScreen(false);
-                    generateWallet();
-                }}
+                onMoveBack={onBackFromEnterPassword}
             />
         </div>
     ) : (
@@ -201,15 +191,7 @@ function Page() {
                 className="rounded-full bg-gray-custom min-w-max aspect-square"
                 size="icon"
                 disabled={loading}
-                onClick={() => {
-                    if (!loading) {
-                        if (isRepairing) {
-                            router.replace("/homescreen");
-                        } else {
-                            router.replace("/intro");
-                        }
-                    }
-                }}
+                onClick={onBackFromPairing}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -258,7 +240,7 @@ function Page() {
                                 Currently active account:
                             </div>
                             <AddressCopyPopover
-                                address={oldEoa?.address ?? ""}
+                                address={oldEoa ?? ""}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>
@@ -273,7 +255,7 @@ function Page() {
                                     alignItems: "center",
                                 }}
                             >
-                                {qr == "placeholder" ? (
+                                {qr === "placeholder" ? (
                                     <div className="flex items-center justify-center">
                                         <Image
                                             priority={true}
@@ -360,7 +342,7 @@ function Page() {
                         </div>
                     )}
                     <div
-                        className={`b2-regular flex flex-col space-y-4 text-[#8E95A2] mt-4 ${
+                        className={`b2-regular flex flex-col space-y-4  text-[#8E95A2] mt-4 ${
                             isQrExpired ? "opacity-30" : ""
                         }`}
                     >

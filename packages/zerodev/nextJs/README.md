@@ -1,32 +1,60 @@
 ## MPC X AA DApp
- A NextJs app that uses the ZeroDev SDK. This DApp allows users to pair with the silent Shard app, mint a smart contact account, and create transactions on the blockchain.
+ A NextJs app that uses the ZeroDev AA SDK. This DApp allows users to pair with the silent Shard app, mint a smart contact account, and create transactions on the blockchain.
 
 ## Prerequisites:
 - Node.js v16.13.0 or higher
+- Build MPC Authenticator library, follow instruction in ["How to build" section](../../mpc/README.md#how-to-build)
 
-## Setting Up Environment Variables
-1. Create a .env file:
+## Setting Up Development Environment
+
+1. Clone the repository.
+
+ ```bash
+  git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
+ ```
+
+- Navigate to the nextJs directory within the cloned repository:
+
+  ```bash
+  cd packages/zerodev/nextJs
+  ```
+
+2. Create a .env file:
 - In the root of your project, create a new file named .env
 
-2. Fill in your API keys in .env:
+- Fill in your API keys in .env:
     ``` bash
-    NEXT_PUBLIC_BASE_URL= https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
-    API_KEY = your_zerodev_api_key_here //update this API key using step 3 below
+    API_KEY = your_zerodev_api_key_here #update this API key using step 3 below
+    NEXT_PUBLIC_SDK_MODE=development #only require for development
     ```
 3. Set the rpcUrl:
-- To set the rpcUrl, you can create an instance at [ZeroDev Dashboard](https://dashboard.zerodev.app/) Follow these steps:
+- To set up the rpcUrl, create an instance at :
 - Create an account or log in if you already have one.
-- Create New Project
 - Select the Sepolia network for your instance.
-- Once the instance is created,Copy the API Key for your instance and paste in the .env file.
+- Once the instance is created, navigate to the "Bundlers" tab
+- The API Key is the string after the chain ID in the testnet Bundler's URL 
+- Copy the API Key for your instance.
 
-### How to run
-1. `npm install`
-2. `npm run dev` to run dev version
+## How to run
+Make sure you've done all the steps mentioned above. Run command:
 
-Once started, the app is running on http://localhost:3000/. Ensure that you use only port 3000 strictly.
+```sh
+npm run dev
+```
 
-### Using the Silent Shard App
+If you see the error below:
+
+```sh
+npm ERR! code ENOWORKSPACES
+npm ERR! This command does not support workspaces.
+```
+
+It is an [issue](https://github.com/vercel/next.js/issues/47121) of NextJS with npm workspace.
+You could ignore the error or skips the error by running the command `npx next telemetry disable`
+
+**Note:** The dapp is required to run on port 3000 only, if we don't strictly run dapp at http://localhost:3000/ the functionality of the dapp will not work as expected.
+
+## Using the Silent Shard App to interact with the DApp
 To interact with QR codes essential for this setup, you'll need to use the Silent Shard app. Follow these steps:
 1. Download the App:
  - Get the Silent Shard app from the Google Play Store.

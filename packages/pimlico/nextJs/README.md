@@ -1,5 +1,5 @@
 ## MPC X AA DApp
- A NextJs app that uses the Biconomy AA SDK. This DApp allows users to pair with the silent Shard app, mint a smart contact account, and create transactions on the blockchain.
+ A NextJs app that uses the Pimlico AA SDK. This DApp allows users to pair with the silent Shard app, mint a smart contact account, and create transactions on the blockchain.
 
 ## Prerequisites:
 - Node.js v16.13.0 or higher
@@ -16,7 +16,7 @@
 - Navigate to the nextJs directory within the cloned repository:
 
   ```bash
-  cd packages/biconomy/nextJs
+  cd packages/pimlico/nextJs
   ```
 
 2. Create a .env file:
@@ -24,15 +24,14 @@
 
 - Fill in your API keys in .env:
     ``` bash
-    API_KEY = your_biconomy_api_key_here #update this API key using step 3 below
+    API_KEY = your_pimlico_api_key_here #update this API key using step 3 below
     NEXT_PUBLIC_SDK_MODE=development #only require for development
     ```
 3. Set the rpcUrl:
 - To set up the rpcUrl, create an instance at :
 - Create an account or log in if you already have one.
-- Select the Sepolia network for your instance.
-- Once the instance is created, navigate to the "Bundlers" tab
-- The API Key is the string after the chain ID in the testnet Bundler's URL 
+- Navigate to the "API Keys" tab and create a new API key.
+- Check API settings and make sure to enable bundler method and verifying paymaster.
 - Copy the API Key for your instance.
 
 ## How to run

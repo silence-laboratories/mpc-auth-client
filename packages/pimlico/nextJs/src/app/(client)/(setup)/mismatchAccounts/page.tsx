@@ -113,7 +113,7 @@ function Page() {
                                 style={{ listStyleType: "disc" }}
                             >
                                 <li>
-                                    Your Biconomy dApp can hold only one account
+                                    Your Pimlico dApp can hold only one account
                                     at a time.
                                 </li>
                                 <li>

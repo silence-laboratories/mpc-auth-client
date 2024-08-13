@@ -6,8 +6,8 @@ import Image from "next/image";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Silence x Biconomy AA Wallet Demo",
-    description: "Silence x Biconomy AA Wallet Demo",
+    title: "Silence x Pimlico AA Wallet Demo",
+    description: "Silence x Pimlico AA Wallet Demo",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
                             <div className="flex items-center">
                                 <Image
                                     priority={true}
-                                    src="/slxbcnmy.svg"
+                                    src="/slxpimlico.svg"
                                     alt="logo 1"
                                     className="mr-10"
                                     width="237"
