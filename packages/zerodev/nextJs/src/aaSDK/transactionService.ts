@@ -3,12 +3,15 @@ import { createPublicClient, createWalletClient, Hex, http } from "viem";
 import {
     ENTRYPOINT_ADDRESS_V07,
     walletClientToSmartAccountSigner,
-    bundlerActions,
 } from "permissionless";
 
 import { sepolia } from "viem/chains";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
-import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
+import {
+    createKernelAccount,
+    createKernelAccountClient,
+    createZeroDevPaymasterClient,
+} from "@zerodev/sdk";
 
 export async function sendTransaction(
     recipientAddress: string,
@@ -19,7 +22,7 @@ export async function sendTransaction(
     if (!eoa) {
         throw new Error("Eoa not found");
     }
-    const client =  await  ViemSigner.instance(mpcAuth);
+    const client = await ViemSigner.instance(mpcAuth);
     const signer = await client.getViemAccount();
     const publicClient = createPublicClient({
         transport: http("https://rpc.ankr.com/eth_sepolia"),
@@ -27,18 +30,16 @@ export async function sendTransaction(
 
     const entryPoint = ENTRYPOINT_ADDRESS_V07;
 
-   
     const walletClient = createWalletClient({
         account: signer,
         chain: sepolia,
         transport: http(
-             `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
+            `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
         ),
     });
-    
+
     const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
 
-    
     const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
         signer: smartAccountSigner,
         entryPoint,
@@ -51,7 +52,6 @@ export async function sendTransaction(
         entryPoint,
     });
 
-
     const requestData = {
         to: recipientAddress as Hex,
         value: convertEtherToWei(amount),
@@ -62,39 +62,31 @@ export async function sendTransaction(
             account: account,
             entryPoint,
             chain: sepolia,
-            bundlerTransport: http(`https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`),
-             middleware: {
-          sponsorUserOperation: async ({ userOperation }) => {
-            const paymasterClient = createZeroDevPaymasterClient({
-              chain:sepolia,
-              transport: http(`https://rpc.zerodev.app/api/v2/paymaster/${process.env.API_KEY}`),
-              entryPoint,
-            })
-            return paymasterClient.sponsorUserOperation({
-              userOperation,
-              entryPoint,
-            })
-          },
-        },
+            bundlerTransport: http(
+                `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
+            ),
+            middleware: {
+                sponsorUserOperation: async ({ userOperation }) => {
+                    const paymasterClient = createZeroDevPaymasterClient({
+                        chain: sepolia,
+                        transport: http(
+                            `https://rpc.zerodev.app/api/v2/paymaster/${process.env.API_KEY}`
+                        ),
+                        entryPoint,
+                    });
+                    return paymasterClient.sponsorUserOperation({
+                        userOperation,
+                        entryPoint,
+                    });
+                },
+            },
+        });
+        const txHash = await kernelClient.sendTransaction({
+            to: requestData.to,
+            value: requestData.value,
         });
 
-        // const txHash = await kernelClient.sendUserOperation({
-        //     userOperation: {
-        //         callData: await account.encodeCallData({
-        //             to: requestData.to as Hex,
-        //             value: requestData.value,
-        //             data: "0x",
-        //         }),
-        //     },
-        // });
-
-    const txHash = await kernelClient.sendTransaction({
-        to: requestData.to,
-        value: requestData.value
-    });
-
-
-    return { txHash };
+        return { txHash };
     } catch (error) {
         console.error("Transaction error:", error);
         return { success: false, error };

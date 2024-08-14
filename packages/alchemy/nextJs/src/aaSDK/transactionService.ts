@@ -16,9 +16,7 @@ export async function sendTransaction(
     }
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
     const client = await MpcSigner.instance(mpcAuth, provider);
-
     const accountSigner = ethersToAccount(client);
-    console.log("api key", process.env.API_KEY);
     const smartAccountClient =  await createModularAccountAlchemyClient({
         apiKey: process.env.API_KEY,
         chain:sepolia,
@@ -29,7 +27,6 @@ export async function sendTransaction(
         to: recipientAddress,
         value: convertEtherToWei(amount),
     };
-
     try {
         const uo = await smartAccountClient.sendUserOperation({
             uo: {

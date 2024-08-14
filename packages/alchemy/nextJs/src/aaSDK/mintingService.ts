@@ -14,7 +14,6 @@ export async function mintAlchemyWallet(mpcAuth: MpcAuthenticator) {
         chain:sepolia,
         signer: accountSigner,
       });
-
     const response = smartAccountClient.getAddress()
     mpcAuth.accountManager.setSmartContractAccount({ address: response });
     return response;

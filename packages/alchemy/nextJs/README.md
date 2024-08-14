@@ -28,11 +28,10 @@
     NEXT_PUBLIC_SDK_MODE=development #only require for development
     ```
 3. Set the rpcUrl:
-- To set up the rpcUrl, create an instance at :
+- To set up the rpcUrl, create an instance at : [Alchemy](https://dashboard.alchemy.com/apps)
 - Create an account or log in if you already have one.
-- Select the Sepolia network for your instance.
-- Once the instance is created, navigate to the "Bundlers" tab
-- The API Key is the string after the chain ID in the testnet Bundler's URL 
+- Click on the "Create new App" button and add the name,discrption and use case of the app.
+- Once added,navigate to network tab and select API key corresponding to the sepolia network.
 - Copy the API Key for your instance.
 
 ## How to run
