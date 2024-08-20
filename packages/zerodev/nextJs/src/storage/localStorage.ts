@@ -14,7 +14,7 @@ export function setOldEoa(eoa: string) {
     localStorage.setItem("oldEoa", eoa);
 }
 
-export function getOldEoa(): string | null{
+export function getOldEoa(): string | null {
     return localStorage.getItem("oldEoa");
 }
 

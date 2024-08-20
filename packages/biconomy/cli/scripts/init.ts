@@ -15,13 +15,14 @@ if (!API_KEY) {
   process.exit(1);
 }
 const INIT_CONFIG: any = {
-  "accountIndex": 0,
-  "chainId": 11155111,
-  "rpcUrl": "https://rpc.sepolia.org",
-  "bundlerUrl": `https://bundler.biconomy.io/api/v2/11155111/${API_KEY}`,
-  "biconomyPaymasterUrl": "https://paymaster.biconomy.io/api/v1/80001/add_your_api_key_here",
-  "preferredToken": "",
-  "tokenList": []
+  accountIndex: 0,
+  chainId: 11155111,
+  rpcUrl: "https://rpc.sepolia.org",
+  bundlerUrl: `https://bundler.biconomy.io/api/v2/11155111/${API_KEY}`,
+  biconomyPaymasterUrl:
+    "https://paymaster.biconomy.io/api/v1/80001/add_your_api_key_here",
+  preferredToken: "",
+  tokenList: [],
 };
 
 const CONFIG_PATH = path.resolve(__dirname, "../config.json");
@@ -31,12 +32,15 @@ INIT_CONFIG.accountIndex = 0;
 export const init = async (chainId: string) => {
   const silentSigner = await generate();
   console.log(chalk.blue("network is: ", chainId));
-  console.log(chalk.green("your address is: ", await silentSigner.getAddress()))
+  console.log(
+    chalk.green("your address is: ", await silentSigner.getAddress())
+  );
   if (chainId === "sepolia") {
     INIT_CONFIG.chainId = 11155111;
     INIT_CONFIG.rpcUrl = "https://rpc.sepolia.org";
     INIT_CONFIG.bundlerUrl = `https://bundler.biconomy.io/api/v2/11155111/${API_KEY}`;
-    INIT_CONFIG.biconomyPaymasterUrl = "https://paymaster.biconomy.io/api/v1/11155111/add_your_api_key_here";
+    INIT_CONFIG.biconomyPaymasterUrl =
+      "https://paymaster.biconomy.io/api/v1/11155111/add_your_api_key_here";
   } else if (chainId === "mumbai") {
     INIT_CONFIG.chainId = ChainId.POLYGON_MUMBAI;
     INIT_CONFIG.rpcUrl = RPC_PROVIDER_URLS[ChainId.POLYGON_MUMBAI];
@@ -98,7 +102,10 @@ export const init = async (chainId: string) => {
   INIT_CONFIG.preferredToken = "";
   INIT_CONFIG.tokenList = [];
 
-  const configContent = prettier.format(JSON.stringify({ INIT_CONFIG, silentSigner }, null, 2), { parser: "json" });
+  const configContent = prettier.format(
+    JSON.stringify({ INIT_CONFIG, silentSigner }, null, 2),
+    { parser: "json" }
+  );
 
   await fs.writeFile(CONFIG_PATH, configContent);
   console.log(chalk.yellow(`Config written to ${CONFIG_PATH}`));

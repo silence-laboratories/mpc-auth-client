@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import Image from "next/image";
 import React from "react";
 import loadingGif from "../../public/loading.gif";

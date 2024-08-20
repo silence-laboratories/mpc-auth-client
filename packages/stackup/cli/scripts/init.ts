@@ -7,7 +7,6 @@ import prettier from "prettier";
 import chalk from "chalk";
 import { generate } from "../mpc";
 
-
 const INIT_CONFIG = {
   rpcUrl: `https://api.stackup.sh/v1/node/${process.env.API_KEY}`,
   paymaster: {
@@ -17,7 +16,6 @@ const INIT_CONFIG = {
   },
 };
 const CONFIG_PATH = path.resolve(__dirname, "../config.json");
-
 
 async function main() {
   const silentSigner = await generate();

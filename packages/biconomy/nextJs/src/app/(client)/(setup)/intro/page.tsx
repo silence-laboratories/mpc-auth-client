@@ -29,7 +29,7 @@ function Page() {
             router.replace("/homescreen");
             return;
         } catch (error) {
-            if(error instanceof BaseError) {
+            if (error instanceof BaseError) {
                 console.error(error.message);
             }
         }

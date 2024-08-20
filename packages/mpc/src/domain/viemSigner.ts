@@ -1,11 +1,11 @@
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
-import type { DistributedKey } from "../storage/types";
-import type { MpcAuthenticator } from "./authenticator";
-import { BaseError, BaseErrorCode } from "../error";
 import * as viem from "viem";
 import { toAccount } from "viem/accounts";
+import { BaseError, BaseErrorCode } from "../error";
+import type { DistributedKey } from "../storage/types";
+import type { MpcAuthenticator } from "./authenticator";
 
 /**
  * Represents a signer that utilizes Multi-Party Computation (MPC) for signing Ethereum transactions and messages
@@ -14,7 +14,7 @@ import { toAccount } from "viem/accounts";
  *
  * @property {MpcAuthenticator} mpcAuth - MPC SDK instance used for signing operations.
  * @property {DistributedKey} distributedKey - Distributed key of the signer.
- * @property {string} address - Ethereum address associated with this signer.
+ * @property {viem.Hex} address - Ethereum address associated with this signer.
  * Creates an instance of ViemSigner. IMPORTANT: MUST NOT be used to create ViemSigner instance.
  */
 export class ViemSigner {

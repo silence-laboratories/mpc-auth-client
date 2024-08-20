@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 "use client";
 
 import React from "react";
@@ -29,7 +32,7 @@ function Page() {
             router.replace("/homescreen");
             return;
         } catch (error) {
-            if(error instanceof BaseError) {
+            if (error instanceof BaseError) {
                 console.error(error.message);
             }
         }

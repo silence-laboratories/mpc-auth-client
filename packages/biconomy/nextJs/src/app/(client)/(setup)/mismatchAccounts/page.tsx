@@ -9,7 +9,11 @@ import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
-import { getOldEoa, getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import {
+    getOldEoa,
+    getPairingStatus,
+    setPairingStatus,
+} from "@/storage/localStorage";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 function Page() {
@@ -22,7 +26,7 @@ function Page() {
 
     useEffect(() => {
         (async () => {
-            const val = await mpcAuth.accountManager.getEoa() ?? "";
+            const val = (await mpcAuth.accountManager.getEoa()) ?? "";
             setEoa(val);
         })();
     }, []);
@@ -247,9 +251,7 @@ function Page() {
                     disabled={showHeadsUp && !isAgree}
                 >
                     Restore account
-                    <span className="b2-bold ml-1">
-                        {briefAddress(eoa)}
-                    </span>
+                    <span className="b2-bold ml-1">{briefAddress(eoa)}</span>
                 </Button>
             </div>
         </div>

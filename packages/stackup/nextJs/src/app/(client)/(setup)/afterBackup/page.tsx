@@ -29,7 +29,7 @@ function Page() {
         const val = await mpcAuth.getPairedDeviceOS();
         setDeviceOS(val);
     })();
-    
+
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;
     }
@@ -86,7 +86,7 @@ function Page() {
             <div className="text-[#B6BAC3] mt-4 mb-3 label-md text-center">
                 2 Ways you can backup your wallet
             </div>
-            <CarouselWrapper deviceOS={deviceOS}/>
+            <CarouselWrapper deviceOS={deviceOS} />
             <div className="w-full justify-center items-center flex flex-col mt-14">
                 <Button
                     className="bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active w-1/2"

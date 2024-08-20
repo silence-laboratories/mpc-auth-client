@@ -1,7 +1,6 @@
-
 ## MPC X AA CLI
 
- This example is a basic command-line wallet application which uses the userop.js library to build user operations. You can think of it like ethers.js but for ERC-4337. 
+This example is a basic command-line wallet application which uses the userop.js library to build user operations. You can think of it like ethers.js but for ERC-4337.
 
 ## Prerequisites:
 
@@ -37,24 +36,25 @@ To set up the rpcUrl, create an instance at StackUp:
 ### Step 2: Setting Up Environment Variables
 
 1. Create a `.env` file:
-    - In the root of your project, create a new file named `.env`.
+
+   - In the root of your project, create a new file named `.env`.
 
 2. Fill in your Base urls and API keys in `.env`:
 
-    - Replace `your_stackup_api_key_here` with your actual stackup's API key.
-    - To run in development environment, add `NEXT_PUBLIC_SDK_MODE=development`.
+   - Replace `your_stackup_api_key_here` with your actual stackup's API key.
+   - To run in development environment, add `NEXT_PUBLIC_SDK_MODE=development`.
 
-        ```env
-        API_KEY=your_stsackup_api_key_here
-        NEXT_PUBLIC_SDK_MODE=development
-        ```
-
+     ```env
+     API_KEY=your_stsackup_api_key_here
+     NEXT_PUBLIC_SDK_MODE=development
+     ```
 
 ### Step 3: Using the Silent Shard App
 
 As defined earlier, this setup is between your CLI and the Silent Shard Mobile Application. To interact further with this setup, please install the Silent Shard App.
 
 1. Download the Silent Shard App from:
+
    - [Apple App Store](https://apps.apple.com/us/app/silent-shard/id6468993285)
    - [Google Play Store](https://play.google.com/store/apps/details?id=com.silencelaboratories.silentshard&hl=kr&pli=1)
 
@@ -151,5 +151,4 @@ The implementation for all commands is located in the `simpleAccount` directory 
 - Sample contracts: [eth-infinitism/account-abstraction](https://github.com/eth-infinitism/account-abstraction)
 - JS SDK: [userop.js](https://github.com/eth-infinitism/userop.js)
 
- 
 ### This integration is built on top of StackUp's Quick Start repository. For more details check out the [docs here](https://github.com/stackup-wallet/erc-4337-examples).

@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { providers } from "ethers";
 import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
 import { ethersToAccount } from "./alchemyUtility";
@@ -17,11 +20,11 @@ export async function sendTransaction(
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
     const client = await MpcSigner.instance(mpcAuth, provider);
     const accountSigner = ethersToAccount(client);
-    const smartAccountClient =  await createModularAccountAlchemyClient({
+    const smartAccountClient = await createModularAccountAlchemyClient({
         apiKey: process.env.API_KEY,
-        chain:sepolia,
+        chain: sepolia,
         signer: accountSigner,
-      });
+    });
 
     const requestData = {
         to: recipientAddress,
@@ -32,12 +35,13 @@ export async function sendTransaction(
             uo: {
                 target: requestData.to as viem.Hex,
                 data: "0x",
-                value: requestData.value
+                value: requestData.value,
             },
-            });
+        });
 
-        const transactionHash = await smartAccountClient.waitForUserOperationTransaction(uo);
-        return {transactionHash};
+        const transactionHash =
+            await smartAccountClient.waitForUserOperationTransaction(uo);
+        return { transactionHash };
     } catch (error) {
         console.error("Transaction error:", error);
         return { success: false, error };

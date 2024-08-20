@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -19,7 +22,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <div className="app-container">
-                <nav className="w-full z-20 top-0 start-0 border-b border-gray-700 bg-white-primary mb-6 pl-[160px] pr-[100px]">
+                    <nav className="w-full z-20 top-0 start-0 border-b border-gray-700 bg-white-primary mb-6 pl-[160px] pr-[100px]">
                         <div className="flex w-full flex-wrap items-center justify-between h-[8.88vh]">
                             <div className="flex items-center">
                                 <Image

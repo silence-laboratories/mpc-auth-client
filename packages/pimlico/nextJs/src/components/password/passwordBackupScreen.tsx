@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -9,7 +12,6 @@ import { checkPassword } from "@/utils/password";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
-
 
 export type PasswordBackupScreenProps = {
     onProceed?: () => void;

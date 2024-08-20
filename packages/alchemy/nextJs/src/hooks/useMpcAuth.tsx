@@ -1,4 +1,11 @@
-import { MpcAuthenticator, WalletId, StoragePlatform } from "@silencelaboratories/mpc-sdk";
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
+import {
+    MpcAuthenticator,
+    WalletId,
+    StoragePlatform,
+} from "@silencelaboratories/mpc-sdk";
 import { useState } from "react";
 export const useMpcAuth = () => {
     const [sdk] = useState<MpcAuthenticator>(

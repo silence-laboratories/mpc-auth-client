@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 export const SEPOLIA = {
     chainId: "0xaa36a7", // in hex
     chainName: "Sepolia Test Network",

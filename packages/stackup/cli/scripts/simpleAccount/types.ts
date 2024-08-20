@@ -6,4 +6,3 @@ export interface CLIOpts {
   withPM: boolean;
   overrideBundlerRpc?: string;
 }
-

@@ -1,5 +1,7 @@
-import qrCodeTerm from "qrcode-terminal";
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 
+import qrCodeTerm from "qrcode-terminal";
 import { CliStorage } from "./storage";
 import type { IP1KeyShare } from "@silencelaboratories/ecdsa-tss";
 import {

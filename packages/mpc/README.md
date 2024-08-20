@@ -93,19 +93,19 @@ The `ViemSigner` class is designed to facilitate signing Ethereum transactions a
 
 An example of `ViemSigner` with `Pimlico` account creation:
 
-````javascript
+```javascript
 // ViemSigner initialization
 const client = await ViemSigner.instance(mpcAuth);
 const signer = await client.getViemAccount();
 const walletClient = createWalletClient({
-        account: signer,
-        chain: sepolia,
-        transport: http(
-            `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
-        ),
-    });
+  account: signer,
+  chain: sepolia,
+  transport: http(
+    `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
+  ),
+});
 const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
-````
+```
 
 ### Error codes
 
@@ -113,26 +113,26 @@ The library provides the following error codes:
 
 ```typescript
 enum BaseErrorCode {
-	StorageWriteFailed = 1,
-	StorageFetchFailed = 2,
-	HttpError = 3,
-	// Action errors
-	PairingFailed = 4,
-	KeygenFailed = 5,
-	BackupFailed = 6,
-	SignFailed = 7,
-	RecoverFailed = 8,
+  StorageWriteFailed = 1,
+  StorageFetchFailed = 2,
+  HttpError = 3,
+  // Action errors
+  PairingFailed = 4,
+  KeygenFailed = 5,
+  BackupFailed = 6,
+  SignFailed = 7,
+  RecoverFailed = 8,
 
-	KeygenResourceBusy = 9,
-	SignResourceBusy = 10,
-	InternalLibError = 11,
-	PhoneDenied = 12,
-	InvalidBackupData = 13,
-	InvalidMessageHashLength = 14,
-	WalletNotCreated = 15,
-	UnknownError = 16,
+  KeygenResourceBusy = 9,
+  SignResourceBusy = 10,
+  InternalLibError = 11,
+  PhoneDenied = 12,
+  InvalidBackupData = 13,
+  InvalidMessageHashLength = 14,
+  WalletNotCreated = 15,
+  UnknownError = 16,
 }
-````
+```
 
 ## How to build:
 

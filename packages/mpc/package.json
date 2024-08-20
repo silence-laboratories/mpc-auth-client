@@ -26,7 +26,8 @@
     "lint": "biome check --write src/",
     "prebuild": "npm run clean",
     "build": "npx tsc && npx tsc -p ./tsconfig-cjs.json",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@ethereumjs/util": "^8.1.0",

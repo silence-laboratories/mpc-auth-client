@@ -10,7 +10,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     }, []);
     useSwitchScreen();
 
-
     return isClient ? children : null;
 };
 

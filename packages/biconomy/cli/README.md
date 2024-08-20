@@ -1,6 +1,6 @@
 ## MPC X AA CLI
 
-This example is a basic command-line wallet application which demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK. 
+This example is a basic command-line wallet application which demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK.
 
 ## Prerequisites:
 
@@ -14,15 +14,15 @@ This example is a basic command-line wallet application which demonstrates how t
 
 Clone the repository.
 
- ```bash
-  git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
- ```
+```bash
+ git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
+```
 
 Navigate to the cli directory within the cloned repository:
 
-  ```bash
-  cd packages/biconomy/cli
-  ```
+```bash
+cd packages/biconomy/cli
+```
 
 #### Set Up the RPC URL
 
@@ -37,23 +37,25 @@ To set up the `rpcUrl`, create an instance at:
 ### Step 2: Setting Up Environment Variables
 
 1. Create a `.env` file:
-    - In the root of your project, create a new file named `.env`.
+
+   - In the root of your project, create a new file named `.env`.
 
 2. Fill in your Base urls and API keys in `.env`:
 
-    - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
-    - To run in development environment, add `NEXT_PUBLIC_SDK_MODE=development`.
+   - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
+   - To run in development environment, add `NEXT_PUBLIC_SDK_MODE=development`.
 
-        ```env
-        API_KEY=your_biconomy_api_key_here
-        NEXT_PUBLIC_SDK_MODE=development
-        ```
+     ```env
+     API_KEY=your_biconomy_api_key_here
+     NEXT_PUBLIC_SDK_MODE=development
+     ```
 
 ### Step 3: Using the Silent Shard App
 
 As defined earlier, this setup is between your CLI and the Silent Shard Mobile Application. To interact further with this setup, please install the Silent Shard App.
 
 1. Download the Silent Shard App from:
+
    - [Apple App Store](https://apps.apple.com/us/app/silent-shard/id6468993285)
    - [Google Play Store](https://play.google.com/store/apps/details?id=com.silencelaboratories.silentshard&hl=kr&pli=1)
 
@@ -63,9 +65,9 @@ As defined earlier, this setup is between your CLI and the Silent Shard Mobile A
 
 Initialize your local configuration by running the following command:
 
-  ```bash
-  npm run smartAccount-init --network=sepolia
-  ```
+```bash
+npm run smartAccount-init --network=sepolia
+```
 
 A QR code will be generated on your CLI which must be scanned by the QR scanner on your mobile app (refer to Step 4). Note that during the account setup in the init step, the mobile app will ask you to set a password and backup option. For this CLI demo version, please skip all these steps.
 
@@ -75,7 +77,7 @@ A `config.json` file will be created. The file will look like this:
 
 ```json
 {
-{ 
+{
    "accountIndex": 0,
    "chainId": 11155111,
    "rpcUrl": "https://rpc.sepolia.org",
@@ -131,7 +133,7 @@ A `config.json` file will be created. The file will look like this:
 Create a counterfactual address by running the command:
 
 ```bash
-npm run smartAccount-address               
+npm run smartAccount-address
 ```
 
 An address will be returned. At this point, the Smart Account has not been deployed. ERC-4337 account addresses are deterministic, so you don't need to deploy the contract to know its address.

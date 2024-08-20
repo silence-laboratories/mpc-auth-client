@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import { MpcAuthenticator, ViemSigner } from "@silencelaboratories/mpc-sdk";
 import {
     ENTRYPOINT_ADDRESS_V07,
