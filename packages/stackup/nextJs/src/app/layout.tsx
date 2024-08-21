@@ -1,3 +1,5 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";

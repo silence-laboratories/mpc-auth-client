@@ -11,7 +11,8 @@
     "prettier:fix": "prettier --write --ignore-path ./.eslintignore '**'",
     "init": "ts-node scripts/init.ts",
     "kernel": "ts-node scripts/kernel/index.ts",
-    "simpleAccount": "ts-node scripts/simpleAccount/index.ts"
+    "simpleAccount": "ts-node scripts/simpleAccount/index.ts",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@ethereumjs/tx": "^4.1.2",

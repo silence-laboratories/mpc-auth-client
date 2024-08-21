@@ -3,7 +3,10 @@
 
 import { ethers } from "ethers";
 import chalk from "chalk";
-import { type SupportedSigner, createSmartAccountClient } from "@biconomy/account";
+import {
+  type SupportedSigner,
+  createSmartAccountClient,
+} from "@biconomy/account";
 import { mpcAuth } from "../../mpc";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 export const mintNftPayERC20 = async () => {

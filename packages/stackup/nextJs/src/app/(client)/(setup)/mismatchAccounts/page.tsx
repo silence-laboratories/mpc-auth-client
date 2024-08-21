@@ -27,7 +27,7 @@ function Page() {
 
     useEffect(() => {
         (async () => {
-            const val = await mpcAuth.accountManager.getEoa() ?? "";
+            const val = (await mpcAuth.accountManager.getEoa()) ?? "";
             setEoa(val);
         })();
     }, [mpcAuth.accountManager.getEoa]);

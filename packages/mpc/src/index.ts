@@ -4,13 +4,21 @@
 import { StoragePlatform, WalletId } from "./constants";
 import { MpcAuthenticator } from "./domain/authenticator";
 import { MpcSigner } from "./domain/signer";
+import { ViemSigner } from "./domain/viemSigner";
 import { BaseError } from "./error";
 import type {
-	AccountData,
-	PairingSessionData,
-	StorageData,
+  AccountData,
+  PairingSessionData,
+  StorageData,
 } from "./storage/types";
 import type { IStorage } from "./storage/types";
 
-export { MpcAuthenticator, MpcSigner, StoragePlatform, WalletId, BaseError };
+export {
+  MpcAuthenticator,
+  MpcSigner,
+  StoragePlatform,
+  WalletId,
+  BaseError,
+  ViemSigner,
+};
 export type { AccountData, IStorage, StorageData, PairingSessionData };

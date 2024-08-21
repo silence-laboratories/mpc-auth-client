@@ -62,7 +62,7 @@ function Page() {
             }
             setLoading(false);
         } catch (error) {
-            if(error instanceof BaseError) {
+            if (error instanceof BaseError) {
                 console.error(error.message);
             }
             throw error;

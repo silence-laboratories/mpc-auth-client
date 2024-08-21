@@ -6,7 +6,9 @@
     "start": "ts-node scripts/index.ts",
     "smartAccount-init": "ts-node scripts/index.ts init --network=$npm_config_network",
     "smartAccount-address": "ts-node scripts/index.ts address",
-    "smartAccount-transfer": "ts-node scripts/index.ts transfer --to=$npm_config_to --amount=$npm_config_amount"
+    "smartAccount-transfer": "ts-node scripts/index.ts transfer --to=$npm_config_to --amount=$npm_config_amount",
+    "format": "prettier --write .",
+    "lint": "eslint ."
   },
   "keywords": [],
   "license": "ISC",

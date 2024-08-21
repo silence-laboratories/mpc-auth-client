@@ -1,3 +1,5 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 import { Presets } from "userop";
 import type { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";

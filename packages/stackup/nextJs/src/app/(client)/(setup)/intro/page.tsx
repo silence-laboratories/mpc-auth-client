@@ -1,3 +1,5 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 "use client";
 
 import React, { useEffect } from "react";
@@ -29,7 +31,7 @@ function Page() {
             router.replace("/homescreen");
             return;
         } catch (error) {
-            if(error instanceof BaseError) {
+            if (error instanceof BaseError) {
                 console.error(error.message);
             }
         }
@@ -55,7 +57,8 @@ function Page() {
                     letterSpacing: "0px",
                 }}
             >
-                Eliminate Single Points of failure with<b/>
+                Eliminate Single Points of failure with
+                <b />
                 Distributed Smart Contract Accounts
             </div>
             <div
@@ -79,7 +82,7 @@ function Page() {
                 </span>{" "}
                 to enable a 2FA- like experience
             </div>
-            <br/>
+            <br />
 
             <div className="flex items-center justify-center">
                 <Image

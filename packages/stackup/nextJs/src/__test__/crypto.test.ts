@@ -1,6 +1,6 @@
 import _sodium from "libsodium-wrappers-sumo";
-import {aeadEncrypt, aeadDecrypt} from "@/mpc/crypto"
-import { TextEncoder, TextDecoder } from 'util';
+import { aeadEncrypt, aeadDecrypt } from "@/mpc/crypto";
+import { TextEncoder, TextDecoder } from "util";
 
 Object.assign(global, { TextDecoder, TextEncoder });
 import { uint8ArrayToUtf8String } from "@/mpc/utils";

@@ -7,7 +7,6 @@ import { Command } from "commander";
 import address from "./address";
 import transfer from "./transfer";
 
-
 const program = new Command();
 
 program
@@ -58,8 +57,10 @@ program
   )
   .requiredOption("-tkn, --token <address>", "The token address")
   .requiredOption("-t, --to <address>", "The recipient address")
-  .requiredOption("-amt, --amount <decimal>", "Amount of the token to transfer")
- 
+  .requiredOption(
+    "-amt, --amount <decimal>",
+    "Amount of the token to transfer"
+  );
 
 program
   .command("erc20Approve")
@@ -75,8 +76,10 @@ program
   )
   .requiredOption("-tkn, --token <address>", "The token address")
   .requiredOption("-s, --spender <address>", "The spender address")
-  .requiredOption("-amt, --amount <decimal>", "Amount of the token to transfer")
-  
+  .requiredOption(
+    "-amt, --amount <decimal>",
+    "Amount of the token to transfer"
+  );
 
 program
   .command("batchErc20Transfer")
@@ -95,7 +98,9 @@ program
     "-t, --to <addresses>",
     "Comma separated list of recipient addresses"
   )
-  .requiredOption("-amt, --amount <decimal>", "Amount of the token to transfer")
-  
+  .requiredOption(
+    "-amt, --amount <decimal>",
+    "Amount of the token to transfer"
+  );
 
 program.parse();

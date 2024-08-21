@@ -10,7 +10,6 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
 import { useMpcAuth } from "@/hooks/useMpcAuth";
 
-
 export type PasswordBackupScreenProps = {
     onProceed?: () => void;
     onTakeRisk?: () => void;

@@ -2,7 +2,10 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import chalk from "chalk";
-import { type SupportedSigner, createSmartAccountClient } from "@biconomy/account";
+import {
+  type SupportedSigner,
+  createSmartAccountClient,
+} from "@biconomy/account";
 import { providers } from "ethers";
 import { mpcAuth } from "../mpc";
 import { MpcSigner } from "@silencelaboratories/mpc-sdk";

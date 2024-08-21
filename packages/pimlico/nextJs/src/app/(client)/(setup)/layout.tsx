@@ -1,14 +1,17 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 "use client";
 import * as React from "react";
 import Footer from "@/components/footer";
 
 import { usePathname } from "next/navigation";
-import { getWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
+import { getPairingStatus } from "@/storage/localStorage";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
-    const showFooter = pathname === "/intro" && getWalletStatus() === WALLET_STATUS.Unpaired;
+    const showFooter =
+        pathname === "/intro" && getPairingStatus() === WALLET_STATUS.Unpaired;
     return (
         <>
             <div>{children}</div>
