@@ -8,7 +8,7 @@ import {
   MpcAuthenticator,
   StoragePlatform,
   WalletId,
-  ViemSigner
+  ViemSigner,
 } from "@silencelaboratories/mpc-sdk";
 import "dotenv/config";
 

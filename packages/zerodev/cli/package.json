@@ -9,7 +9,9 @@
   "scripts": {
     "init": "tsx scripts/init.ts",
     "kernel": "tsx scripts/kernel/index.ts",
-    "simpleAccount": "npx tsx scripts/simpleAccount/index.ts"
+    "simpleAccount": "npx tsx scripts/simpleAccount/index.ts",
+    "format": "prettier --write .",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@ethereumjs/tx": "^4.1.2",
@@ -34,7 +36,6 @@
     "viem": "2.19.1",
     "@zerodev/ecdsa-validator": "5.2.3",
     "@zerodev/sdk": "^5.2.17"
-
   },
   "devDependencies": {
     "@types/libsodium-wrappers": "^0.7.11",

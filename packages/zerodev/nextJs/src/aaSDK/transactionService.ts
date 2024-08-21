@@ -2,7 +2,13 @@
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import { MpcAuthenticator, ViemSigner } from "@silencelaboratories/mpc-sdk";
-import { createPublicClient, createWalletClient, Hex, http } from "viem";
+import {
+    Account,
+    createPublicClient,
+    createWalletClient,
+    Hex,
+    http,
+} from "viem";
 import {
     ENTRYPOINT_ADDRESS_V07,
     walletClientToSmartAccountSigner,
@@ -34,7 +40,7 @@ export async function sendTransaction(
     const entryPoint = ENTRYPOINT_ADDRESS_V07;
 
     const walletClient = createWalletClient({
-        account: signer,
+        account: signer as Account,
         chain: sepolia,
         transport: http(
             `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`

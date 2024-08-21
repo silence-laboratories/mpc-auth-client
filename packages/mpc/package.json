@@ -23,11 +23,11 @@
   "scripts": {
     "test": "jest --config jestconfig.json",
     "clean": "rimraf lib/",
-    "lint": "biome check --write src/",
     "prebuild": "npm run clean",
     "build": "npx tsc && npx tsc -p ./tsconfig-cjs.json",
     "prepare": "npm run build",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@ethereumjs/util": "^8.1.0",
@@ -35,7 +35,7 @@
     "dotenv": "^16.4.5",
     "ethers": "5.7.0",
     "libsodium-wrappers-sumo": "^0.7.14",
-    "viem": "^2.18.7"
+    "viem": "2.18.7"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",

@@ -6,7 +6,13 @@ import {
     ENTRYPOINT_ADDRESS_V07,
     walletClientToSmartAccountSigner,
 } from "permissionless";
-import { createPublicClient, createWalletClient, Hex, http } from "viem";
+import {
+    Account,
+    createPublicClient,
+    createWalletClient,
+    Hex,
+    http,
+} from "viem";
 import { sepolia } from "viem/chains";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { createKernelAccount } from "@zerodev/sdk";
@@ -15,7 +21,7 @@ export async function mintZeroDevWallet(mpcAuth: MpcAuthenticator) {
     const client = await ViemSigner.instance(mpcAuth);
     const signer = await client.getViemAccount();
     const walletClient = createWalletClient({
-        account: signer,
+        account: signer as Account,
         chain: sepolia,
         transport: http(
             `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`

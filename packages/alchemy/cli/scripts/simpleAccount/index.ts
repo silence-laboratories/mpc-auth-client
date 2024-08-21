@@ -35,9 +35,6 @@ program
   )
   .requiredOption("-t, --to <address>", "The recipient address")
   .requiredOption("-amt, --amount <eth>", "Amount in ETH to transfer")
-  .action(async (opts) =>
-    transfer(opts.to, opts.amount)
-  );
-
+  .action(async (opts) => transfer(opts.to, opts.amount));
 
 program.parse();

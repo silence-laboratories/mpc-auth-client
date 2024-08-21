@@ -108,6 +108,7 @@ A `config.json` file will be created. The file will look like this:
 ```
 
 ### Anatomy of the config.json file:
+
 - `keygenResult`: Contains the result of the key generation process, including the distributed public key and key share data, along with the elapsed time for the operation.
 - `pairingData`: Contains the pairing data, including the pairing ID, web encryption and signing keys, app public key, token, token expiration, and device name.
 
@@ -138,4 +139,3 @@ npm run simpleAccount transfer -- --to <address> --amount <eth>
 ## Step 8: Approve the signature on the paired Mobile Application
 
 When transferring the token to any address via this integration, your phone will receive a signature alert notification twice. You need to swipe right to approve the transaction. Once approved,you will see transaction hash.
-

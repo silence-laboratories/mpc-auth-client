@@ -1,7 +1,5 @@
-
 import chalk from "chalk";
 import { generate } from "../mpc";
-
 
 async function main() {
   const silentSigner = await generate();

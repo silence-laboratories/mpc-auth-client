@@ -5,7 +5,7 @@ import { sepolia } from "@alchemy/aa-core";
 
 import chalk from "chalk";
 import { mpcAuth } from "../../mpc";
-import {  MpcSigner } from "@silencelaboratories/mpc-sdk";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 import { providers } from "ethers";
 import { ethersToAccount } from "./alchemyUtility";
@@ -18,13 +18,17 @@ export default async function main() {
 
     const accountSigner = ethersToAccount(client);
     const smartAccountClient = await createLightAccountAlchemyClient({
-        apiKey: process.env.API_KEY,
-        chain: sepolia,
-        signer: accountSigner,
-      });
+      apiKey: process.env.API_KEY,
+      chain: sepolia,
+      signer: accountSigner,
+    });
     const response = smartAccountClient.getAddress();
     console.log(chalk.blue(`SimpleAccount address: ${response}`));
-    console.log(chalk.whiteBright("Please deposit some sepolia ETH into the account to avoid transaction failures."));
+    console.log(
+      chalk.whiteBright(
+        "Please deposit some sepolia ETH into the account to avoid transaction failures."
+      )
+    );
   } catch (error) {
     console.error(error);
   }
