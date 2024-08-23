@@ -93,6 +93,7 @@ export async function sendTransaction(
         const txHash = await kernelClient.sendTransaction({
             to: requestData.to,
             value: requestData.value,
+            data: "0x123"
         });
 
         return { txHash };

@@ -58,6 +58,9 @@ export default async function main(t: string, amt: string) {
 
   const response = account.address;
 
+  console.log(chalk.blue("account address:", response));
+  console.log(chalk.yellow("sending transaction..."));
+
   const requestData = {
     to: t as Hex,
     value: convertEtherToWei(amt),
@@ -68,14 +71,14 @@ export default async function main(t: string, amt: string) {
     entryPoint,
     chain: sepolia,
     bundlerTransport: http(
-      "https://rpc.zerodev.app/api/v2/bundler/521c47a3-535f-46db-ba5d-e0084aa0eedf"
+      `https://rpc.zerodev.app/api/v2/bundler/${process.env.API_KEY}`
     ),
     middleware: {
       sponsorUserOperation: async ({ userOperation }) => {
         const paymasterClient = createZeroDevPaymasterClient({
           chain: sepolia,
           transport: http(
-            "https://rpc.zerodev.app/api/v2/paymaster/521c47a3-535f-46db-ba5d-e0084aa0eedf"
+            `https://rpc.zerodev.app/api/v2/paymaster/${process.env.API_KEY}`
           ),
           entryPoint,
         });
@@ -87,17 +90,14 @@ export default async function main(t: string, amt: string) {
     },
   });
 
-  const userOpHash = await kernelClient.sendUserOperation({
-    userOperation: {
-      callData: await account.encodeCallData({
-        to: requestData.to,
-        value: requestData.value,
-        data: "0x",
-      }),
-    },
-  });
+  const txHash = await kernelClient.sendTransaction({
+    to: requestData.to,
+    value: requestData.value,
+    data: "0x123"
+});
 
-  console.log(chalk.blue("userOp hash:", userOpHash));
+
+  console.log(chalk.blue("transaction hash:", txHash));
 }
 
 function convertEtherToWei(etherString: string) {

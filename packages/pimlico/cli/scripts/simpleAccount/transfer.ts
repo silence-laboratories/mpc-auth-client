@@ -62,6 +62,7 @@ export default async function main(t: string, amt: string) {
       `https://api.pimlico.io/v2/sepolia/rpc?apikey=${process.env.API_KEY}`
     ),
     middleware: {
+      sponsorUserOperation: paymasterClient.sponsorUserOperation, // optional
       gasPrice: async () =>
         (await pimlicoBundlerClient.getUserOperationGasPrice()).fast,
     },
