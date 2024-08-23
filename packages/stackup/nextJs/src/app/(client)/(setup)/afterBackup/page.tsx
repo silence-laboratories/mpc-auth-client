@@ -1,3 +1,5 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -14,15 +16,22 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getDeviceOS, getWalletStatus } from "@/mpc/storage/wallet";
 import { layoutClassName } from "@/utils/ui";
 import { WALLET_STATUS } from "@/constants";
 import { RouteLoader } from "@/components/routeLoader";
+import { getPairingStatus } from "@/storage/localStorage";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 function Page() {
+    const mpcAuth = useMpcAuth();
     const router = useRouter();
-    const deviceOS = getDeviceOS();
-    const status = getWalletStatus();
+    const status = getPairingStatus();
+    const [deviceOS, setDeviceOS] = useState<string>("");
+    (async () => {
+        const val = await mpcAuth.getPairedDeviceOS();
+        setDeviceOS(val);
+    })();
+
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;
     }
@@ -79,7 +88,7 @@ function Page() {
             <div className="text-[#B6BAC3] mt-4 mb-3 label-md text-center">
                 2 Ways you can backup your wallet
             </div>
-            <CarouselWrapper deviceOS={deviceOS}></CarouselWrapper>
+            <CarouselWrapper deviceOS={deviceOS} />
             <div className="w-full justify-center items-center flex flex-col mt-14">
                 <Button
                     className="bg-indigo-primary hover:bg-indigo-hover active:bg-indigo-active w-1/2"

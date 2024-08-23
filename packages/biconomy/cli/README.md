@@ -1,25 +1,30 @@
 ## MPC X AA CLI
 
+This example is a basic command-line wallet application which demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK.
+
+## Prerequisites:
+
+- **Build MPC Authenticator library**. Follow instruction in ["How to build" section](../../mpc/README.md#how-to-build)
+
+- **Node Version:** Ensure you are using Node.js version 18.
+
+## How to run
+
 ### Step 1: Clone the Repository
 
-Clone the mpc-account-abstraction-sdk repository. This example is a basic command-line wallet application.
+Clone the repository.
 
- ```bash
-  git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
- ```
+```bash
+ git clone https://github.com/silence-laboratories/mpc-account-abstraction-sdk
+```
 
 Navigate to the cli directory within the cloned repository:
 
-  ```bash
-  cd packages/biconomy/cli
-  ```
+```bash
+cd packages/biconomy/cli
+```
 
-### Configuration Setup:
-
-**Node Version:** Ensure you are using Node.js version 18.
-
-
-### Set Up the RPC URL
+#### Set Up the RPC URL
 
 To set up the `rpcUrl`, create an instance at:
 
@@ -32,41 +37,37 @@ To set up the `rpcUrl`, create an instance at:
 ### Step 2: Setting Up Environment Variables
 
 1. Create a `.env` file:
-    - In the root of your project, create a new file named `.env`.
+
+   - In the root of your project, create a new file named `.env`.
 
 2. Fill in your Base urls and API keys in `.env`:
 
-    - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
+   - Replace `your_biconomy_api_key_here` with your actual Biconomy's API key.
+   - To run in development environment, add `NEXT_PUBLIC_SDK_MODE=development`.
 
-        ```env
-        FIREBASE_BASEURL=https://us-central1-mobile-wallet-mm-snap-staging.cloudfunctions.net
-        API_KEY=your_biconomy_api_key_here
-        ```
+     ```env
+     API_KEY=your_biconomy_api_key_here
+     NEXT_PUBLIC_SDK_MODE=development
+     ```
 
-### Step 3: Install Dependencies
-
-- This example demonstrates how to send a simple transaction using ethers.js and the Biconomy Smart Account with the `@biconomy/account` SDK. Install it, and all other dependencies.
-
-  ```bash
-  npm install
-  ```
-### Step 4: Using the Silent Shard App
+### Step 3: Using the Silent Shard App
 
 As defined earlier, this setup is between your CLI and the Silent Shard Mobile Application. To interact further with this setup, please install the Silent Shard App.
 
 1. Download the Silent Shard App from:
+
    - [Apple App Store](https://apps.apple.com/us/app/silent-shard/id6468993285)
    - [Google Play Store](https://play.google.com/store/apps/details?id=com.silencelaboratories.silentshard&hl=kr&pli=1)
 
 2. Press the "Connect new Account" button to initiate the QR scanner on the app to pair with the CLI.
 
-### Step 5: Initialising and Distributed Key Generation
+### Step 4: Initialising and Distributed Key Generation
 
 Initialize your local configuration by running the following command:
 
-  ```bash
-  npm run smartAccount-init --network=sepolia
-  ```
+```bash
+npm run smartAccount-init --network=sepolia
+```
 
 A QR code will be generated on your CLI which must be scanned by the QR scanner on your mobile app (refer to Step 4). Note that during the account setup in the init step, the mobile app will ask you to set a password and backup option. For this CLI demo version, please skip all these steps.
 
@@ -76,7 +77,7 @@ A `config.json` file will be created. The file will look like this:
 
 ```json
 {
-{ 
+{
    "accountIndex": 0,
    "chainId": 11155111,
    "rpcUrl": "https://rpc.sepolia.org",
@@ -127,23 +128,23 @@ A `config.json` file will be created. The file will look like this:
 - **paymaster:** URL of the Paymaster service you are using and context (optional)
 - **keygenResult:** Contains the result of the key generation process, including the distributed public key and key share data, along with the elapsed time for the operation.
 
-### Step 6: Create an Account
+### Step 5: Create an Account
 
 Create a counterfactual address by running the command:
 
 ```bash
-npm run smartAccount-address               
+npm run smartAccount-address
 ```
 
 An address will be returned. At this point, the Smart Account has not been deployed. ERC-4337 account addresses are deterministic, so you don't need to deploy the contract to know its address.
 
-### Step 7: Fund the Account
+### Step 6: Fund the Account
 
 You will now need to deposit the native token of the blockchain you are using into your new Smart Account. Since we are using the sepolia testnet, you will deposit sepolia ETH into the account.
 
 Navigate to a faucet, such as this [link](https://cloud.google.com/application/web3/faucet/ethereum/sepolia). Enter the account address from Step 6 and claim the testnet token.
 
-### Step 8: Initiate the Transfer
+### Step 7: Initiate the Transfer
 
 The `smartAccount transfer` command allows you to transfer the native token from the smart contract account to any address. It will create a User Operation, sign it, and send it to the Bundler:
 
@@ -151,7 +152,7 @@ The `smartAccount transfer` command allows you to transfer the native token from
  npm run smartAccount-transfer --to=<receiver_address_here> --amount=<amount_here>
 ```
 
-### Step 9: Approve the Signature on the Paired Mobile Application
+### Step 8: Approve the Signature on the Paired Mobile Application
 
 When transferring the token to any address via this integration, your phone will receive a signature alert notification. You need to swipe right to approve the transaction. Once approved, you will see the signed `userOperation` object and the transaction hash.
 

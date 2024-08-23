@@ -1,51 +1,52 @@
-import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@/mpc/storage/wallet";
-import * as store from "@/mpc/storage/account";
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 import { Client, Presets } from "userop";
 import { ethers } from "ethers";
+import type { MpcAuthenticator } from "@silencelaboratories/mpc-sdk";
+import { MpcSigner } from "@silencelaboratories/mpc-sdk/lib/esm/domain/signer";
 
-export async function sendTransaction(recipientAddress: string, amount: string) {
+export async function sendTransaction(
+    recipientAddress: string,
+    amount: string,
+    mpcAuth: MpcAuthenticator
+) {
     const requestData = {
         to: recipientAddress,
         amount: convertEtherToWei(amount),
     };
-
-    // TODO: Move this to `mpc`
-    const keyshards = getSilentShareStorage();
-    const distributedKey = keyshards.newPairingState?.distributedKey;
+    const eoa = mpcAuth.accountManager.getEoa();
+    if (!eoa) {
+        throw new Error("Eoa not found");
+    }
+    const signer = await MpcSigner.instance(mpcAuth);
     const simpleAccount = await Presets.Builder.SimpleAccount.init(
-        new SilentWallet(
-            store.getEoa().address,
-            distributedKey?.publicKey as string,
-            distributedKey?.keyShareData,
-            { distributedKey }
-        ),
+        signer,
         `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
     const client = await Client.init(
         `https://api.stackup.sh/v1/node/${process.env.API_KEY}`
     );
-    try{
-    const target = ethers.utils.getAddress(requestData.to);
-    const value = requestData.amount;
+    try {
+        const target = ethers.utils.getAddress(requestData.to);
+        const value = requestData.amount;
 
-    const res = await client.sendUserOperation(
-        simpleAccount.execute(target, value, "0x"),
-        {
-          // Add necessary options as needed
-            onBuild: (op) => console.log("Signed UserOperation:", op),
-        }
-    );
-    console.log("userOp Hash", res.userOpHash);
+        const res = await client.sendUserOperation(
+            simpleAccount.execute(target, value, "0x"),
+            {
+                // Add necessary options as needed
+                onBuild: (op) => console.log("Signed UserOperation:", op),
+            }
+        );
+        const ev = await res.wait();
 
-    const ev = await res.wait();
-    console.log("transactionHash", ev?.transactionHash ?? null);
-
-    return {success:true,transactionHash:ev?.transactionHash ?? null, userOpHash:res.userOpHash}
-    }
-    catch(error){
-        console.log("transaction error :",error)
-        return {success:false,error:error}
+        return {
+            success: true,
+            transactionHash: ev?.transactionHash ?? null,
+            userOpHash: res.userOpHash,
+        };
+    } catch (error) {
+        console.log("transaction error :", error);
+        return { success: false, error: error };
     }
 }
 

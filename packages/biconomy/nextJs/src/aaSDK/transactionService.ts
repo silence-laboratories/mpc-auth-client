@@ -1,27 +1,22 @@
 import { providers } from "ethers";
-import { SilentWallet } from "@/silentWallet";
-import { getSilentShareStorage } from "@/mpc/storage/wallet";
 import { SupportedSigner, createSmartAccountClient } from "@biconomy/account";
-import * as store from "@/mpc/storage/account";
+import { MpcAuthenticator, MpcSigner } from "@silencelaboratories/mpc-sdk";
 
 export async function sendTransaction(
     recipientAddress: string,
-    amount: string
+    amount: string,
+    mpcAuth: MpcAuthenticator
 ) {
+    const eoa = mpcAuth.accountManager.getEoa();
+    if (!eoa) {
+        throw new Error("Eoa not found");
+    }
     const provider = new providers.JsonRpcProvider("https://rpc.sepolia.org");
-    const keyshards = getSilentShareStorage();
-    const distributedKey = keyshards.newPairingState?.distributedKey;
-    const client = new SilentWallet(
-        store.getEoa().address,
-        distributedKey?.publicKey ?? "",
-        distributedKey?.keyShareData,
-        { distributedKey },
-        provider
-    );
+    const client = await MpcSigner.instance(mpcAuth, provider);
 
     const biconomySmartAccount = await createSmartAccountClient({
         signer: client as SupportedSigner,
-        bundlerUrl:`https://bundler.biconomy.io/api/v2/11155111/${process.env.API_KEY}`,
+        bundlerUrl: `https://bundler.biconomy.io/api/v2/11155111/${process.env.API_KEY}`,
     });
 
     const requestData = {
@@ -34,7 +29,6 @@ export async function sendTransaction(
             requestData
         );
         const { transactionHash } = await userOpResponse.waitForTxHash();
-        console.log("Transaction Hash:", transactionHash);
         const userOpReceipt = await userOpResponse.wait();
         return { userOpReceipt, transactionHash };
     } catch (error) {

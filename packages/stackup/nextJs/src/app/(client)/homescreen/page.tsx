@@ -1,3 +1,5 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
@@ -8,28 +10,35 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { TextInput } from "@/components/textInput";
-import * as store from "@/mpc/storage/account";
 import { useRouter } from "next/navigation";
 import { formatEther } from "ethers/lib/utils";
-import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { Separator } from "@/components/separator";
 import { MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
-import { signOut } from "@/mpc";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { sendTransaction } from "@/aaSDK/transactionService";
 import Image from "next/image";
 import { SEPOLIA, WALLET_STATUS } from "@/constants";
 import Footer from "@/components/footer";
 import { RouteLoader } from "@/components/routeLoader";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
+import type { AccountData } from "@silencelaboratories/mpc-sdk";
+import {
+    clearOldEoa,
+    getOldEoa,
+    getPairingStatus,
+    setOldEoa,
+    setPairingStatus,
+} from "@/storage/localStorage";
 
 const Homescreen: React.FC = () => {
-    const oldEoa = store.getOldEoa();
+    const mpcAuth = useMpcAuth();
+    const oldEoa = getOldEoa();
     const router = useRouter();
-    const [walletAccount, setWalletAccount] = useState<store.accountType>();
+    const [walletAccount, setWalletAccount] = useState<AccountData>();
     const [walletBalance, setWalletBalance] = useState<string>("0");
-    const [eoa, setEoa] = useState<store.accountType>();
+    const [eoa, setEoa] = useState<string>();
     const [network, setNetwork] = useState("...");
     const [switchChain, setSwitchChain] = useState<"none" | "popup" | "button">(
         "none"
@@ -38,30 +47,59 @@ const Homescreen: React.FC = () => {
     const [isPasswordReady, setIsPasswordReady] = useState(false);
     const [openPasswordBackupDialog, setOpenPasswordBackupDialog] =
         useState(false);
-    const chainCheckRef = useRef(false);
-    const status = getWalletStatus();
-    useEffect(() => {
-        const account = store.getSmartContractAccount();
-        if (!account) {
-            setWalletStatus(WALLET_STATUS.BackedUp);
-            router.replace("/mint");
-            return;
-        }
-
-        const eoa = store.getEoa();
-        if (!eoa) {
-            setWalletStatus(WALLET_STATUS.Unpaired);
-            router.replace("/intro");
-            return;
-        }
-
-        setWalletStatus(WALLET_STATUS.Minted);
-        setWalletAccount(account);
-        setEoa(eoa);
-    }, [router, status]);
+    const [missingProvider, setMissingProvider] = useState(false);
+    const status = getPairingStatus();
 
     useEffect(() => {
-        if (!walletAccount || !eoa || chainCheckRef.current) return;
+        // @ts-ignore
+        if (!window.ethereum) {
+            setMissingProvider(true);
+            return;
+        }
+    }, []);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const isReady = await mpcAuth.accountManager.isPasswordReady();
+                setIsPasswordReady(isReady);
+            } catch (error) {
+                console.error("isPasswordReady error", error);
+            }
+        })();
+    }, [openPasswordBackupDialog]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const account =
+                    await mpcAuth.accountManager.getSmartContractAccount();
+                if (!account) {
+                    setPairingStatus(WALLET_STATUS.BackedUp);
+                    router.replace("/mint");
+                    return;
+                }
+
+                const eoa = await mpcAuth.accountManager.getEoa();
+                if (!eoa) {
+                    setPairingStatus(WALLET_STATUS.Unpaired);
+                    router.replace("/intro");
+                    return;
+                }
+
+                setPairingStatus(WALLET_STATUS.Minted);
+                setWalletAccount(account);
+                setEoa(eoa);
+            } catch (error) {
+                setPairingStatus(WALLET_STATUS.Unpaired);
+                router.replace("/intro");
+                return;
+            }
+        })();
+    }, [router]);
+
+    useEffect(() => {
+        if (!walletAccount || !eoa) return;
 
         const checkAndSwitchChain = async () => {
             const isSepolia = await isChainSepolia();
@@ -78,13 +116,6 @@ const Homescreen: React.FC = () => {
             if (isSepolia || didUserSwitch) {
                 setNetwork("Sepolia Test Network");
                 await updateBalance();
-                setWalletAccount({
-                    ...walletAccount,
-                });
-                setEoa({
-                    ...eoa,
-                });
-                chainCheckRef.current = true;
             }
         };
 
@@ -124,10 +155,8 @@ const Homescreen: React.FC = () => {
                 method: "wallet_addEthereumChain",
                 params: [SEPOLIA],
             });
-            if (true) {
-                setNetwork("Sepolia Test Network");
-                return true;
-            }
+            setNetwork("Sepolia Test Network");
+            return true;
         } catch (e: unknown) {
             console.log("switchToSepolia error", e);
             return false;
@@ -143,7 +172,7 @@ const Homescreen: React.FC = () => {
             const balance_wallet = await provider.getBalance(
                 walletAccount.address
             );
-            let balance_eoa = await provider.getBalance(eoa.address);
+            const balance_eoa = await provider.getBalance(eoa);
             setWalletBalance(formatEther(balance_wallet));
             return { balance_wallet, balance_eoa };
         } catch (error) {
@@ -165,10 +194,7 @@ const Homescreen: React.FC = () => {
     const [recipientAddressError, setRecipientAddressError] =
         useState<string>("");
     const [amountError, setAmountError] = useState<string>("");
-
-    useEffect(() => {
-        setIsPasswordReady(store.isPasswordReady());
-    }, [openPasswordBackupDialog]);
+    const [txHash, setTxHash] = useState<string>("");
 
     useEffect(() => {
         setIsSendValid(
@@ -205,9 +231,9 @@ const Homescreen: React.FC = () => {
         const isValidAmount = (
             amount: string
         ): { isValid: boolean; errorMsg: string } => {
-            const amountValue = parseFloat(amount);
+            const amountValue = Number.parseFloat(amount);
 
-            if (isNaN(amountValue)) {
+            if (Number.isNaN(amountValue)) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
             }
             if (amount.split(".")[1]?.length > 15) {
@@ -219,7 +245,7 @@ const Homescreen: React.FC = () => {
             if (amountValue < 0) {
                 return { isValid: false, errorMsg: "Invalid Amount" };
             }
-            if (amountValue > parseFloat(walletBalance)) {
+            if (amountValue > Number.parseFloat(walletBalance)) {
                 return { isValid: false, errorMsg: "Insufficient funds" };
             }
             if (!/^\d+(\.\d+)?$/.test(amount)) {
@@ -249,7 +275,11 @@ const Homescreen: React.FC = () => {
             setShowTransactionSignedBanner(false);
             setShowTransactionInitiatedBanner(true);
             try {
-                const result = await sendTransaction(recipientAddress, amount);
+                const result = await sendTransaction(
+                    recipientAddress,
+                    amount,
+                    mpcAuth
+                );
                 if (!result.transactionHash) {
                     setShowTransactionInitiatedBanner(false);
                     setShowTransactionfailBanner(true);
@@ -257,7 +287,7 @@ const Homescreen: React.FC = () => {
                 }
                 setShowTransactionSignedBanner(true);
                 setShowTransactionInitiatedBanner(false);
-                store.setTxHash(result.transactionHash);
+                setTxHash(result.transactionHash);
                 await updateBalance();
             } catch (error) {
                 setShowTransactionInitiatedBanner(false);
@@ -272,13 +302,15 @@ const Homescreen: React.FC = () => {
 
     const logout = (event: React.MouseEvent): void => {
         event.preventDefault();
-        signOut();
+        mpcAuth.signOut();
+        clearOldEoa();
+        setPairingStatus(WALLET_STATUS.Unpaired);
         router.push("/intro");
     };
 
     const handleRecover = () => {
         if (eoa) {
-            store.setOldEoa(eoa);
+            setOldEoa(eoa);
             router.push("/pair?repair=true");
         } // TODO: handle undefined eoa case
     };
@@ -340,12 +372,16 @@ const Homescreen: React.FC = () => {
                         padding: "32px 40px",
                     }}
                 >
-                    {(switchChain === "popup" || switchChain === "button") && (
+                    {(switchChain === "popup" ||
+                        switchChain === "button" ||
+                        missingProvider) && (
                         <div
                             className="text-center text-indigo-300 font-bold cursor-pointer"
                             onClick={onSwitchChainClick}
                         >
-                            Switch to Sepolia (Testnet) ...
+                            {missingProvider
+                                ? "Please install Metamask or your favorite ETH Wallet to continue"
+                                : " Switch to Sepolia (Testnet) ..."}
                         </div>
                     )}
                     {switchChain === "none" && (
@@ -373,10 +409,7 @@ const Homescreen: React.FC = () => {
                                 </div>
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
-                                    address={
-                                        walletAccount?.address ||
-                                        "Address not found"
-                                    }
+                                    address={walletAccount?.address || ""}
                                 />
 
                                 {
@@ -394,9 +427,7 @@ const Homescreen: React.FC = () => {
                                 </div>
                                 <AddressCopyPopover
                                     className="b2-regular text-[#0A0D14]"
-                                    address={
-                                        eoa?.address || "Address not found"
-                                    }
+                                    address={eoa ?? ""}
                                 />
 
                                 <div className="mt-4 rounded-full bg-[#E8EDF3] text-sm py-2 px-3 flex flex-row text-nowrap">
@@ -686,7 +717,7 @@ const Homescreen: React.FC = () => {
                                     <a
                                         href={
                                             "https://sepolia.etherscan.io/tx/" +
-                                            `${store.getTxHash()}`
+                                            `${txHash}`
                                         }
                                     >
                                         {" "}

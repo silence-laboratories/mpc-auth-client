@@ -1,29 +1,52 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { getWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
-import { cn, layoutClassName } from "@/utils/ui";
+import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
+import { BaseError } from "@silencelaboratories/mpc-sdk";
 
 function Page() {
+    const mpcAuth = useMpcAuth();
     const router = useRouter();
+
+    (async () => {
+        try {
+            const eoa = await mpcAuth.accountManager.getEoa();
+            const account =
+                await mpcAuth.accountManager.getSmartContractAccount();
+            if (eoa && !account) {
+                setPairingStatus(WALLET_STATUS.BackedUp);
+                router.replace("/mint");
+                return;
+            }
+            setPairingStatus(WALLET_STATUS.Minted);
+            router.replace("/homescreen");
+            return;
+        } catch (error) {
+            if (error instanceof BaseError) {
+                console.error(error.message);
+            }
+        }
+    })();
 
     const nextPageClick = () => {
         router.replace("/pair");
     };
-    
-    const status = getWalletStatus();
+
+    const status = getPairingStatus();
     if (status !== WALLET_STATUS.Unpaired) {
         return <RouteLoader />;
     }
     return (
-        <div
-            className={layoutClassName}
-        >
+        <div className={layoutClassName}>
             <div
                 className="text-black h2-bold"
                 style={{
@@ -34,7 +57,8 @@ function Page() {
                     letterSpacing: "0px",
                 }}
             >
-                Eliminate Single Points of failure with<br></br>
+                Eliminate Single Points of failure with
+                <b />
                 Distributed Smart Contract Accounts
             </div>
             <div
@@ -58,7 +82,7 @@ function Page() {
                 </span>{" "}
                 to enable a 2FA- like experience
             </div>
-            <br></br>
+            <br />
 
             <div className="flex items-center justify-center">
                 <Image

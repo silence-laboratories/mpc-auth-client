@@ -4,15 +4,11 @@
 import fs from "fs/promises";
 import path from "path";
 import prettier from "prettier";
-import { SilentWallet } from "../silentWallet";
-import { config } from "dotenv";
 import chalk from "chalk";
-
-config();
+import { generate } from "../mpc";
 
 const INIT_CONFIG = {
-  rpcUrl:
-    `https://api.stackup.sh/v1/node/${process.env.API_KEY}`,
+  rpcUrl: `https://api.stackup.sh/v1/node/${process.env.API_KEY}`,
   paymaster: {
     rpcUrl:
       "https://api.stackup.sh/v1/paymasterhttps://api.stackup.sh/v1/paymaster/32bbc56086c93278c34d5b3376a487e6b57147f052ec41688c1ad65bd984af7e",
@@ -22,9 +18,7 @@ const INIT_CONFIG = {
 const CONFIG_PATH = path.resolve(__dirname, "../config.json");
 
 async function main() {
-  // performKeygen()
-
-  const silentSigner = await SilentWallet.generate();
+  const silentSigner = await generate();
 
   return fs.writeFile(
     CONFIG_PATH,

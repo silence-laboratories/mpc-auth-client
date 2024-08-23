@@ -13,7 +13,7 @@ export enum PasswordInputErr {
     Short = "Password must be at least 8 characters",
     Confirm = "Confirm password is not match",
     NotAllowed = "Password is not allowed",
-    IncorrectPassword = "Incorrect password"
+    IncorrectPassword = "Incorrect password",
 }
 
 const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(

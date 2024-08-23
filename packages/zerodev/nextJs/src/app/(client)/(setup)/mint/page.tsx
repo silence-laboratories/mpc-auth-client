@@ -1,55 +1,82 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Progress } from "@/components/progress";
-import * as store from "@/mpc/storage/account";
-import { useRouter } from "next/navigation";
-import { clearWallet, getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
+import { useRouter, useSearchParams } from "next/navigation";
 import LoadingScreen from "@/components/loadingScreen";
-import { mintWallet } from "@/aaSDK/mintingService";
+import { mintZeroDevWallet } from "@/aaSDK/mintingService";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import {
+    clearOldEoa,
+    getPairingStatus,
+    setPairingStatus,
+} from "@/storage/localStorage";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
+import { BaseError } from "@silencelaboratories/mpc-sdk";
+
 function Page() {
-    const placeholderAccount = { address: "...", balance: 0 };
+    const mpcAuth = useMpcAuth();
     const [loading, setLoading] = useState<boolean>(false);
-    const [eoa, setEoa] = useState<store.accountType>(placeholderAccount);
+    const [eoa, setEoa] = useState<string | null>(null);
     const router = useRouter();
-    const status = getWalletStatus();
+    const query = useSearchParams();
+    const isRepairing = query.get("repair");
+    const status = getPairingStatus();
+
     useEffect(() => {
         if (status === WALLET_STATUS.Unpaired) {
             router.replace("/intro");
             return;
         }
-
-        setEoa(store.getEoa());
+        (async () => {
+            const val = await mpcAuth.accountManager.getEoa();
+            setEoa(val);
+        })();
     }, [router, status]);
 
     const handleMint = async () => {
         setLoading(true);
         try {
-            await mintWallet(eoa);
-            setLoading(true);
-            setWalletStatus(WALLET_STATUS.Minted);
-            router.replace("/homescreen");
+            if (eoa) {
+                await mintZeroDevWallet(mpcAuth);
+                setLoading(true);
+                clearOldEoa();
+                setPairingStatus(WALLET_STATUS.Minted);
+                router.replace("/homescreen");
+            } else {
+                console.log("Eoa not found.");
+                setLoading(false);
+            }
         } catch (error) {
-            console.log("Minting failed.", error);
+            if (error instanceof BaseError) {
+                console.error(error.message);
+            }
             setLoading(false);
         }
     };
 
     const handleMoveBack = () => {
-        clearWallet();
-        setWalletStatus(WALLET_STATUS.Unpaired);
-        router.replace("/intro");
-    }
+        clearOldEoa();
+        if (isRepairing) {
+            setPairingStatus(WALLET_STATUS.Minted);
+            router.replace("/homescreen");
+        } else {
+            mpcAuth.signOut();
+            setPairingStatus(WALLET_STATUS.Unpaired);
+            router.replace("/intro");
+        }
+    };
 
-    
     if (status !== WALLET_STATUS.BackedUp) {
         return <RouteLoader />;
     }
+
     return (
         <div className={layoutClassName}>
             <div className="absolute w-full top-0 right-0">
@@ -119,7 +146,7 @@ function Page() {
 
                             <div className="flex flex-col">
                                 <AddressCopyPopover
-                                    address={eoa.address}
+                                    address={eoa}
                                     className="text-[black] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                                 />
                             </div>

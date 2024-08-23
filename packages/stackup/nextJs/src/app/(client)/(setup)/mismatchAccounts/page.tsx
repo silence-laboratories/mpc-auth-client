@@ -2,21 +2,35 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/button";
-import * as store from "@/mpc/storage/account";
+
 import { useRouter } from "next/navigation";
-import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { AddressCopyPopover } from "@/components/addressCopyPopover";
 import Image from "next/image";
 import { WALLET_STATUS } from "@/constants";
 import { layoutClassName } from "@/utils/ui";
 import { RouteLoader } from "@/components/routeLoader";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
+import {
+    getOldEoa,
+    getPairingStatus,
+    setPairingStatus,
+} from "@/storage/localStorage";
 function Page() {
+    const mpcAuth = useMpcAuth();
     const router = useRouter();
-    const oldEoa = store.getOldEoa();
-    const eoa = store.getEoa();
+    const oldEoa = getOldEoa() ?? "";
+    const [eoa, setEoa] = useState<string>("");
     const [showHeadsUp, setShowHeadsUp] = useState(false);
     const [isAgree, setIsAgree] = useState(false);
+
+    useEffect(() => {
+        (async () => {
+            const val = (await mpcAuth.accountManager.getEoa()) ?? "";
+            setEoa(val);
+        })();
+    }, [mpcAuth.accountManager.getEoa]);
 
     const handleRestoreAccount = async () => {
         if (!showHeadsUp) {
@@ -24,9 +38,8 @@ function Page() {
         } else {
             if (isAgree) {
                 try {
-                    setWalletStatus(WALLET_STATUS.BackedUp);
+                    setPairingStatus(WALLET_STATUS.BackedUp);
                     router.replace("/mint");
-                    store.clearOldAccount();
                 } catch (err) {
                     console.error(err);
                 }
@@ -40,7 +53,7 @@ function Page() {
     };
 
     const handleCancelRestoration = () => {
-        setWalletStatus(WALLET_STATUS.Minted);
+        setPairingStatus(WALLET_STATUS.Minted);
         router.push("/pair?repair=true");
     };
 
@@ -50,7 +63,7 @@ function Page() {
             : ``;
     };
 
-    const status = getWalletStatus();
+    const status = getPairingStatus();
     if (status !== WALLET_STATUS.Mismatched) {
         return <RouteLoader />;
     }
@@ -111,11 +124,11 @@ function Page() {
                                 <li>
                                     Restoring new account{" "}
                                     <span className="text-[#DC2626] b2-bold rounded-[3px] p-[2px]">
-                                        {briefAddress(eoa?.address)}
+                                        {briefAddress(eoa)}
                                     </span>{" "}
                                     will replace the existing account
                                     <span className="text-[#DC2626] b2-bold rounded-[3px] p-[2px]">
-                                        {briefAddress(oldEoa?.address)}
+                                        {briefAddress(oldEoa)}
                                     </span>
                                 </li>
                                 <li>
@@ -167,7 +180,7 @@ function Page() {
                                 Currently active account on the browser:
                             </span>
                             <AddressCopyPopover
-                                address={oldEoa?.address}
+                                address={oldEoa}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>
@@ -176,7 +189,7 @@ function Page() {
                                 Account that you are trying to restore:
                             </span>
                             <AddressCopyPopover
-                                address={eoa?.address}
+                                address={eoa}
                                 className="text-[#FDD147] rounded-[5px] py-[3px] pl-[10px] pr-[7px]"
                             />
                         </div>
@@ -189,7 +202,7 @@ function Page() {
                                 Return to your mobile and try again by selecting
                                 the backup file for the existing account{" "}
                                 <span className="b2-bold">
-                                    {briefAddress(oldEoa?.address)}
+                                    {briefAddress(oldEoa)}
                                 </span>
                                 , or
                             </li>
@@ -197,7 +210,7 @@ function Page() {
                                 Proceed with restoring the newly selected
                                 account{" "}
                                 <span className="b2-bold">
-                                    {briefAddress(eoa?.address)}
+                                    {briefAddress(eoa)}
                                 </span>
                             </li>
                         </ul>
@@ -239,9 +252,7 @@ function Page() {
                     disabled={showHeadsUp && !isAgree}
                 >
                     Restore account
-                    <span className="b2-bold ml-1">
-                        {briefAddress(eoa?.address)}
-                    </span>
+                    <span className="b2-bold ml-1">{briefAddress(eoa)}</span>
                 </Button>
             </div>
         </div>

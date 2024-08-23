@@ -1,3 +1,6 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -6,8 +9,8 @@ import Image from "next/image";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Silence x pimlico AA Wallet Demo",
-    description: "Silence x pimlico AA Wallet Demo",
+    title: "Silence x Pimlico AA Wallet Demo",
+    description: "Silence x Pimlico AA Wallet Demo",
 };
 
 export default function RootLayout({
@@ -27,8 +30,8 @@ export default function RootLayout({
                                     src="/slxpimlico.svg"
                                     alt="logo 1"
                                     className="mr-10"
-                                    width="213"
-                                    height="32"
+                                    width="237"
+                                    height="33"
                                 />
                                 <Image
                                     priority={true}

@@ -1,3 +1,5 @@
+// Copyright (c) Silence Laboratories Pte. Ltd.
+// This software is licensed under the Silence Laboratories License Agreement.
 "use client";
 
 import React from "react";
@@ -6,23 +8,19 @@ import { Progress } from "@/components/progress";
 import { useRouter } from "next/navigation";
 
 import { PasswordBackupScreen } from "@/components/password/passwordBackupScreen";
-import { getWalletStatus, setWalletStatus } from "@/mpc/storage/wallet";
 import { WALLET_STATUS } from "@/constants";
-import { isPasswordReady } from "@/mpc/storage/account";
 import { RouteLoader } from "@/components/routeLoader";
 import { layoutClassName } from "@/utils/ui";
-
-
+import { getPairingStatus, setPairingStatus } from "@/storage/localStorage";
 
 function Page() {
     const router = useRouter();
-    
     const moveToNext = () => {
-        setWalletStatus(WALLET_STATUS.BackedUp);
+        setPairingStatus(WALLET_STATUS.BackedUp);
         router.replace("/afterBackup");
     };
-    const status = getWalletStatus();
-    if (status !== WALLET_STATUS.Paired || isPasswordReady()) {
+    const status = getPairingStatus();
+    if (status !== WALLET_STATUS.Paired) {
         return <RouteLoader />;
     }
     return (

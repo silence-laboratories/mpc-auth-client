@@ -8,8 +8,7 @@ import { Button } from "../ui/button";
 import { checkPassword } from "@/utils/password";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
-import { runBackup } from "@/mpc";
-import { setPasswordReady } from "@/mpc/storage/account";
+import { useMpcAuth } from "@/hooks/useMpcAuth";
 
 export type PasswordBackupScreenProps = {
     onProceed?: () => void;
@@ -22,6 +21,7 @@ export function PasswordBackupScreen({
     onTakeRisk,
     showSkipButton = true,
 }: PasswordBackupScreenProps) {
+    const mpcAuth = useMpcAuth();
     const [currentPassword, setCurrentPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
     const [passwordErr, setPasswordErr] = useState<PasswordInputErr>();
@@ -72,6 +72,12 @@ export function PasswordBackupScreen({
         } else {
             setPasswordErr(undefined);
         }
+
+        if (currentPassword !== passwordConfirmation) {
+            setPasswordConfirmErr(PasswordInputErr.Confirm);
+        } else {
+            setPasswordConfirmErr(undefined);
+        }
     };
 
     const handleConfirmPwdOnBlur = () => {
@@ -95,9 +101,9 @@ export function PasswordBackupScreen({
             return;
         }
         try {
-            await runBackup(currentPassword);
+            await mpcAuth.runBackup(currentPassword);
             onProceed?.();
-            setPasswordReady();
+            mpcAuth.accountManager.setPasswordReady();
         } catch (error) {
             // TODO: Handle error
             console.error(error);
@@ -109,7 +115,7 @@ export function PasswordBackupScreen({
     };
 
     const handleTakeRisk = () => {
-        runBackup("");
+        mpcAuth.runBackup("");
         onTakeRisk?.();
     };
 

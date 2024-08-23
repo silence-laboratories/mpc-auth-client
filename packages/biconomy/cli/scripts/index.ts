@@ -1,15 +1,12 @@
-
-
 // Copyright (c) Silence Laboratories Pte. Ltd.
 // This software is licensed under the Silence Laboratories License Agreement.
 
 import yargs from "yargs";
 import chalk from "chalk";
-import { hideBin } from 'yargs/helpers';
+import { hideBin } from "yargs/helpers";
 import { init } from "./init";
 import { getAddress } from "./address";
 import { nativeTransferPayERC20 } from "./erc20/nativeTransfer";
-
 
 const argv = yargs(hideBin(process.argv))
   .scriptName(chalk.green("smartAccount"))
@@ -28,7 +25,7 @@ const argv = yargs(hideBin(process.argv))
     },
     ({ network }) => {
       console.log(
-        chalk.magenta(`Initializing config for ${network || 'default'} network`)
+        chalk.magenta(`Initializing config for ${network || "default"} network`)
       );
       init(network || "");
     }
@@ -58,14 +55,11 @@ const argv = yargs(hideBin(process.argv))
       },
     },
     ({ amount, to, mode }) => {
-      console.log(
-        chalk.magenta(`Transferring ${amount} ether to ${to}...`)
-      );
+      console.log(chalk.magenta(`Transferring ${amount} ether to ${to}...`));
       nativeTransferPayERC20(to, Number(amount));
     }
   )
 
-  
   .help()
   .parse();
 
