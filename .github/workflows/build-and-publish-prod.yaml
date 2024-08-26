@@ -82,7 +82,7 @@ jobs:
             ln -sf /opt/service/update/packages/stackup/nextJs /opt/service/stackup
             if [ -d "/opt/service/stackup/node_modules" ]; then rm -Rf /opt/service/stackup/node_modules; fi
             ln -sf /opt/service/update/node_modules /opt/service/stackup/
-       - run: |
+      - run: |
             if [ -d "/opt/service/pimlico" ]; then rm -Rf /opt/service/pimlico; fi
             ln -sf /opt/service/update/packages/pimlico/nextJs /opt/service/pimlico
             if [ -d "/opt/service/pimlico/node_modules" ]; then rm -Rf /opt/service/pimlico/node_modules; fi
