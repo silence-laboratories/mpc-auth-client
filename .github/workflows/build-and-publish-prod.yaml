@@ -8,10 +8,11 @@ on:
   pull_request:
     branches: ['main']
     types:
-      [closed]
+      [opened, closed]
 
 jobs:
   build:
+    if: ${{ github.event.action }} == 'opened'
     runs-on: mpc-account-abstraction-sdk-builder
     steps:
       - name: Checkout repository
@@ -56,8 +57,9 @@ jobs:
           path: ./biconomy-stackup.7z
           
   deploy-prod:
-    runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
+    if: ${{ github.event.pull_request.merged }}
     needs: build
+    runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
