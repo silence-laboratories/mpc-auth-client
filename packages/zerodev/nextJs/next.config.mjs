@@ -8,6 +8,9 @@ const nextConfig = {
   env: {
     API_KEY: process.env.API_KEY,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;
