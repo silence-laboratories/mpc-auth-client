@@ -1,8 +1,8 @@
-name: build-and-publish--biconomy-and-stackup
+name: build-and-publish--clientSdk
 
 on:
   push:
-    branches: ['staging', 'CI/CD']
+    branches: ['staging']
   # we can also trigger manually in case needed
   workflow_dispatch:
   pull_request:
@@ -33,16 +33,27 @@ jobs:
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
           popd
+          pushd packages/pimlico/nextJs
+          echo "API_KEY=${{ secrets.PIMLICO_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+          npm run build
+          popd
+          pushd packages/zerodev/nextJs
+          echo "API_KEY=${{ secrets.ZERODEV_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+          npm run build
+          popd
+
 
       - name: Build artifact
         run: |
-          /usr/bin/7z a ./biconomy-stackup.7z ./*
+          /usr/bin/7z a ./clientSdk.7z ./*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: biconomy-stackup
-          path: ./biconomy-stackup.7z
+          name: clientSdk
+          path: ./clientSdk.7z
           
   deploy-staging:
     if: ${{ github.event.pull_request.merged }}
@@ -52,13 +63,13 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: biconomy-stackup
+          name: clientSdk
           path: ./
       - run: |
             if [ -d "/opt/service/update" ]; then rm -Rf /opt/service/update; fi 
             mkdir /opt/service/update/
-            mv ./biconomy-stackup.7z /opt/service/update/
-            cd /opt/service/update/ && 7z x biconomy-stackup.7z
+            mv ./clientSdk.7z /opt/service/update/
+            cd /opt/service/update/ && 7z x clientSdk.7z
             cd /opt/service/update && npm i
 
       - run: |
@@ -71,6 +82,16 @@ jobs:
             ln -sf /opt/service/update/packages/stackup/nextJs /opt/service/stackup
             if [ -d "/opt/service/stackup/node_modules" ]; then rm -Rf /opt/service/stackup/node_modules; fi
             ln -sf /opt/service/update/node_modules /opt/service/stackup/
-      - run: sudo systemctl restart biconomy.service stackup.service
+      - run: |
+            if [ -d "/opt/service/pimlico" ]; then rm -Rf /opt/service/pimlico; fi
+            ln -sf /opt/service/update/packages/pimlico/nextJs /opt/service/pimlico
+            if [ -d "/opt/service/pimlico/node_modules" ]; then rm -Rf /opt/service/pimlico/node_modules; fi
+            ln -sf /opt/service/update/node_modules /opt/service/pimlico/
+      - run: |
+            if [ -d "/opt/service/zerodev" ]; then rm -Rf /opt/service/zerodev; fi
+            ln -sf /opt/service/update/packages/zerodev/nextJs /opt/service/zerodev
+            if [ -d "/opt/service/zerodev/node_modules" ]; then rm -Rf /opt/service/zerodev/node_modules; fi
+            ln -sf /opt/service/update/node_modules /opt/service/zerodev/
+      - run: sudo systemctl restart biconomy.service stackup.service pimlico.service zerodev.service
 
           
