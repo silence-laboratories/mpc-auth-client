@@ -43,7 +43,11 @@ jobs:
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
           popd
-
+          pushd packages/alchemy/nextJs
+          echo "API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env
+          npm run build
+          popd
 
       - name: Build artifact
         run: |
@@ -92,6 +96,12 @@ jobs:
             ln -sf /opt/service/update/packages/zerodev/nextJs /opt/service/zerodev
             if [ -d "/opt/service/zerodev/node_modules" ]; then rm -Rf /opt/service/zerodev/node_modules; fi
             ln -sf /opt/service/update/node_modules /opt/service/zerodev/
-      - run: sudo systemctl restart biconomy.service stackup.service pimlico.service zerodev.service
+      - run: |
+            if [ -d "/opt/service/alchemy" ]; then rm -Rf /opt/service/alchemy; fi
+            ln -sf /opt/service/update/packages/alchemy/nextJs /opt/service/alchemy
+            if [ -d "/opt/service/alchemy/node_modules" ]; then rm -Rf /opt/service/alchemy/node_modules; fi
+            ln -sf /opt/service/update/node_modules /opt/service/alchemy/
+
+      - run: sudo systemctl restart biconomy.service stackup.service pimlico.service zerodev.service alchemy.service
 
           
