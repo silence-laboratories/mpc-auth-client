@@ -60,7 +60,7 @@ jobs:
           path: ./clientSdk.7z
           
   deploy-staging:
-    if: ${{ github.event.pull_request.merged }}
+    # if: ${{ github.event.pull_request.merged }}
     needs: build
     runs-on: mpc-account-abstraction-sdk-stage-deployer-asia
     steps:
