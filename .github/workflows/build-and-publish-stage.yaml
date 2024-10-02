@@ -19,6 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           curl ifconfig.me
+          ip a
       #     npm i
       #     pushd packages/mpc
       #     npm run test
