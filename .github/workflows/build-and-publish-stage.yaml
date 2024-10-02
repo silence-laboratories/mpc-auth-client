@@ -23,7 +23,7 @@ jobs:
           npm run test
           npm run build
           popd
-          pushd packages/ /nextJs 
+          pushd packages/biconomy/nextJs 
           echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
