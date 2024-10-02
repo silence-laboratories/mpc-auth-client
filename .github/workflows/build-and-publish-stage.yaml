@@ -12,45 +12,42 @@ on:
 jobs:
   build:
     if: ${{ github.event.action }} == 'opened'
-    runs-on: mpc-account-abstraction-sdk-builder
+    runs-on: mpc-auth-client-builder
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          curl ifconfig.me
-          ip a
-          uname -a
-      #     npm i
-      #     pushd packages/mpc
-      #     npm run test
-      #     npm run build
-      #     popd
-      #     pushd packages/biconomy/nextJs 
-      #     echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env
-      #     echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
-      #     npm run build
-      #     popd 
-      #     pushd packages/stackup/nextJs
-      #     echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env
-      #     echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
-      #     npm run build
-      #     popd
-      #     pushd packages/pimlico/nextJs
-      #     echo "API_KEY=${{ secrets.PIMLICO_API_KEY }}" >> .env
-      #     echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
-      #     npm run build
-      #     popd
-      #     pushd packages/zerodev/nextJs
-      #     echo "API_KEY=${{ secrets.ZERODEV_API_KEY }}" >> .env
-      #     echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
-      #     npm run build
-      #     popd
-      #     pushd packages/alchemy/nextJs
-      #     echo "API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
-      #     echo "NEXT_PUBLIC_SDK_MODE=development" >> .env
-      #     npm run build
-      #     popd
+          npm i
+          pushd packages/mpc
+          npm run test
+          npm run build
+          popd
+          pushd packages/ /nextJs 
+          echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+          npm run build
+          popd 
+          pushd packages/stackup/nextJs
+          echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+          npm run build
+          popd
+          pushd packages/pimlico/nextJs
+          echo "API_KEY=${{ secrets.PIMLICO_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+          npm run build
+          popd
+          pushd packages/zerodev/nextJs
+          echo "API_KEY=${{ secrets.ZERODEV_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+          npm run build
+          popd
+          pushd packages/alchemy/nextJs
+          echo "API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env
+          npm run build
+          popd
 
       # - name: Build artifact
       #   run: |
