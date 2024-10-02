@@ -51,6 +51,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
+          include-hidden-files: true
           name: clientSdk
           path: ./*
           
