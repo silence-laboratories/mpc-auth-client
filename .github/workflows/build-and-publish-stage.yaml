@@ -20,6 +20,7 @@ jobs:
         run: |
           curl ifconfig.me
           ip a
+          uname -a
       #     npm i
       #     pushd packages/mpc
       #     npm run test
