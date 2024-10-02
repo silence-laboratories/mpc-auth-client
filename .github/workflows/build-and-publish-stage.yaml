@@ -48,16 +48,11 @@ jobs:
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env
           npm run build
           popd
-
-      - name: Build artifact
-        run: |
-          /usr/bin/7z a ./clientSdk.7z ./*
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: clientSdk
-          path: ./clientSdk.7z
+          path: ./*
           
   deploy-staging:
     # if: ${{ github.event.pull_request.merged }}
@@ -72,8 +67,8 @@ jobs:
       - run: |
             if [ -d "/opt/service/update" ]; then rm -Rf /opt/service/update; fi 
             mkdir /opt/service/update/
-            mv ./clientSdk.7z /opt/service/update/
-            cd /opt/service/update/ && 7z x clientSdk.7z
+            mv ./* /opt/service/update/
+            # cd /opt/service/update/ && 7z x clientSdk.7z
 
       - run: |
             if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
