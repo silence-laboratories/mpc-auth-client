@@ -3,7 +3,6 @@ name: build-and-publish--clientSdk
 on:
   push:
     branches: ['main']
-  # we can also trigger manually in case needed
   workflow_dispatch:
   pull_request:
     branches: ['main']
@@ -11,8 +10,8 @@ on:
       [opened, closed]
 jobs:
   build:
-    if: ${{ github.event.action }} == 'opened'
-    runs-on: mpc-account-abstraction-sdk-builder
+    #if: ${{ github.event.action }} == 'opened'
+    runs-on: mpc-auth-client-builder
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,43 +24,35 @@ jobs:
           popd
           pushd packages/biconomy/nextJs 
           echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env
-          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
           popd 
           pushd packages/stackup/nextJs
           echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env
-          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
           popd
           pushd packages/pimlico/nextJs
           echo "API_KEY=${{ secrets.PIMLICO_API_KEY }}" >> .env
-          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
           popd
           pushd packages/zerodev/nextJs
           echo "API_KEY=${{ secrets.ZERODEV_API_KEY }}" >> .env
-          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
           npm run build
           popd
           pushd packages/alchemy/nextJs
           echo "API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
-          echo "NEXT_PUBLIC_SDK_MODE=development" >> .env
           npm run build
           popd
-
-
-      - name: Build artifact
-        run: |
-          /usr/bin/7z a ./clientSdk.7z ./*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
+          include-hidden-files: true
           name: clientSdk
-          path: ./clientSdk.7z
+          path: ./*
+          
           
   deploy-prod:
-    if: ${{ github.event.pull_request.merged }}
+    #if: ${{ github.event.pull_request.merged }}
     needs: build
     runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
     steps:
@@ -73,9 +64,7 @@ jobs:
       - run: |
             if [ -d "/opt/service/update" ]; then rm -Rf /opt/service/update; fi 
             mkdir /opt/service/update/
-            mv ./clientSdk.7z /opt/service/update/
-            cd /opt/service/update/ && 7z x clientSdk.7z
-            cd /opt/service/update && npm i
+            mv ./* /opt/service/update/
 
       - run: |
             if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
