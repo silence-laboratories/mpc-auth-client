@@ -6,8 +6,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches: ['stage']
-    types:
-      [opened, closed]
+
 jobs:
   build:
     #if: ${{ github.event.action }} == 'opened'

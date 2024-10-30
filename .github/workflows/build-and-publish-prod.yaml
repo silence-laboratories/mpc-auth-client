@@ -6,8 +6,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches: ['main']
-    types:
-      [opened, closed]
+
 jobs:
   build:
     runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
