@@ -69,7 +69,6 @@ jobs:
             if [ -d "/opt/service/update" ]; then rm -Rf /opt/service/update; fi 
             mkdir /opt/service/update/
             mv ./* /opt/service/update/
-            # cd /opt/service/update/ && 7z x clientSdk.7z
 
       - run: |
             if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
