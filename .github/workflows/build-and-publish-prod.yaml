@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     #if: ${{ github.event.action }} == 'opened'
-    runs-on: mpc-auth-client-builder
+    runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
