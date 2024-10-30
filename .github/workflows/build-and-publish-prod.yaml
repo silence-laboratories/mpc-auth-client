@@ -3,7 +3,6 @@ name: build-and-publish--clientSdk
 on:
   push:
     branches: ['main']
-  # we can also trigger manually in case needed
   workflow_dispatch:
   pull_request:
     branches: ['main']
@@ -11,8 +10,7 @@ on:
       [opened, closed]
 jobs:
   build:
-    if: ${{ github.event.action }} == 'opened'
-    runs-on: mpc-auth-client-builder
+    runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,59 +41,8 @@ jobs:
           echo "API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
           npm run build
           popd
-
-
-      - name: Build artifact
-        run: |
-          /usr/bin/7z a ./clientSdk.7z ./*
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: clientSdk
-          path: ./clientSdk.7z
-          
-  deploy-prod:
-    if: ${{ github.event.pull_request.merged }}
-    needs: build
-    runs-on: mpc-account-abstraction-sdk-stage-deployer-prod
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: clientSdk
-          path: ./
-      - run: |
-            if [ -d "/opt/service/update" ]; then rm -Rf /opt/service/update; fi 
-            mkdir /opt/service/update/
-            mv ./* /opt/service/update/
-
-      - run: |
-            if [ -d "/opt/service/biconomy" ]; then rm -Rf /opt/service/biconomy; fi
-            ln -sf /opt/service/update/packages/biconomy/nextJs /opt/service/biconomy
-            if [ -d "/opt/service/biconomy/node_modules" ]; then rm -Rf /opt/service/biconomy/node_modules; fi
-            ln -sf /opt/service/update/node_modules /opt/service/biconomy/
-      - run: |
-            if [ -d "/opt/service/stackup" ]; then rm -Rf /opt/service/stackup; fi
-            ln -sf /opt/service/update/packages/stackup/nextJs /opt/service/stackup
-            if [ -d "/opt/service/stackup/node_modules" ]; then rm -Rf /opt/service/stackup/node_modules; fi
-            ln -sf /opt/service/update/node_modules /opt/service/stackup/
-      - run: |
-            if [ -d "/opt/service/pimlico" ]; then rm -Rf /opt/service/pimlico; fi
-            ln -sf /opt/service/update/packages/pimlico/nextJs /opt/service/pimlico
-            if [ -d "/opt/service/pimlico/node_modules" ]; then rm -Rf /opt/service/pimlico/node_modules; fi
-            ln -sf /opt/service/update/node_modules /opt/service/pimlico/
-      - run: |
-            if [ -d "/opt/service/zerodev" ]; then rm -Rf /opt/service/zerodev; fi
-            ln -sf /opt/service/update/packages/zerodev/nextJs /opt/service/zerodev
-            if [ -d "/opt/service/zerodev/node_modules" ]; then rm -Rf /opt/service/zerodev/node_modules; fi
-            ln -sf /opt/service/update/node_modules /opt/service/zerodev/
-      - run: |
-            if [ -d "/opt/service/alchemy" ]; then rm -Rf /opt/service/alchemy; fi
-            ln -sf /opt/service/update/packages/alchemy/nextJs /opt/service/alchemy
-            if [ -d "/opt/service/alchemy/node_modules" ]; then rm -Rf /opt/service/alchemy/node_modules; fi
-            ln -sf /opt/service/update/node_modules /opt/service/alchemy/
-
+          if [ -d "/opt/service/mpc-auth-client" ]; then rm -Rf mpc-auth-client; fi 
+          cp -r ../mpc-auth-client /opt/service/
       - run: sudo systemctl restart biconomy.service stackup.service pimlico.service zerodev.service alchemy.service
 
           
