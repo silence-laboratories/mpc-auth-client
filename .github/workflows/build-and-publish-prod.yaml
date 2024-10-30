@@ -43,16 +43,13 @@ jobs:
           npm run build
           popd
 
-
-      - name: Build artifact
-        run: |
-          /usr/bin/7z a ./clientSdk.7z ./*
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
+          include-hidden-files: true
           name: clientSdk
-          path: ./clientSdk.7z
+          path: ./*
+          
           
   deploy-prod:
     if: ${{ github.event.pull_request.merged }}
