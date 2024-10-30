@@ -43,7 +43,7 @@ jobs:
           npm run build
           popd
           if [ -d "/opt/service/mpc-auth-client" ]; then rm -Rf mpc-auth-client; fi 
-          mv ../mpc-auth-client /opt/service/
+          cp -r ../mpc-auth-client /opt/service/
       - run: sudo systemctl restart biconomy.service stackup.service pimlico.service zerodev.service alchemy.service
 
           
