@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   biconomy:
-    image: mpc-auth-client
+    image: ghcr.io/silence-laboratories/mpc-auth-client:prod
     container_name: biconomy_service
     environment:
       - SERVICE_NAME=biconomy
@@ -10,7 +10,7 @@ services:
       - "3000:3000"
 
   stackup:
-    image: mpc-auth-client
+    image: ghcr.io/silence-laboratories/mpc-auth-client:prod
     container_name: stackup_service
     environment:
       - SERVICE_NAME=stackup
@@ -18,7 +18,7 @@ services:
       - "3001:3000"
 
   pimlico:
-    image: mpc-auth-client
+    image: ghcr.io/silence-laboratories/mpc-auth-client:prod
     container_name: pimlico_service
     environment:
       - SERVICE_NAME=pimlico
@@ -26,7 +26,7 @@ services:
       - "3002:3000"
 
   zerodev:
-    image: mpc-auth-client
+    image: ghcr.io/silence-laboratories/mpc-auth-client:prod
     container_name: zerodev_service
     environment:
       - SERVICE_NAME=zerodev
@@ -34,7 +34,7 @@ services:
       - "3003:3000"
 
   alchemy:
-    image: mpc-auth-client
+    image: ghcr.io/silence-laboratories/mpc-auth-client:prod
     container_name: alchemy_service
     environment:
       - SERVICE_NAME=alchemy
