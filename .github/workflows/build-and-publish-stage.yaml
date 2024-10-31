@@ -9,46 +9,97 @@ on:
     types:
       [opened, closed]
 jobs:
-  build:
-    #if: ${{ github.event.action }} == 'opened'
-    runs-on: mpc-account-abstraction-sdk-stage-deployer-asia
+  build-and-push:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install dependencies
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set environment files
         run: |
-          npm i
-          pushd packages/mpc
-          npm run test
-          npm run build
-          popd
-          pushd packages/biconomy/nextJs 
+          pushd packages/biconomy/nextJs
           echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
-          npm run build
-          popd 
+          popd
+
           pushd packages/stackup/nextJs
           echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
-          npm run build
           popd
+
           pushd packages/pimlico/nextJs
           echo "API_KEY=${{ secrets.PIMLICO_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
-          npm run build
           popd
+
           pushd packages/zerodev/nextJs
           echo "API_KEY=${{ secrets.ZERODEV_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
-          npm run build
           popd
+
           pushd packages/alchemy/nextJs
           echo "API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env
-          npm run build
           popd
-          if [ -d "/opt/service/mpc-auth-client" ]; then rm -Rf mpc-auth-client; fi 
-          cp -r ../mpc-auth-client /opt/service/
-      - run: sudo systemctl restart biconomy.service stackup.service pimlico.service zerodev.service alchemy.service
+          
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/silence-laboratories/mpc-auth-client:latest
+            ghcr.io/silence-laboratories/mpc-auth-client:${{ github.sha }}
+    # #if: ${{ github.event.action }} == 'opened'
+    # runs-on: mpc-account-abstraction-sdk-stage-deployer-asia
+    # steps:
+    #   - name: Checkout repository
+    #     uses: actions/checkout@v4
+    #   - name: Install dependencies
+    #     run: |
+    #       npm i
+    #       pushd packages/mpc
+    #       npm run test
+    #       npm run build
+    #       popd
+    #       pushd packages/biconomy/nextJs 
+    #       echo "API_KEY=${{ secrets.BICONOMY_API_KEY }}" >> .env
+    #       echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+    #       npm run build
+    #       popd 
+    #       pushd packages/stackup/nextJs
+    #       echo "API_KEY=${{ secrets.STACKUP_API_KEY }}" >> .env
+    #       echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+    #       npm run build
+    #       popd
+    #       pushd packages/pimlico/nextJs
+    #       echo "API_KEY=${{ secrets.PIMLICO_API_KEY }}" >> .env
+    #       echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+    #       npm run build
+    #       popd
+    #       pushd packages/zerodev/nextJs
+    #       echo "API_KEY=${{ secrets.ZERODEV_API_KEY }}" >> .env
+    #       echo "NEXT_PUBLIC_SDK_MODE=development" >> .env 
+    #       npm run build
+    #       popd
+    #       pushd packages/alchemy/nextJs
+    #       echo "API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
+    #       echo "NEXT_PUBLIC_SDK_MODE=development" >> .env
+    #       npm run build
+    #       popd
+    #       if [ -d "/opt/service/mpc-auth-client" ]; then rm -Rf mpc-auth-client; fi 
+    #       cp -r ../mpc-auth-client /opt/service/
+    #   - run: sudo systemctl restart biconomy.service stackup.service pimlico.service zerodev.service alchemy.service
 
           
