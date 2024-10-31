@@ -68,5 +68,5 @@ jobs:
           password: ${{ secrets.TOKEN }}
       - name: Checkout repository
         uses: actions/checkout@v4
-      - run: docker compose -f compose.yml pull  
+      - run: docker pull ghcr.io/silence-laboratories/mpc-auth-client:prod
       - run: docker compose -f compose.yml up -d 
