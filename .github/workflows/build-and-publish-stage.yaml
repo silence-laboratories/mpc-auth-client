@@ -2,7 +2,7 @@ name: build-and-publish--clientSdk
 
 on:
   push:
-    branches: ['stage']
+    branches: ['stage', "CI/CD_test"]
   workflow_dispatch:
   pull_request:
     branches: ['stage']
@@ -52,7 +52,7 @@ jobs:
           echo "API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_SDK_MODE=development" >> .env
           popd
-          
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
