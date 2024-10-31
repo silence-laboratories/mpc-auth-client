@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  biconomy:
+    image: ghcr.io/silence-laboratories/mpc-auth-client:staging
+    container_name: biconomy_service
+    environment:
+      - SERVICE_NAME=biconomy
+    ports:
+      - "3000:3000"
+
+  stackup:
+    image: ghcr.io/silence-laboratories/mpc-auth-client:staging
+    container_name: stackup_service
+    environment:
+      - SERVICE_NAME=stackup
+    ports:
+      - "3001:3000"
+
+  pimlico:
+    image: ghcr.io/silence-laboratories/mpc-auth-client:staging
+    container_name: pimlico_service
+    environment:
+      - SERVICE_NAME=pimlico
+    ports:
+      - "3002:3000"
+
+  zerodev:
+    image: ghcr.io/silence-laboratories/mpc-auth-client:staging
+    container_name: zerodev_service
+    environment:
+      - SERVICE_NAME=zerodev
+    ports:
+      - "3003:3000"
+
+  alchemy:
+    image: ghcr.io/silence-laboratories/mpc-auth-client:staging
+    container_name: alchemy_service
+    environment:
+      - SERVICE_NAME=alchemy
+    ports:
+      - "3004:3000"
