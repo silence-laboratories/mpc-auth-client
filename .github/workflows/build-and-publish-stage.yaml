@@ -60,7 +60,6 @@ jobs:
           push: true
           tags: |
             ghcr.io/silence-laboratories/mpc-auth-client:staging
-            ghcr.io/silence-laboratories/mpc-auth-client:${{ github.sha }}
 
   pull_and_deploy:
     runs-on: mpc-account-abstraction-sdk-stage-deployer-asia
