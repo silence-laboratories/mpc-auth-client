@@ -9,7 +9,7 @@ export default function Footer() {
             This Dapp is powered by Silent Shard{" "}
             <a
                 className="underline text-[#745EF6] label-bold"
-                href="https://docs.silencelaboratories.com/duo"
+                href="https://silencelaboratories.com/silent-shard"
                 target="_blank"
                 rel="noreferrer"
             >

@@ -43,7 +43,7 @@ export default function RootLayout({
                             </div>
                             <div className="flex items-left">
                                 <a
-                                    href="https://docs.silencelaboratories.com/duo"
+                                    href="https://silencelaboratories.com/silent-shard"
                                     target="_blank"
                                     className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
                                 >
